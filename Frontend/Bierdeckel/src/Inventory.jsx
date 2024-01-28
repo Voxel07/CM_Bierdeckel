@@ -4,12 +4,14 @@ import axios from 'axios';
 
 const ProductList = () => {
     const [products, setProducts] = useState([
-        { id: 1, name: 'Product 1', price: '10' },
-        { id: 2, name: 'Product 2', price: '20' }
+        { id: 1, name: 'Product 1', price: '10', amount: 10, remaining: 5 },
+        { id: 2, name: 'Product 2', price: '20', amount: 10, remaining: 10 }
     ]);
 
     const [newProductName, setNewProductName] = useState('');
     const [newProductPrice, setNewProductPrice] = useState('');
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [remainingAmount, setRemainingAmount] = useState(0);
 
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {
@@ -60,7 +62,8 @@ const ProductList = () => {
         const newProduct = {
             id: products.length + 1,
             name: newProductName,
-            price: newProductPrice
+            price: newProductPrice,
+            amount: 0
         };
 
         axios.post('http://localhost:8080/products', newProduct)
@@ -75,6 +78,23 @@ const ProductList = () => {
             });
     };
 
+    // Calculate total amount and remaining amount
+    const calculateAmounts = () => {
+        let total = 0;
+        let remaining = 0;
+        products.forEach(product => {
+            total += parseFloat(product.price);
+            remaining += parseFloat(product.price);
+        });
+        setTotalAmount(total);
+        setRemainingAmount(remaining);
+    };
+
+    // Call calculateAmounts when products change
+    React.useEffect(() => {
+        calculateAmounts();
+    }, [products]);
+
     return (
         <div>
             <h1>Produkt Liste</h1>
@@ -84,6 +104,8 @@ const ProductList = () => {
                         <TableRow>
                             <TableCell>Name</TableCell>
                             <TableCell>Price</TableCell>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Remaining</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -146,28 +168,74 @@ const ProductList = () => {
                                 </TableCell>
                                 <TableCell>
                                     {product.isEditing ? (
-                                        <Button variant="contained" color="primary" onClick={() => handleSave(product.id)}>Save</Button>
+                                        <TextField
+                                            value={product.amount}
+                                            type='number'
+                                            onChange={(e) => {
+                                                const input = e.target.value;
+                                                const updatedProducts = products.map(p => {
+                                                    if (p.id === product.id) {
+                                                        return {
+                                                            ...p,
+                                                            amount: input
+                                                        };
+                                                    }
+                                                    return p;
+                                                });
+                                                setProducts(updatedProducts);
+                                            }}
+                                        />
                                     ) : (
-                                        <Button variant="contained" color="primary" onClick={() => !product.isEditing && handleEdit(product.id)}>Edit</Button>
+                                        product.amount
                                     )}
-                                    <Button variant="contained" color="secondary" onClick={() => handleDelete(product.id)}>Delete</Button>
+                                </TableCell>
+                                <TableCell>
+                                    {product.isEditing ? (
+                                        <TextField
+                                            value={product.remaining}
+                                            type='number'
+                                            onChange={(e) => {
+                                                const input = e.target.value;
+                                                const updatedProducts = products.map(p => {
+                                                    if (p.id === product.id) {
+                                                        return {
+                                                            ...p,
+                                                            remaining: input
+                                                        };
+                                                    }
+                                                    return p;
+                                                });
+                                                setProducts(updatedProducts);
+                                            }}
+                                        />
+                                    ) : (
+                                        product.remaining
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {product.isEditing ? (
+                                        <Button variant="contained" color="primary" onClick={() => handleSave(product.id)}>Speichern</Button>
+                                    ) : (
+                                        <Button variant="contained" color="primary" onClick={() => !product.isEditing && handleEdit(product.id)}>Anpassen</Button>
+                                    )}
+                                    <Button variant="contained" color="secondary" onClick={() => handleDelete(product.id)}>Löschen</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
-                <TextField
+                <TextField 
                     label="Produkt Name"
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}
-                />
+                    />
                 <TextField
                     label="Produkt Preis"
                     value={newProductPrice}
                     onChange={(e) => setNewProductPrice(e.target.value)}
-                />
-                <Button variant="contained" color="primary" onClick={handleCreate}>Create New Entry</Button>
+                    />
+                <Button variant="contained" color="primary" onClick={handleCreate}>Eintrag hinzufügen</Button>
+                </TableContainer>
             </div>
     );
 };
