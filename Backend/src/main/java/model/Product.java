@@ -1,13 +1,19 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.bind.annotation.JsonbTransient;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.FetchType;
 
 @Entity
@@ -26,9 +32,8 @@ public class Product {
     @Column(name = "price")
     private Double price;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name ="order_id", referencedColumnName="id")
-    private Order order;
+   @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "products")
+    private  List<Request> requests = new ArrayList<>();
 
     public Product() {
     }
@@ -61,5 +66,16 @@ public class Product {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    @JsonIgnore
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
+
+    
 }
 

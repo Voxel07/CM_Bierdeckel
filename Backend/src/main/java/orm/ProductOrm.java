@@ -1,8 +1,8 @@
 package orm;
 
+import java.util.ArrayList;
 import java.util.List;
 import model.Product;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -16,13 +16,25 @@ public class ProductOrm {
     @Inject
     EntityManager em;
 
-    public Product getProductById(Long id) {
-        return em.find(Product.class, id);
+    @Inject
+    RequestOrm requestOrm;
+
+    public List<Product> getProductById(Long id) {
+        Product product = em.find(Product.class, id);
+        List<Product> products = new ArrayList<>();
+        if (product != null) {
+            products.add(product);
+        }
+        return products;
     }
 
     public List<Product> getAllProducts() {
         TypedQuery<Product> query = em.createQuery("SELECT p FROM Product p", Product.class);
         return query.getResultList();
+    }
+
+    public List<Product> getProductsByRequest(Long requestId) {
+        return requestOrm.getRequestById(requestId).get(0).getProducts();
     }
 
     @Transactional

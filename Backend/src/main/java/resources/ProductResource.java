@@ -12,6 +12,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import orm.ProductOrm;
@@ -26,8 +27,18 @@ public class ProductResource {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Product> getAllProducts() {
-        return orm.getAllProducts();
+    public List<Product> getAllProducts(@QueryParam("productId") Long productId
+    , @QueryParam("requestId") Long requestId) {
+        if (productId != null) {
+            return orm.getProductById(productId);
+        }
+        if (requestId != null) {
+            return orm.getProductsByRequest(requestId);
+        }
+        else
+        {
+            return orm.getAllProducts();
+        }
     }
 
     @POST
