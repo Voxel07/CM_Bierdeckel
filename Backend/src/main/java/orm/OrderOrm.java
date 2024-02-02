@@ -10,7 +10,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
-import model.Request;
+import model.Order;
 import model.Product;
 import model.ProductState;
 import model.User;
@@ -18,7 +18,7 @@ import model.ProductState.OrderStatus;
 import model.ProductState.PaymentStatus;
 
 @ApplicationScoped
-public class RequestOrm {
+public class OrderOrm {
 
     @Inject
     EntityManager em;
@@ -26,29 +26,29 @@ public class RequestOrm {
     @Inject
     ProductStateOrm productStateOrm;
 
-    public List<Request> getRequestById(Long id) {
-        Request request = em.find(Request.class, id);
-        List<Request> requests = new ArrayList<>();
-        if (request != null) {
-            requests.add(request);
+    public List<Order> getOrderById(Long id) {
+        Order order = em.find(Order.class, id);
+        List<Order> orders = new ArrayList<>();
+        if (order != null) {
+            orders.add(order);
         }
-        return requests;
+        return orders;
     }
 
-    public List<Request> getAllRequests() {
-        TypedQuery<Request> query = em.createQuery("SELECT r FROM Request r", Request.class);
+    public List<Order> getAllOrder() {
+        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r", Order.class);
 
-        List<Request> requests = query.getResultList();
-        System.out.println(requests.size());
+        List<Order> order = query.getResultList();
+        System.out.println(order.size());
 
-        return requests;
+        return order;
     }
 
 
     @Transactional
-    public Response createRequest(Long userId) {
+    public Response createOrder(Long userId) {
         
-        Request request = new Request();
+        Order order = new Order();
         User user = new User();
         
         try {
@@ -61,7 +61,7 @@ public class RequestOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("User not found").build();
         }
 
-        TypedQuery<Request> query = em.createQuery("SELECT r FROM Request r WHERE r.user =: user", Request.class);
+        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
         query.setParameter("user", user);
 
         if(query.getResultList().size() != 0)
@@ -69,15 +69,15 @@ public class RequestOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("User already has an order").build();
         }
         
-        request.setUser(user);
+        order.setUser(user);
         
         try {
-            em.persist(request);
+            em.persist(order);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
         
-        user.setRequest(request);
+        user.setOrder(order);
         
         try {
             em.merge(user);
@@ -88,19 +88,19 @@ public class RequestOrm {
     }
 
     @Transactional
-    public Response addProductToRequest(Long requestId, Long productId) {
+    public Response addProductToOrder(Long orderId, Long productId) {
 
-        System.out.println("addProductToRequest");
+        System.out.println("addProductToOrder");
        
-        Request requestDB = new Request();
+        Order orderDB = new Order();
         Product productDB = new Product();
         try {
-            requestDB = em.find(Request.class, requestId);
+            orderDB = em.find(Order.class, orderId);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
-        if (requestDB == null) {
+        if (orderDB == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
         }
 
@@ -114,15 +114,15 @@ public class RequestOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Product not found").build();
         }
 
-        requestDB.addProduct(productDB);
+       orderDB.addProduct(productDB);
         
         try {
-            em.merge(requestDB);
+            em.merge(orderDB);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
-        ProductState productState = new ProductState(PaymentStatus.UNPAID, OrderStatus.ORDERED, productDB, requestDB);
+        ProductState productState = new ProductState(PaymentStatus.UNPAID, OrderStatus.ORDERED, productDB,orderDB);
 
         productStateOrm.createProductState(productState);
                      
@@ -135,7 +135,7 @@ public class RequestOrm {
     }
 
     @Transactional
-    public void deleteOrder(Request order) {
+    public void deleteOrder(Order order) {
         em.remove(order);
     }
 

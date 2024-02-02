@@ -17,7 +17,7 @@ public class ProductOrm {
     EntityManager em;
 
     @Inject
-    RequestOrm requestOrm;
+    OrderOrm orderOrm;
 
     public List<Product> getProductById(Long id) {
         Product product = em.find(Product.class, id);
@@ -33,8 +33,8 @@ public class ProductOrm {
         return query.getResultList();
     }
 
-    public List<Product> getProductsByRequest(Long requestId) {
-        return requestOrm.getRequestById(requestId).get(0).getProducts();
+    public List<Product> getProductsByOrder(Long orderId) {
+        return orderOrm.getOrderById(orderId).get(0).getProducts();
     }
 
     @Transactional

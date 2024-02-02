@@ -28,13 +28,13 @@ public class ProductResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<Product> getAllProducts(@QueryParam("productId") Long productId, 
-                                        @QueryParam("requestId") Long requestId) 
+                                        @QueryParam("orderId") Long orderId) 
     {
         if (productId != null) {
             return orm.getProductById(productId);
         }
-        if (requestId != null) {
-            return orm.getProductsByRequest(requestId);
+        if (orderId != null) {
+            return orm.getProductsByOrder(orderId);
         }
         else
         {

@@ -33,8 +33,8 @@ public class ProductState {
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requestId", referencedColumnName = "id")
-    private Request request;
+    @JoinColumn(name = "orderId", referencedColumnName = "id")
+    private Order order;
 
     public enum PaymentStatus {
         UNPAID,
@@ -51,11 +51,11 @@ public class ProductState {
     public ProductState() {
     }
 
-    public ProductState(PaymentStatus paymentStatus, OrderStatus orderStatus, Product product, Request request) {
+    public ProductState(PaymentStatus paymentStatus, OrderStatus orderStatus, Product product, Order order) {
         this.paymentStatus = paymentStatus;
         this.orderStatus = orderStatus;
         this.product = product;
-        this.request = request;
+        this.order = order;
     }
 
     public PaymentStatus getPaymentStatus() {
@@ -82,12 +82,12 @@ public class ProductState {
         this.product = product;
     }
 
-    public Request getRequest() {
-        return request;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     

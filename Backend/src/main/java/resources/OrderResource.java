@@ -4,7 +4,6 @@ import jakarta.inject.Inject;
 
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
@@ -17,58 +16,58 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import model.Request;
-import orm.RequestOrm;
+import model.Order;
+import orm.OrderOrm;
 
 @RequestScoped
-@Path("/requests")
-public class RqeuestResource {
+@Path("/order")
+public class OrderResource {
 
     @Inject
-    RequestOrm orm;
+    OrderOrm orm;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Request> getAllOrders(@QueryParam("orderId") Long orderId) 
+    public List<Order> getAllOrder(@QueryParam("orderId") Long orderId) 
     {
         if(orderId != null)
         {
-            return orm.getRequestById(orderId);
+            return orm.getOrderById(orderId);
         }
         else
         {
-            return orm.getAllRequests();
+            return orm.getAllOrder();
         }
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createRequest(@QueryParam("userId") Long userId) {
+    public Response createOrder(@QueryParam("userId") Long userId) {
         if (userId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
         }
         
-        return orm.createRequest(userId);
+        return orm.createOrder(userId);
     }
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateRequest(@QueryParam("requestId") Long requestId,
+    public Response updateOrder(@QueryParam("orderId") Long orderId,
                                         @QueryParam("productId") Long productId) 
     {
-        if (requestId == null || productId == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty requestId or productId").build();
+        if (orderId == null || productId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty orderId or productId").build();
         }
-        return orm.addProductToRequest(requestId, productId);
+        return orm.addProductToOrder(orderId, productId);
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteRequest(@QueryParam("requestId") int requestId) {
+    public Response deleteOrder(@QueryParam("orderId") int orderId) {
         // Implementation for deleting an order
         return Response.noContent().build();
     }

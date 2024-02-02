@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "REQUEST")
-public class Request {
+@Table(name = "REQUESTS")
+public class Order {
 
     @Id
-    @SequenceGenerator(name = "requestSeq", sequenceName = "ZSEQ_REQUEST_ID", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(generator = "requestSeq")
+    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(generator = "orderSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
@@ -32,8 +32,8 @@ public class Request {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinTable(
-                name = "request_product",
-                joinColumns = {@JoinColumn(name = "requestId", referencedColumnName="id")},
+                name = "order_product",
+                joinColumns = {@JoinColumn(name = "orderId", referencedColumnName="id")},
                 inverseJoinColumns = {@JoinColumn(name = "productId", referencedColumnName="id")}
                 )
 
@@ -43,10 +43,10 @@ public class Request {
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductState> productStates = new ArrayList<>();
 
-    public Request(){
+    public Order(){
 
     }
 
