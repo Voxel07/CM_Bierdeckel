@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
 
 @Entity
@@ -31,8 +31,8 @@ public class Product {
     @Column(name = "price")
     private Double price;
 
-   @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "products")
-    private List<Order> order = new ArrayList<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     public Product() {
     }
@@ -67,12 +67,12 @@ public class Product {
     }
 
     @JsonIgnore
-    public List<Order> getOrder() {
-        return order;
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    public void setOrder(List<Order> order) {
-        this.order = order;
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     

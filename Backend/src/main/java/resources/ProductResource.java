@@ -33,9 +33,6 @@ public class ProductResource {
         if (productId != null) {
             return orm.getProductById(productId);
         }
-        if (orderId != null) {
-            return orm.getProductsByOrder(orderId);
-        }
         else
         {
             return orm.getAllProducts();

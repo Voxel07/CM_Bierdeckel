@@ -11,20 +11,15 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 import model.Order;
+import model.OrderItem;
 import model.Product;
-import model.ProductState;
 import model.User;
-import model.ProductState.OrderStatus;
-import model.ProductState.PaymentStatus;
 
 @ApplicationScoped
 public class OrderOrm {
 
     @Inject
     EntityManager em;
-
-    @Inject
-    ProductStateOrm productStateOrm;
 
     public List<Order> getOrderById(Long id) {
         Order order = em.find(Order.class, id);
@@ -114,18 +109,16 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Product not found").build();
         }
 
-       orderDB.addProduct(productDB);
-        
+        OrderItem orderItem = new OrderItem(productDB, orderDB, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
+
+        orderDB.addOrderItem(orderItem);
+
         try {
             em.merge(orderDB);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-
-        ProductState productState = new ProductState(PaymentStatus.UNPAID, OrderStatus.ORDERED, productDB,orderDB);
-
-        productStateOrm.createProductState(productState);
-                     
+        
         return Response.status(Response.Status.CREATED).entity("New product added to order").build();
     }
 

@@ -33,10 +33,6 @@ public class ProductOrm {
         return query.getResultList();
     }
 
-    public List<Product> getProductsByOrder(Long orderId) {
-        return orderOrm.getOrderById(orderId).get(0).getProducts();
-    }
-
     @Transactional
     public Response createProduct(Product product) {
 

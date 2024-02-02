@@ -7,18 +7,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.json.bind.annotation.JsonbTransient;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "REQUESTS")
+@Table(name = "REQUESTS") // Cant be named Order because it is a reserved word in SQL
 public class Order {
 
     @Id
@@ -30,21 +28,12 @@ public class Order {
     @Column(name = "sum")
     private double sum;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinTable(
-                name = "order_product",
-                joinColumns = {@JoinColumn(name = "orderId", referencedColumnName="id")},
-                inverseJoinColumns = {@JoinColumn(name = "productId", referencedColumnName="id")}
-                )
-
-    private  List<Product> products = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order")
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductState> productStates = new ArrayList<>();
 
     public Order(){
 
@@ -67,22 +56,22 @@ public class Order {
     }
 
     @JsonbTransient
-    public List<Product> getProducts() {
-        return products;
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    public void addProduct(Product product) {
-        this.products.add(product);
-        this.sum += product.getPrice();
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        this.sum += orderItem.getProduct().getPrice();
     }
 
-    public void removeProduct(Product product) {
-        this.products.remove(product);
-        this.sum -= product.getPrice();
+    public void removeOrderItem(OrderItem orderItem) {
+        this.orderItems.remove(orderItem);
+        this.sum -= orderItem.getProduct().getPrice();
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     // @JsonIgnore
