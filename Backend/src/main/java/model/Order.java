@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import model.OrderItem.OrderStatus;
+import model.OrderItem.PaymentStatus;
 import jakarta.persistence.OneToMany;
 import jakarta.json.bind.annotation.JsonbTransient;
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class Order {
     @Column(name = "sum")
     private double sum;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order")
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
@@ -68,6 +70,24 @@ public class Order {
     public void removeOrderItem(OrderItem orderItem) {
         this.orderItems.remove(orderItem);
         this.sum -= orderItem.getProduct().getPrice();
+        if (this.sum < 0 || this.orderItems.size() == 0){
+            this.sum = 0;
+        }
+    }
+
+    public void setOrderItemPay(OrderItem orderItem, PaymentStatus paymentStatus) {
+        orderItem.setPaymentStatus(paymentStatus);
+    }
+
+    public void payOrder(){
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.setPaymentStatus(OrderItem.PaymentStatus.PAID);
+        }
+        this.sum = 0;
+    }
+
+    public void setOrderItemState(OrderItem orderItem, OrderStatus orderStatus){
+        orderItem.setOrderStatus(orderStatus);
     }
 
     public void setOrderItems(List<OrderItem> orderItems) {

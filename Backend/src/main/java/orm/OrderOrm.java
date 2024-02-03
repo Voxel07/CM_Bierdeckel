@@ -14,6 +14,7 @@ import model.Order;
 import model.OrderItem;
 import model.Product;
 import model.User;
+import model.OrderItem.PaymentStatus;
 
 @ApplicationScoped
 public class OrderOrm {
@@ -35,6 +36,15 @@ public class OrderOrm {
 
         List<Order> order = query.getResultList();
         System.out.println(order.size());
+
+        return order;
+    }
+
+    public List<Order> getOderByProducts(Long productId) {
+        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r JOIN r.orderItems o WHERE o.product.id = :productId", Order.class);
+        query.setParameter("productId", productId);
+
+        List<Order> order = query.getResultList();
 
         return order;
     }
@@ -108,28 +118,188 @@ public class OrderOrm {
         if (productDB == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Product not found").build();
         }
-
+     
         OrderItem orderItem = new OrderItem(productDB, orderDB, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
-
         orderDB.addOrderItem(orderItem);
+       
+        try {
+            System.out.println("merge");
+
+            em.merge(orderDB);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Product added to order").build();
+    }
+
+    @Transactional
+    public Response removeProductFromOrder(Long orderId, Long orderItemId) 
+    {
+        System.out.println("addProductToOrder");
+       
+        Order orderDB = new Order();
+        try {
+            orderDB = em.find(Order.class, orderId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        List<OrderItem> orderItems = orderDB.getOrderItems();
+        boolean itemFound = false;
+
+        System.out.println("orderItems.size " + orderItems.size());
+
+        // only remove the first item found
+        for (OrderItem orderItem : orderItems) {
+            if (orderItem.getId() == orderItemId) {
+                // em.remove(orderItem); // Remove the OrderItem from the database
+                orderDB.removeOrderItem(orderItem);
+                itemFound = true;
+                break;
+            }
+        }
+
+        System.out.println("orderDB.getOrderItems " + orderDB.getOrderItems().size());
+
+        if (!itemFound) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Item not found").build();
+        }
 
         try {
             em.merge(orderDB);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
+
+        return Response.status(Response.Status.CREATED).entity("Product removed from order").build();
+    }
+
+    @Transactional
+    public Response updateOrderStatus(Long orderId, Long orderItemId) {
+        Order orderDB = new Order();
+        try {
+            orderDB = em.find(Order.class, orderId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        OrderItem orderItem = new OrderItem();
+        try {
+            orderItem = em.find(OrderItem.class, orderItemId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
         
-        return Response.status(Response.Status.CREATED).entity("New product added to order").build();
+        if (orderItem == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
+            
+        }
+
+        switch (orderItem.getOrderStatus()) {
+            case ORDERED:
+                orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.IN_PROGRESS);
+                break;
+            case IN_PROGRESS:
+                orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.DELIVERED);
+                break;
+            case DELIVERED:
+                return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+            default:
+                return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid action").build();
+        }
+
+        try {
+            em.merge(orderDB);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Order updated").build();
     }
 
     @Transactional
-    public void removeProductFromOrder(Product product) {
-        // em.merge(product);
+    public Response updateOrderPayment(Long orderId, Long orderItemId) {
+        
+        Order orderDB = new Order();
+        try {
+            orderDB = em.find(Order.class, orderId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        OrderItem orderItem = new OrderItem();
+        try {
+            orderItem = em.find(OrderItem.class, orderItemId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+        
+        if (orderItem == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
+        }
+
+        if (orderItem.getPaymentStatus() == PaymentStatus.PAID) {
+            orderDB.setOrderItemPay(orderItem, PaymentStatus.UNPAID);
+        } else {
+            orderDB.setOrderItemPay(orderItem, PaymentStatus.PAID);
+        }
+
+        try {
+            em.merge(orderItem);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Order updated").build();
     }
 
     @Transactional
-    public void deleteOrder(Order order) {
-        em.remove(order);
+    public Response payOrder(Long orderId) {
+        Order orderDB = new Order();
+        try {
+            orderDB = em.find(Order.class, orderId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        orderDB.payOrder();
+
+        try {
+            em.merge(orderDB);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Order paid").build();
+    }
+
+    @Transactional
+    public Response deleteOrder(Order order) {
+        
+        try {
+            em.remove(order);
+            
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+        return Response.status(Response.Status.OK).entity("Order deleted").build();
     }
 
 }

@@ -52,23 +52,62 @@ public class OrderResource {
         return orm.createOrder(userId);
     }
 
+    
+    /**
+     * Updates the order based on the provided parameters.
+     * 
+     * @param orderId   the ID of the order
+     * @param productId the ID of the product for remove, payment or progress its the orderItem id
+     * @param action    the action to perform on the order
+     * @return          the response indicating the success or failure of the update
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateOrder(@QueryParam("orderId") Long orderId,
-                                        @QueryParam("productId") Long productId) 
+                                @QueryParam("productId") Long productId,
+                                @QueryParam("action") String action) 
     {
-        if (orderId == null || productId == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty orderId or productId").build();
+        if (orderId == null || productId == null || action == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
         }
-        return orm.addProductToOrder(orderId, productId);
+
+        if(action.equals("add"))
+        {
+            return orm.addProductToOrder(orderId, productId);
+        }
+        else if(action.equals("remove") )
+        {
+            return orm.removeProductFromOrder(orderId, productId);
+        }
+        else if (action.equals("payItem")) 
+        {
+            return orm.updateOrderPayment(orderId, productId);
+        }
+        else if (action.equals("progress"))
+        {
+            return orm.updateOrderStatus(orderId, productId);
+        }
+        else if (action.equals("payOrder") && productId == 0)
+        {
+            return orm.payOrder(orderId);
+        }
+        else
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
+        }
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteOrder(@QueryParam("orderId") int orderId) {
-        // Implementation for deleting an order
-        return Response.noContent().build();
+    public Response deleteOrder(Order order) 
+    {
+        if (order == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty order").build();
+            
+        }
+
+        return orm.deleteOrder(order);
     }
 }

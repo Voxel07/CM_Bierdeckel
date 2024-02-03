@@ -2,6 +2,9 @@ package orm;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Order;
+import model.OrderItem;
 import model.Product;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -61,8 +64,24 @@ public class ProductOrm {
         try {
             em.merge(product);
         } catch (Exception e) {
-            // TODO: handle exception
+            return Response.status(500).entity("Error while updating product").build();
         }
+
+        List<Order> orders = orderOrm.getOderByProducts(product.getId());
+
+        Double newSum = 0.0;
+        for (Order order : orders) {
+            for (OrderItem oi : order.getOrderItems()) {
+                newSum += oi.getProduct().getPrice();
+            }
+            order.setSum(newSum);
+            try {
+                em.merge(order);
+            } catch (Exception e) {
+                return Response.status(500).entity("Error while updating order").build();
+            }
+        }
+
         return Response.status(200).entity("Product updated").build();
 
     }

@@ -39,7 +39,7 @@ public class OrderItem
 
     public enum PaymentStatus {
         UNPAID,
-        PARTIALLY_PAID,
+        PARTIALLY_PAID, //only an order can be partially paid
         PAID
     }
 
@@ -100,7 +100,16 @@ public class OrderItem
         this.orderStatus = orderStatus;
     }
 
-
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "id=" + id +
+                ", product=" + product +
+                ", order=" + order +
+                ", paymentStatus=" + paymentStatus +
+                ", orderStatus=" + orderStatus +
+                '}';
+    }
     
     
 
