@@ -86,6 +86,12 @@ public class Order {
         this.sum = 0;
     }
 
+    public void completeOrder(){
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.setOrderStatus(OrderItem.OrderStatus.DELIVERED);
+        }
+    }
+
     public void setOrderItemState(OrderItem orderItem, OrderStatus orderStatus){
         orderItem.setOrderStatus(orderStatus);
     }

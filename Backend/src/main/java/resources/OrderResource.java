@@ -92,6 +92,10 @@ public class OrderResource {
         {
             return orm.payOrder(orderId);
         }
+        else if (action.equals("completeOrder") && productId == 0)
+        {
+            return orm.completeOrder(orderId);
+        }
         else
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
