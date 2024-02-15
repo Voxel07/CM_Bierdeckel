@@ -87,9 +87,25 @@ public class ProductOrm {
     }
 
     @Transactional
-    public void deleteProductById(Long id) {
-        Product product = em.find(Product.class, id);
-        em.remove(product);
+    public Response deleteProductById(Long id) {
+        
+        Product product;
+       
+        try {
+            product = em.find(Product.class, id);
+            if (product.getOrderItems().size() > 0) {
+                return Response.status(406).entity("Product has orders").build();
+            }
+        } catch (Exception e) {
+            return Response.status(500).entity("Error while deleting product").build();
+        }
+
+        try {
+            em.remove(product);
+        } catch (Exception e) {
+           return Response.status(500).entity("Error while deleting product").build();
+        }
+        return Response.status(200).entity("Product deleted").build();
     }
 
 }

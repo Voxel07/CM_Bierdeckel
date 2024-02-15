@@ -33,12 +33,14 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    // @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    // private List<ExtraItem> extraItems = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
 
     public Order(){
-
     }
 
     public Long getId() {
@@ -57,9 +59,26 @@ public class Order {
         this.sum = sum;
     }
 
+    public void incSum(double sum) {
+        this.sum += sum;
+    }
+
+    public void decSum(double sum) {
+        this.sum -= sum;
+    }
+
     @JsonbTransient
     public List<OrderItem> getOrderItems() {
         return orderItems;
+    }
+
+    public OrderItem getOrderItemById(Long id){
+        for (OrderItem orderItem : this.orderItems) {
+            if (orderItem.getId() == id){
+                return orderItem;
+            }
+        }
+        return null;
     }
 
     public void addOrderItem(OrderItem orderItem) {
