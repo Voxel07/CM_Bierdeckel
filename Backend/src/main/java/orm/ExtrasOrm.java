@@ -100,14 +100,13 @@ public class ExtrasOrm {
                             System.out.println("Price: " + dBExtras.getPrice());
                             order.incSum(extra.getPrice());
                             System.out.println("Price2: " + extra.getPrice());
-                            try {
-                                em.merge(order);
-                            } catch (Exception e) {
-                                return Response.status(500).entity("Error while updating order").build();
-                            }
-                            em.flush();
                         }
                     }
+                }
+                try {
+                    em.merge(order);
+                } catch (Exception e) {
+                    return Response.status(500).entity("Error while updating order").build();
                 }
             }
         }
