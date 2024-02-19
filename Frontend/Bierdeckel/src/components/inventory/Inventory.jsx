@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TextField, Box } from '@material-ui/core';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
@@ -8,6 +8,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
 
+import AddProduct from './AddProduct'
+
+//Feedback
+import { AlertsManager  } from '../../utils/AlertsManager';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -30,12 +34,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }));
 
 const ProductList = () => {
-    const [products, setProducts] = useState([]);
 
-    const [newProductName, setNewProductName] = useState('');
-    const [newProductPrice, setNewProductPrice] = useState('');
-    const [stock, setStock] = useState(0);
-    const [consumption, setConsumption] = useState(0);
+    const [products, setProducts] = useState([]);
+    const [trigger, setTrigger] = useState(false); 
+    const alertsManagerRef =  useRef();
 
     useEffect(()=>{
         axios.get("http://localhost:8080/products")
@@ -45,7 +47,7 @@ const ProductList = () => {
             console.log(error)
         })
         
-    },[])
+    },[trigger, products])
     
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {
@@ -84,35 +86,27 @@ const ProductList = () => {
         }
     };
 
-    const handleDelete = (id) => {
-        const updatedProducts = products.filter(product => product.id !== id);
+    const handleDelete = (_id) => {
+        const updatedProducts = products.filter(product => product.id !== _id);
         setProducts(updatedProducts);
-    };
 
+        axios.delete('http://localhost:8080/products',
+        {
+            data:{ id: _id }
 
-    const handleCreate = () => {
-        console.log('Creating new product');
-        const newProduct = {
-            id: products.length + 1,
-            name: newProductName,
-            price: newProductPrice,
-            amount: 0
-        };
-
-        axios.post('http://localhost:8080/products', newProduct)
-            .then(response => {
-                console.log('Product created successfully:', response.data);
-                setProducts([...products, newProduct]);
-                setNewProductName('');
-                setNewProductPrice('');
-            })
-            .catch(error => {
-                console.error('Error creating product:', error);
-            });
+        }).then(response=>{
+            console.log(response.data)
+            alertsManagerRef.current.showAlert('success', response.data);
+            setTrigger()
+        }).catch(error=>{
+            console.log(error.response)
+            // alertsManagerRef.current.showAlert('error', error.response.data);
+        });
     };
 
     return (
         <Box sx={{width: "100px"}}>
+             <AlertsManager ref={alertsManagerRef} />
             <h1>Produkt Liste</h1>
             <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
                 <Table sx={{ backgroundColor: 'transparent' }}>
@@ -246,7 +240,7 @@ const ProductList = () => {
                                             )}
                                         </>
                                     ) : (
-                                        `${product.consumption} €`
+                                        product.category == "Food"? `${product.consumption} stk.`:`${product.consumption} l`
                                     )}
                                 </TableCell>
                                 <TableCell>
@@ -261,27 +255,7 @@ const ProductList = () => {
                         ))}
                     </TableBody>
                 </Table>
-                <TextField 
-                    label="Produkt Name"
-                    value={newProductName}
-                    onChange={(e) => setNewProductName(e.target.value)}
-                    />
-                <TextField
-                    label="Produkt Preis"
-                    value={newProductPrice}
-                    onChange={(e) => setNewProductPrice(e.target.value)}
-                    />
-                <TextField 
-                    label="Produkt Name"
-                    value={newProductName}
-                    onChange={(e) => setNewProductName(e.target.value)}
-                    />
-                <TextField
-                    label="Produkt Preis"
-                    value={newProductPrice}
-                    onChange={(e) => setNewProductPrice(e.target.value)}
-                    />
-                <Button variant="contained" color="primary" onClick={handleCreate}>Eintrag hinzufügen</Button>
+                <AddProduct  onSubmitSuccess={() => setTrigger(!trigger)}/>
                 </TableContainer>
             </Box>
     );

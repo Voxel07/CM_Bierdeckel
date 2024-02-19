@@ -58,8 +58,14 @@ public class ProductResource {
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteProduct(Long Id) {
-        orm.deleteProductById(Id);
-        return "Product deleted";
+    public Response deleteProduct(Product product) {
+
+        if(product.getId() != null)
+        {
+            return orm.deleteProductById(product.getId());
+        }
+        else{
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty productId").build();
+        }
     }
 }

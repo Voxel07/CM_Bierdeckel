@@ -20,7 +20,7 @@ import jakarta.persistence.FetchType;
 public class Product {
 
     @Id
-    @SequenceGenerator(name = "productSeq", sequenceName = "ZSEQ_PRODUCT_ID", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "productSeq", sequenceName = "ZSEQ_PRODUCT_ID", allocationSize = 1, initialValue = 7) //TODO: Change back to 1
     @GeneratedValue(generator = "productSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;

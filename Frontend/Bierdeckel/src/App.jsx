@@ -15,7 +15,8 @@ import Footer from './components/core/Footer';
 import Home from './components/core/Home';
 import PageNotFound from './components/core/PageNotFound';
 import TemporaryDrawer from './components/core/Drawer';
-import BasicForm from './components/test'
+import AddProduct from './components/inventory/AddProduct'
+
 function App() {
 
   return (
@@ -32,7 +33,7 @@ function App() {
 
       <Route path='Inventar' Component={Inventory}/>
       <Route path='bestellungen' Component={Order}/>
-      <Route path='test' Component={BasicForm}/>
+      <Route path='test' Component={AddProduct}/>
     </Routes>
     {/* <Footer/> */}
    </Router>
