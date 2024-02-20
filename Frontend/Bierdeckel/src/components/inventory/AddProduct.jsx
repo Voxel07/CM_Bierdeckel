@@ -8,7 +8,6 @@ import axios from 'axios'
 //MUI
 import TextField from '@material-ui/core/TextField';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
-import AddIcon from '@mui/icons-material/Add';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -18,9 +17,11 @@ import { Container, Typography } from '@mui/material';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@mui/icons-material/Add';
 
 //Feedback
-import { AlertsManager  } from '../../utils/AlertsManager';
+import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
+import { IconButton } from '@material-ui/core';
 
 const useStyles = makeStyles({
     root: {
@@ -48,9 +49,10 @@ const style = {
   };
 
 
-const AddProduct = React.forwardRef((props, ref) =>
+
+const AddProduct = ((props) =>
 {
-    const alertsManagerRef =  useRef();
+    const alertsManagerRef =  useRef(AlertsContext);
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
 
@@ -71,8 +73,8 @@ const AddProduct = React.forwardRef((props, ref) =>
     
         })
         .catch(error => {//handle response codes over 400 here
-            console.log(error.response)
-            alertsManagerRef.current.showAlert('error', error.response.data);
+            console.log("Error:"+ error.response)
+            // alertsManagerRef.current.showAlert('error', error.response.data);
 
         });
     
@@ -94,12 +96,16 @@ const AddProduct = React.forwardRef((props, ref) =>
     })
 
     const classes = useStyles();
-    return(
-        <div >
-        <AlertsManager ref={alertsManagerRef} />
-        <Button onClick={handleOpen}>Neues Produkt hinzufügen</Button>
-        <Modal
 
+    const FormikWithRef = React.forwardRef((props, ref) => (
+        <Formik {...props} />
+      ));
+
+    return(
+        <div>
+        <AlertsManager ref={alertsManagerRef} />
+        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+        <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border:"solid 2px" }}
@@ -112,7 +118,7 @@ const AddProduct = React.forwardRef((props, ref) =>
           },
         }}
       >
-        <Formik
+        <FormikWithRef
         validateOnChange={true}
         initialValues={
             {
@@ -130,8 +136,8 @@ const AddProduct = React.forwardRef((props, ref) =>
                 setSubmitting(false);
             }
         }
-
-    >
+        //end Formik
+        >  
         {
             ({ values, errors, isSubmitting, touched }) => {
                 
@@ -176,7 +182,7 @@ const AddProduct = React.forwardRef((props, ref) =>
 
             }
         }
-    </Formik>
+    </FormikWithRef>
     </Modal>
     </div>
     );

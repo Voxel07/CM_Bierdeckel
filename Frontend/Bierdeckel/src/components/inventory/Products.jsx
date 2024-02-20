@@ -7,47 +7,81 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
-
+import Skeleton from '@mui/material/Skeleton';
 import AddProduct from './AddProduct'
+import { withStyles } from '@material-ui/core/styles';
 
 //Feedback
 import { AlertsManager  } from '../../utils/AlertsManager';
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.background.paper,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 25,
-    },
-  }));
+// const StyledTableCell = styled(TableCell)(({ theme }) => ({
+//     [`&.${tableCellClasses.head}`]: {
+//       backgroundColor: theme.palette.background.paper,
+//       color: theme.palette.common.white,
+//       border: '1px solid blue',
+//     },
+//     [`&.${tableCellClasses.body}`]: {
+//       fontSize: 25,
+//     },
+//   }));
+
+const StyledTableCellHead = styled(TableCell)(({ theme }) => ({
+    color: 'rgb(70, 120, 167)',
+    borderBottom : '1px solid rgb(24, 24, 24)',
+}));
+
+const StyledTableCellBody = styled(TableCell)(({ theme }) => ({
+    color: 'rgb(132, 205, 71)',
+    // borderLeft: '1px solid blue',
+    // borderRight: '1px solid blue',
+    borderBottom : '1px solid rgb(24, 24, 24)',
+}));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-    },
+    }
+   
   }));
 
-const ProductList = () => {
+const StyledPaper = withStyles({
+    root: {
+        backgroundColor: 'rgba(36, 36, 36, 0.5)', // Semi-transparent white
+        boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.1)', // Shadow for "hover" effect
+        backdropFilter: 'blur(100px)', // Blur effect for background content
+        borderRadius: '20px',
+        border: 'px solid rgba(20, 20, 20, 0.5)',
+      // Add more styles as needed
+    },
+  })(props => <Paper elevation={1} {...props} />); // Change '3' to your desired elevation
+
+const Products = () => {
 
     const [products, setProducts] = useState([]);
     const [trigger, setTrigger] = useState(false); 
+    const [fetchingData, setDataFetched] = useState(true);
     const alertsManagerRef =  useRef();
+    const[loadingState, setLoadingState] = useState("Loading Inventory...");
 
     useEffect(()=>{
         axios.get("http://localhost:8080/products")
         .then(response => {
             setProducts(response.data)
-        }).catch(error=>{
-            console.log(error)
+            axios.get("http://localhost:8080/products")
+                .then(response => {
+                    setTimeout(() => {
+                        setProducts(response.data);
+                        setDataFetched(false);
+                    }, 0);
+                }).catch(error => {
+                    console.log(error);
+                    setDataFetched(false);
+                    setLoadingState("Server not reachable");
+                });
+
         })
         
-    },[trigger, products])
+    },[trigger])
     
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {
@@ -100,29 +134,51 @@ const ProductList = () => {
             setTrigger()
         }).catch(error=>{
             console.log(error.response)
-            // alertsManagerRef.current.showAlert('error', error.response.data);
+            alertsManagerRef.current.showAlert('error', error.response.data);
         });
     };
 
     return (
-        <Box sx={{width: "100px"}}>
-             <AlertsManager ref={alertsManagerRef} />
-            <h1>Produkt Liste</h1>
-            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
-                <Table sx={{ backgroundColor: 'transparent' }}>
+            // fetchingData ? (
+            //     <TableContainer component={Paper}>
+            //         <h1>{loadingState}</h1>
+            //         <Table>
+            //             <TableHead>
+            //                 <TableRow>
+            //                     <StyledTableCell>
+            //                         <Skeleton variant="text" height={40} />
+            //                     </StyledTableCell>
+            //                 </TableRow>
+            //             </TableHead>
+            //             <TableBody>
+            //                 {[...Array(3)].map((_, index) => (
+            //                     <TableRow key={index}>
+            //                         <TableCell>
+            //                             <Skeleton variant="text" height={50} />
+            //                         </TableCell>
+                         
+            //                     </TableRow>
+            //                 ))}
+            //             </TableBody>
+            //         </Table>
+            //     </TableContainer>
+            // ) : 
+            <TableContainer component={StyledPaper}>
+            <AlertsManager ref={alertsManagerRef} />
+                <Table >
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell>Name</StyledTableCell>
-                            <StyledTableCell>Price</StyledTableCell>
-                            <StyledTableCell>Amount</StyledTableCell>
-                            <StyledTableCell>Remaining</StyledTableCell>
-                            <StyledTableCell>Action</StyledTableCell>
+                            <StyledTableCellHead>Name</StyledTableCellHead>
+                            <StyledTableCellHead>Preis</StyledTableCellHead>
+                            <StyledTableCellHead>Stückzahl</StyledTableCellHead>
+                            <StyledTableCellHead>Verbraucht</StyledTableCellHead>
+                            <StyledTableCellHead>Aktion</StyledTableCellHead>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {products.map((product) => (
                             <StyledTableRow key={product.id}>
-                                <StyledTableCell >
+                                <StyledTableCellBody >
                                     {product.isEditing ? (
                                         <TextField
                                             value={product.newName }
@@ -144,8 +200,8 @@ const ProductList = () => {
                                     ) : (
                                         product.name
                                     )}
-                                </StyledTableCell>
-                                <TableCell>
+                                </StyledTableCellBody>
+                                <StyledTableCellBody>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -177,8 +233,8 @@ const ProductList = () => {
                                     ) : (
                                         `${product.price} €`
                                     )}
-                                </TableCell>
-                                <TableCell>
+                                </StyledTableCellBody>
+                                <StyledTableCellBody>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -210,8 +266,8 @@ const ProductList = () => {
                                     ) : (
                                         product.category == "Food"? `${product.stock} stk.`:`${product.stock} l`
                                     )}
-                                </TableCell>
-                                <TableCell>
+                                </StyledTableCellBody>
+                                <StyledTableCellBody>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -242,23 +298,24 @@ const ProductList = () => {
                                     ) : (
                                         product.category == "Food"? `${product.consumption} stk.`:`${product.consumption} l`
                                     )}
-                                </TableCell>
-                                <TableCell>
+                                </StyledTableCellBody>
+                                <StyledTableCellBody>
                                     {product.isEditing ? (
                                         <IconButton aria-label="delete" variant="contained" color="success" onClick={() => handleSave(product.id)}><SaveIcon/></IconButton>
                                     ) : (
                                         <IconButton variant="contained" color="info" onClick={() => !product.isEditing && handleEdit(product.id)}><EditIcon/></IconButton>
                                     )}
                                     <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
-                                </TableCell>
+                                </StyledTableCellBody>
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
-                <AddProduct  onSubmitSuccess={() => setTrigger(!trigger)}/>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)}/>
+                </div>
                 </TableContainer>
-            </Box>
     );
 };
 
-export default ProductList;
+export default Products;
