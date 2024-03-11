@@ -32,10 +32,21 @@ public class ProductOrm {
     }
 
     public List<Product> getAllProducts() {
+        System.out.println("getAllProducts");
         TypedQuery<Product> query = em.createQuery("SELECT p FROM Product p", Product.class);
         return query.getResultList();
     }
 
+    public List<Product> getProductByCategory(String category)
+    {
+        System.out.println("getProductByCategory");
+
+        TypedQuery<Product> query = em.createQuery("SELECT p FROM Product p WHERE category =: category", Product.class);
+        query.setParameter("category", category);
+        return query.getResultList();
+    }
+
+   
     @Transactional
     public Response createProduct(Product product) {
 

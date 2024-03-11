@@ -7,23 +7,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
-import Skeleton from '@mui/material/Skeleton';
 import AddProduct from './AddProduct'
 import { withStyles } from '@material-ui/core/styles';
 
 //Feedback
 import { AlertsManager  } from '../../utils/AlertsManager';
-
-// const StyledTableCell = styled(TableCell)(({ theme }) => ({
-//     [`&.${tableCellClasses.head}`]: {
-//       backgroundColor: theme.palette.background.paper,
-//       color: theme.palette.common.white,
-//       border: '1px solid blue',
-//     },
-//     [`&.${tableCellClasses.body}`]: {
-//       fontSize: 25,
-//     },
-//   }));
 
 const StyledTableCellHead = styled(TableCell)(({ theme }) => ({
     color: 'rgb(70, 120, 167)',
@@ -65,21 +53,18 @@ const Products = () => {
 
     useEffect(()=>{
         axios.get("http://localhost:8080/products")
-        .then(response => {
-            setProducts(response.data)
-            axios.get("http://localhost:8080/products")
-                .then(response => {
-                    setTimeout(() => {
-                        setProducts(response.data);
-                        setDataFetched(false);
-                    }, 0);
-                }).catch(error => {
-                    console.log(error);
+            .then(response => {
+                setTimeout(() => {
+                    setProducts(response.data);
                     setDataFetched(false);
-                    setLoadingState("Server not reachable");
-                });
+                }, 0);
+            }).catch(error => {
+                console.log(error);
+                setDataFetched(false);
+                setLoadingState("Server not reachable");
+            });
 
-        })
+  
         
     },[trigger])
     

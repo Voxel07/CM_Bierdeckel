@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-
 
 //Inventory
 import Products from './components/inventory/Products'
-import Order from './components/inventory/Order'
+import Order from './pages/Order'
 
 //user
 import SignIn from './components/user/SignIn'
@@ -15,9 +15,9 @@ import Footer from './components/core/Footer';
 import Home from './components/core/Home';
 import PageNotFound from './components/core/PageNotFound';
 import TemporaryDrawer from './components/core/Drawer';
-import AddProduct from './components/inventory/AddProduct'
 
 import Inventory from './pages/inventory'
+import SocketTest from './SocketTest'
 
 function App() {
 
@@ -35,7 +35,7 @@ function App() {
 
       <Route path='Inventar' Component={Inventory}/>
       <Route path='bestellungen' Component={Order}/>
-      <Route path='test' Component={AddProduct}/>
+      <Route path='test' Component={SocketTest}/>
     </Routes>
     {/* <Footer/> */}
    </Router>

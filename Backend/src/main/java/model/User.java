@@ -30,7 +30,6 @@ public class User {
     private String role;
 
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "user")
-    @JoinColumn(name ="orderId", referencedColumnName="id")
     private Order order;
 
     // Getter and Setter methods for id

@@ -73,8 +73,8 @@ const AddProduct = ((props) =>
     
         })
         .catch(error => {//handle response codes over 400 here
-            console.log("Error:"+ error.response)
-            // alertsManagerRef.current.showAlert('error', error.response.data);
+            console.log("Error:"+ error.response.data)
+            alertsManagerRef.current.showAlert('error', error.response.data);
 
         });
     
@@ -159,17 +159,17 @@ const AddProduct = ((props) =>
                             <Field inputRef={descriptionRef}  autoFocus variant="outlined" label="Bezeichung" name="description" type="input" error={!!errors.description && !!touched.description} helperText={!!touched.description && !!errors.description ? String(errors.description): ' '} as={TextField} />
                         </Grid>
                         <Grid  xs={4}>
-                            <Field className={classes.root} variant="outlined" label="Preis" name="price" type="number" error={!!errors.price && !!touched.price} helperText={!!touched.price && !!errors.price ? String(errors.price):' '} as={TextField}  InputProps={{ endAdornment: <InputAdornment position="end">€</InputAdornment>,}}/>
+                            <Field className={classes.root} variant="outlined" label="Preis" name="price" type="tel" error={!!errors.price && !!touched.price} helperText={!!touched.price && !!errors.price ? String(errors.price):' '} as={TextField}  InputProps={{ endAdornment: <InputAdornment position="end">€</InputAdornment>,}}/>
                         </Grid>
                         <Grid  xs={6}>
-                            <Field className={classes.root} variant="outlined" label="Stück" name="stock" type="number" error={!!errors.stock && !!touched.stock} helperText={!!touched.stock && !!errors.stock ? String(errors.stock):' '} as={TextField} />
+                            <Field className={classes.root} variant="outlined" label="Stück" name="stock" type="tel" error={!!errors.stock && !!touched.stock} helperText={!!touched.stock && !!errors.stock ? String(errors.stock):' '} as={TextField} />
                         </Grid>
                         <Grid  xs={6}>
-                            <Field  className={classes.root} variant="outlined" label="Verbraucht" name="consumption" type="number" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
+                            <Field  className={classes.root} variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
                         <Grid container spacing={1} sx={{ flexGrow: 1 }} justify="space-between" >
                         <Grid xs={8} md={6} >
-                            <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Speichern </Button>
+                            <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>
                         </Grid>
                         <Grid xs={8} md={6}>
                             <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<SaveIcon />}> Abbrechen </Button>
