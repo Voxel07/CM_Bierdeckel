@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -38,23 +39,15 @@ public class SocketTest {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("usedid") String userId) {
-        System.out.println("Open");
+        System.out.println("Open " + openConnections);
         sessions.put(userId, session);
-        if(openConnections == 0)
-        {
-            myCachedProdcts = productOrm.getAllProducts();
-        }
         openConnections += 1;
     }
 
     @OnClose
     public void onClose(Session session, @PathParam("usedid") String userId) {
         System.out.println("Close");
-        openConnections -= 1;
-        if(openConnections == 0)
-        {
-            myCachedProdcts.clear();
-        }
+        // openConnections -= 1;
         sessions.remove(userId);
     }
 
@@ -82,6 +75,8 @@ public class SocketTest {
             if(product.getId() == feProduct.getId())
             {
                 product.decStock(1L);
+                System.out.println("found");
+
             }
             else
             {
@@ -89,7 +84,7 @@ public class SocketTest {
             }
         }
 
-        System.out.println(feProduct.getName());
+        System.out.println(feProduct.getId());
         
         if(message.equals("increment"))
         {
@@ -102,10 +97,10 @@ public class SocketTest {
 
         // System.out.println(message);
 
-        broadcast(String.valueOf(myCachedProdcts)); 
+        broadcast(String.valueOf(myCachedProdcts.get(0).getStock())); 
     }
 
-    private void broadcast(String message) {
+    public void broadcast(String message) {
         sessions.values().forEach(s -> {
             s.getAsyncRemote().sendObject(message, result ->  {
                 if (result.getException() != null) {

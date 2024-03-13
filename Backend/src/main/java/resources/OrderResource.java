@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 
 import java.util.List;
 
+import io.quarkus.cache.CacheInvalidate;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
@@ -69,6 +70,7 @@ public class OrderResource {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @CacheInvalidate(cacheName = "product-stock-cache")
     public Response updateOrder(@QueryParam("orderId") Long orderId,
                                 @QueryParam("productId") Long productId,
                                 @QueryParam("extraId") Long extraId,

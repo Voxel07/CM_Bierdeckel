@@ -32,14 +32,12 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-websockets</artifactId>
   </dependency>
-<!-- <dependency>
-    <groupId>redis.clients</groupId>
-    <artifactId>jedis</artifactId>
-    <version>5.1.2</version>
-</dependency> -->
-
-
-    <dependency>
+  <dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-cache</artifactId>
+  </dependency>
+    
+   <dependency>
     <groupId>com.discord4j</groupId>
     <artifactId>discord4j-core</artifactId>
     <version>3.2.6</version>
