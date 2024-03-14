@@ -11,6 +11,8 @@ import OrderDrinks from '../components/order/OrderDrinks'
 
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
+import ShoppingCart from '../components/order/shoppingcard';
+
 
 export default function LabTabs() {
   const [value, setValue] = React.useState('1');
@@ -21,7 +23,9 @@ export default function LabTabs() {
 
   return (
     <Box sx={{ width: '100%', typography: 'body1' }}>
-        <Box> Test </Box>
+        <Box>
+          <ShoppingCart/>
+        </Box>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList textColor="primary" indicatorColor="primary" onChange={handleChange} aria-label="lab API tabs example" centered >
