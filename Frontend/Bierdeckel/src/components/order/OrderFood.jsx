@@ -12,7 +12,7 @@ import {
 import './OrderStyle.css'
 
 
-function OrderFood() {
+function OrderFood({ currentUserId }) {
     const [products, setProducts] = useState([]);
 
     useEffect(()=>
@@ -30,14 +30,14 @@ function OrderFood() {
         }).catch(error => {
             console.log(error);
         });
-    },[])
+    },[currentUserId])
 
     useEffect(()=>
     {
         axios.get("http://localhost:8080/orders",
         {
             params:{
-                userId: 1
+                userId: currentUserId
             }
         }).then(response => {
             setTimeout(() => {
@@ -47,7 +47,7 @@ function OrderFood() {
         }).catch(error => {
             console.log(error);
         });
-    },[])
+    },[currentUserId])
 
 
   return (

@@ -44,7 +44,7 @@ public class OrderOrm {
 
     public List<Order> getOderByUser(Long asd)
     {
-        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.Id = :val", Order.class);
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val", Order.class);
         query.setParameter("val", asd);
 
         return query.getResultList();

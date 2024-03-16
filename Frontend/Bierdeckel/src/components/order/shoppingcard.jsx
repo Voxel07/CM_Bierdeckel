@@ -58,23 +58,7 @@ export default function BasicModal() {
                 </Typography>
                 <Typography variant="h5" component="h2">50 €</Typography>
             </Stack>
-            <Divider sx={{marginBottom:4}}/>
-            <Stack direction="row" spacing={2} justifyContent="space-between">
-                <Typography ariant="subtitle" sx={{ minWidth: '110px'}}>
-                    Bezeichung
-                </Typography>
-                <Typography ariant="subtitle" sx={{ minWidth: '110px'}}>
-                    Menge
-                </Typography>
-                <Typography ariant="subtitle" sx={{ minWidth: '60px'}}>
-                    Preis
-                </Typography>
-                <Typography ariant="subtitle" >
-                    Summe
-                </Typography>
-            </Stack>
-            <Divider sx={{marginBottom:2}}/>
-
+          <Divider sx={{marginBottom:4}}/>
         {
           products.length ? products.map(product => <CartItem info={product}/>)
           : null

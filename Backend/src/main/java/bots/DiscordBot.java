@@ -1,5 +1,6 @@
 package bots;
 
+import discord4j.common.ReactorResources;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import reactor.core.publisher.Mono;
 import discord4j.core.object.entity.Message;
+import io.netty.resolver.DefaultAddressResolverGroup;
 import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
@@ -24,6 +26,18 @@ public class DiscordBot {
     @Path("/message")
     public void sendMessage(@QueryParam("message") String msg) 
     {
+
+        // ReactorResources reactor = ReactorResources.builder()
+        // .httpClient(ReactorResources.DEFAULT_HTTP_CLIENT.get()
+        //         .resolver(DefaultAddressResolverGroup.INSTANCE))
+        // .build();
+        
+        // GatewayDiscordClient gateway = DiscordClient.builder(discordBot.token())
+        // .setReactorResources(reactor)
+        // .build()
+        // .login()
+        // .block();
+       
         DiscordClient client = DiscordClient.create(discordBot.token());
 
         Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) -> Mono.empty());
@@ -31,18 +45,30 @@ public class DiscordBot {
         login.block();
     }
 
-    // void onStart(@Observes StartupEvent ev)
-    // {
-    //     DiscordClient client = DiscordClient.create(discordBot.token());
-    //     GatewayDiscordClient gateway = client.login().block();
+    void onStart(@Observes StartupEvent ev)
+    {
 
-    //     gateway.on(MessageCreateEvent.class).subscribe(event -> {
-    //         String content = event.getMessage().getContent();
-    //         if ("!ping".equals(content)) {
-    //             event.getMessage().getChannel().block().createMessage("Pong!").block();
-    //         }
-    //     });
+        // ReactorResources reactor = ReactorResources.builder()
+        // .httpClient(ReactorResources.DEFAULT_HTTP_CLIENT.get()
+        //         .resolver(DefaultAddressResolverGroup.INSTANCE))
+        // .build();
+        
+        // GatewayDiscordClient gateway = DiscordClient.builder(discordBot.token())
+        // .setReactorResources(reactor)
+        // .build()
+        // .login()
+        // .block();
 
-    //     gateway.onDisconnect().block();
-    // }
+        // // DiscordClient client = DiscordClient.create(discordBot.token());
+        // // GatewayDiscordClient gateway = client.login().block();
+
+        // gateway.on(MessageCreateEvent.class).subscribe(event -> {
+        //     String content = event.getMessage().getContent();
+        //     if ("!ping".equals(content)) {
+        //         event.getMessage().getChannel().block().createMessage("Pong!").block();
+        //     }
+        // });
+
+        // gateway.onDisconnect().block();
+    }
 }

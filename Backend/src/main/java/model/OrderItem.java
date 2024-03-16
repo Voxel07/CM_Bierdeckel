@@ -111,6 +111,7 @@ public class OrderItem
         this.orderStatus = orderStatus;
     }
 
+    @JsonIgnore
     public List<ExtraItem> getExtraItems() {
         return extraItems;
     }
