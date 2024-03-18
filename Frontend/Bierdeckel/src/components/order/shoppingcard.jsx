@@ -1,4 +1,6 @@
-import * as React from 'react';
+
+import React, {useEffect, useState} from 'react';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -7,9 +9,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-
 import CartItem from './cardItem'
-
+import { summarizeOrderItems } from './orderUtils'; 
 
 const style = {
   position: 'absolute',
@@ -24,25 +25,32 @@ const style = {
   p: 4,
 };
 
-const products = [
-    { name: 'Bratwurst', price: 3, ammount: 1 },
-    { name: 'Currywurst', price: 5, ammount: 3 },
-    { name: 'Krakauer', price: 6, ammount: 1 }
-]
-
-export default function BasicModal() {
+export default function shoppingcard({cardData, handleShoppingCard, newItems}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [parsedProducts, setParsedProducts] = React.useState(null);
+
+  useEffect(()=>
+    {
+      if(cardData != null && cardData?.orderItems?.length > 0)
+      {
+        setParsedProducts(summarizeOrderItems(cardData.orderItems));
+      }
+      else
+      {
+        setParsedProducts(null)
+      }
+    },[cardData])
 
   return (
-    <div>
+    <div key={Math.random()}>
         <Button onClick={handleOpen}> 
             <Stack direction="row" spacing={2}>
-                <Badge color="info" size="small" badgeContent={7}>
+                <Badge color="info" size="small" badgeContent={cardData?.orderItems?.length?? 0}>
                     <ShoppingCartIcon />
                 </Badge>
-               <Typography>50 €</Typography>
+               <Typography>{cardData?.sum ?? 0}€</Typography>
             </Stack>
         </Button>
       <Modal
@@ -56,13 +64,15 @@ export default function BasicModal() {
                 <Typography id="modal-modal-title" variant="h5" component="h2">
                     Bestellungsübersicht
                 </Typography>
-                <Typography variant="h5" component="h2">50 €</Typography>
+                <Typography variant="h5" component="h2">{cardData?.sum ?? 0}€</Typography>
             </Stack>
           <Divider sx={{marginBottom:4}}/>
         {
-          products.length ? products.map(product => <CartItem info={product}/>)
+          parsedProducts?.length ? parsedProducts.map(product => <CartItem product={product}/>)
           : null
         }
+         {/* <pre>{JSON.stringify(products, null, 2)}</pre> */}
+         {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
           
         </Box>
       </Modal>

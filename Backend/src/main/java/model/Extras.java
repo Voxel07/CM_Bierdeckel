@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.json.bind.annotation.JsonbTransient;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -78,7 +78,7 @@ public class Extras {
         this.category = category;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public List<ExtraItem> getExtraItem() {
         return extraItem;
     }

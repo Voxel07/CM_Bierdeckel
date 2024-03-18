@@ -1,8 +1,7 @@
 package model;
 
-import java.util.List;
-import java.util.ArrayList;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.json.bind.annotation.JsonbTransient;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -61,7 +59,7 @@ public class ExtraItem {
         this.id = id;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public OrderItem getOrderItem() {
         return orderItem;
     }

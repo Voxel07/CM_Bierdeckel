@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 
 import model.Order;
 import model.OrderItem;
-import model.Product;
 import model.ExtraItem;
 import model.Extras;
 import jakarta.enterprise.context.ApplicationScoped;

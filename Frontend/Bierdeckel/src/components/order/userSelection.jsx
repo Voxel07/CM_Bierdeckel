@@ -60,6 +60,4 @@ const users = [
   { label: '38', id: 38 },
   { label: '39', id: 39 },
   { label: '40', id: 40 },
-
-
 ]

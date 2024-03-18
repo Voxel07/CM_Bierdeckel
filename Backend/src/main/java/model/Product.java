@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.json.bind.annotation.JsonbTransient;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -111,7 +111,7 @@ public class Product {
         this.consumption = consumption;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
