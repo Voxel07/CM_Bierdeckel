@@ -3,8 +3,6 @@ package orm;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.plaf.synth.SynthScrollBarUI;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -113,7 +111,7 @@ public class OrderOrm {
     public Response addProductToOrder(Long orderId, Long productId) {
 
         System.out.println("addProductToOrder");
-       
+    
         Order orderDB = new Order();
         Product productDB = new Product();
         try {

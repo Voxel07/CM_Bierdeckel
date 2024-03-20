@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 
 const ENDPOINT = 'ws://localhost:8080//data-updates/1'
 
