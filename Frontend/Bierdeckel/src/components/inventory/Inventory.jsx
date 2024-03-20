@@ -1,18 +1,52 @@
-import React, { useState } from 'react';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TextField, Box } from '@material-ui/core';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import IconButton from '@mui/material/IconButton';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import { styled } from '@mui/material/styles';
 import axios from 'axios';
 
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 25,
+    },
+  }));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
+
 const ProductList = () => {
-    const [products, setProducts] = useState([
-        { id: 1, name: 'Product 1', price: '10', amount: 10, remaining: 5 },
-        { id: 2, name: 'Product 2', price: '20', amount: 10, remaining: 10 }
-    ]);
+    const [products, setProducts] = useState([]);
 
     const [newProductName, setNewProductName] = useState('');
     const [newProductPrice, setNewProductPrice] = useState('');
-    const [totalAmount, setTotalAmount] = useState(0);
-    const [remainingAmount, setRemainingAmount] = useState(0);
+    const [stock, setStock] = useState(0);
+    const [consumption, setConsumption] = useState(0);
 
+    useEffect(()=>{
+        axios.get("http://localhost:8080/products")
+        .then(response => {
+            setProducts(response.data)
+        }).catch(error=>{
+            console.log(error)
+        })
+        
+    },[])
+    
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {
             if (product.id === id) {
@@ -50,7 +84,6 @@ const ProductList = () => {
         }
     };
 
-    //add a handleDelete function
     const handleDelete = (id) => {
         const updatedProducts = products.filter(product => product.id !== id);
         setProducts(updatedProducts);
@@ -78,44 +111,28 @@ const ProductList = () => {
             });
     };
 
-    // Calculate total amount and remaining amount
-    const calculateAmounts = () => {
-        let total = 0;
-        let remaining = 0;
-        products.forEach(product => {
-            total += parseFloat(product.price);
-            remaining += parseFloat(product.price);
-        });
-        setTotalAmount(total);
-        setRemainingAmount(remaining);
-    };
-
-    // Call calculateAmounts when products change
-    React.useEffect(() => {
-        calculateAmounts();
-    }, [products]);
-
     return (
-        <div>
+        <Box sx={{width: "100px"}}>
             <h1>Produkt Liste</h1>
-            <TableContainer component={Paper}>
-                <Table>
+            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
+                <Table sx={{ backgroundColor: 'transparent' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Amount</TableCell>
-                            <TableCell>Remaining</TableCell>
-                            <TableCell>Action</TableCell>
+                            <StyledTableCell>Name</StyledTableCell>
+                            <StyledTableCell>Price</StyledTableCell>
+                            <StyledTableCell>Amount</StyledTableCell>
+                            <StyledTableCell>Remaining</StyledTableCell>
+                            <StyledTableCell>Action</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {products.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell onClick={() => !product.isEditing && handleEdit(product.id)}>
+                            <StyledTableRow key={product.id}>
+                                <StyledTableCell >
                                     {product.isEditing ? (
                                         <TextField
-                                            value={product.newName}
+                                            value={product.newName }
+                                            style={{ width: '100px', height: '32px' }} 
                                             onChange={(e) => {
                                                 const updatedProducts = products.map(p => {
                                                     if (p.id === product.id) {
@@ -133,12 +150,13 @@ const ProductList = () => {
                                     ) : (
                                         product.name
                                     )}
-                                </TableCell>
+                                </StyledTableCell>
                                 <TableCell>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
                                                 value={product.newPrice}
+                                                style={{ width: '100px', height: '32px' }} 
                                                 type='decimal'
                                                 onChange={(e) => {
                                                     const input = e.target.value;
@@ -168,59 +186,78 @@ const ProductList = () => {
                                 </TableCell>
                                 <TableCell>
                                     {product.isEditing ? (
-                                        <TextField
-                                            value={product.amount}
-                                            type='number'
-                                            onChange={(e) => {
-                                                const input = e.target.value;
-                                                const updatedProducts = products.map(p => {
-                                                    if (p.id === product.id) {
-                                                        return {
-                                                            ...p,
-                                                            amount: input
-                                                        };
+                                        <>
+                                            <TextField
+                                                value={product.newStock}
+                                                style={{ width: '100px', height: '32px' }} 
+                                                type='decimal'
+                                                onChange={(e) => {
+                                                    const input = e.target.value;
+                                                    const regex = /^[0-9]*(\,[0-9]*)?$/; // Allow decimal numbers
+                                                    if (regex.test(input)) {
+                                                        const updatedProducts = products.map(p => {
+                                                            if (p.id === product.id) {
+                                                                return {
+                                                                    ...p,
+                                                                    newStock: input
+                                                                };
+                                                            }
+                                                            return p;
+                                                        });
+                                                        setProducts(updatedProducts);
                                                     }
-                                                    return p;
-                                                });
-                                                setProducts(updatedProducts);
-                                            }}
-                                        />
+                                                }}
+                                                onKeyDown={(e) => handleKeyPress(e, product.id)}
+                                            />
+                                            {!/^\d*\,?\d*$/.test(product.newStock) && (
+                                                <span style={{ color: 'red' }}>Only numbers are allowed</span>
+                                            )}
+                                        </>
                                     ) : (
-                                        product.amount
+                                        product.category == "Food"? `${product.stock} stk.`:`${product.stock} l`
                                     )}
                                 </TableCell>
                                 <TableCell>
                                     {product.isEditing ? (
-                                        <TextField
-                                            value={product.remaining}
-                                            type='number'
-                                            onChange={(e) => {
-                                                const input = e.target.value;
-                                                const updatedProducts = products.map(p => {
-                                                    if (p.id === product.id) {
-                                                        return {
-                                                            ...p,
-                                                            remaining: input
-                                                        };
+                                        <>
+                                            <TextField
+                                                value={product.newConsumption}
+                                                type='decimal'
+                                                onChange={(e) => {
+                                                    const input = e.target.value;
+                                                    const regex = /^[0-9]*(\,[0-9]*)?$/; // Allow decimal numbers
+                                                    if (regex.test(input)) {
+                                                        const updatedProducts = products.map(p => {
+                                                            if (p.id === product.id) {
+                                                                return {
+                                                                    ...p,
+                                                                    newConsumption: input
+                                                                };
+                                                            }
+                                                            return p;
+                                                        });
+                                                        setProducts(updatedProducts);
                                                     }
-                                                    return p;
-                                                });
-                                                setProducts(updatedProducts);
-                                            }}
-                                        />
+                                                }}
+                                                onKeyDown={(e) => handleKeyPress(e, product.id)}
+                                            />
+                                            {!/^\d*\,?\d*$/.test(product.newConsumption) && (
+                                                <span style={{ color: 'red' }}>Only numbers are allowed</span>
+                                            )}
+                                        </>
                                     ) : (
-                                        product.remaining
+                                        `${product.consumption} €`
                                     )}
                                 </TableCell>
                                 <TableCell>
                                     {product.isEditing ? (
-                                        <Button variant="contained" color="primary" onClick={() => handleSave(product.id)}>Speichern</Button>
+                                        <IconButton aria-label="delete" variant="contained" color="success" onClick={() => handleSave(product.id)}><SaveIcon/></IconButton>
                                     ) : (
-                                        <Button variant="contained" color="primary" onClick={() => !product.isEditing && handleEdit(product.id)}>Anpassen</Button>
+                                        <IconButton variant="contained" color="info" onClick={() => !product.isEditing && handleEdit(product.id)}><EditIcon/></IconButton>
                                     )}
-                                    <Button variant="contained" color="secondary" onClick={() => handleDelete(product.id)}>Löschen</Button>
+                                    <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
                                 </TableCell>
-                            </TableRow>
+                            </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
@@ -234,9 +271,19 @@ const ProductList = () => {
                     value={newProductPrice}
                     onChange={(e) => setNewProductPrice(e.target.value)}
                     />
+                <TextField 
+                    label="Produkt Name"
+                    value={newProductName}
+                    onChange={(e) => setNewProductName(e.target.value)}
+                    />
+                <TextField
+                    label="Produkt Preis"
+                    value={newProductPrice}
+                    onChange={(e) => setNewProductPrice(e.target.value)}
+                    />
                 <Button variant="contained" color="primary" onClick={handleCreate}>Eintrag hinzufügen</Button>
                 </TableContainer>
-            </div>
+            </Box>
     );
 };
 
