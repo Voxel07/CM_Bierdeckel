@@ -27,17 +27,26 @@ const InfoCard = ({data, userData, handelChange}) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [orderQuantity, setOrderQuantity] = useState(0);
   const [currentStock, setStock] = useState(stock);
-  console.log(userData)
 
   // Find matching item in userData (if it exists)
-  const matchingItem = userData.find(item => item.productId === id);
+  
 
   // Set initial orderQuantity based on userData
   useEffect(() => {
+    if (userData === 0 || typeof userData !== 'object') {
+      setOrderQuantity(0)
+      return; // Exit early if userData is not valid
+    }
+    const matchingItem = userData?.find(item => item.productId === id)
+
     if (matchingItem) {
       setOrderQuantity(matchingItem.quantity);
     }
-  }, [matchingItem, id]); // Run the effect when matchingItem or id changes
+    else
+    {
+      setOrderQuantity(0)
+    }
+  }, [id, userData]); // Run the effect when matchingItem or id changes
 
   const image = "https://picsum.photos/id/10/2500/1667";
   const shortInfo = "das gibt es noch nicht wwwwaaa";
@@ -58,8 +67,6 @@ const InfoCard = ({data, userData, handelChange}) => {
       setOrderQuantity(Math.max(0, orderQuantity - 1)); // Prevent going below zero
       setStock(currentStock + 1);
       handelChange(id, "rm")
-
-
   };
 
   return (
