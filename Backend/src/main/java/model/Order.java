@@ -71,12 +71,12 @@ public class Order {
         this.sum -= sum;
     }
 
-    @JsonIgnore
+    // @JsonbTransient
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public OrderItem getOrderItemById(Long id){
         for (OrderItem orderItem : this.orderItems) {
             if (orderItem.getId() == id){

@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.json.bind.annotation.JsonbTransient;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
@@ -86,7 +86,7 @@ public class OrderItem
         this.product = product;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public Order getOrder() {
         return order;
     }
@@ -111,7 +111,7 @@ public class OrderItem
         this.orderStatus = orderStatus;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public List<ExtraItem> getExtraItems() {
         return extraItems;
     }

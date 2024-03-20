@@ -1,6 +1,5 @@
 package resources;
 import java.util.List;
-import model.Product;
 import orm.ExtrasOrm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

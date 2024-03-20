@@ -2,8 +2,6 @@ package resources;
 
 import jakarta.inject.Inject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import io.quarkus.cache.CacheInvalidate;

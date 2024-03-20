@@ -12,8 +12,8 @@ import { useState } from 'react';
 
 function cardItem(params) {
 
-    const {name, price, initAmmount} = params.info;
-    const [ammount, setAmmount] = useState(1); // Initial ammount state
+    const {productId, productName, productPrice, quantity} = params.product;
+    const [ammount, setAmmount] = useState(quantity); // Initial ammount state
   
     const handleIncrement = () => {
       setAmmount(prevAmmount => Math.min(prevAmmount + 1, 99));;
@@ -28,11 +28,12 @@ function cardItem(params) {
     }
 
     return (
-       <Box key={name}>
+       <Box key={productId + Math.random()}>
+
             <Stack direction="row" spacing={2}  justifyContent="space-between" alignItems="center">
                 <Tooltip title="Bezeichung"  placement="top">
                     <Typography  sx={{ minWidth: '80px', textAlign: 'left'  }}>
-                        {name}
+                        {productName}
                     </Typography>
                 </Tooltip>
                 <Stack direction="row"  justifyContent="space-between" alignItems="center">
@@ -50,12 +51,12 @@ function cardItem(params) {
                 </Stack>
                 <Tooltip title="Einzelpreis"  placement="top">
                     <Typography sx={{ minWidth: '60px', textAlign: 'right' }}>
-                            {price}€
+                            {productPrice}€
                     </Typography>
                 </Tooltip>
                 <Tooltip title="Gesammtpreis"  placement="top">
                     <Typography sx={{ minWidth: '60px', textAlign: 'right' }}>
-                            {price*ammount}€
+                            {productPrice*ammount}€
                     </Typography>
                 </Tooltip>
                 <IconButton color="error">
