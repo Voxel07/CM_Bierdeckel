@@ -4,7 +4,7 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom';
 
 //Inventory
-import Inventory from './components/inventory/Inventory'
+import Products from './components/inventory/Products'
 import Order from './components/inventory/Order'
 
 //user
@@ -16,6 +16,8 @@ import Home from './components/core/Home';
 import PageNotFound from './components/core/PageNotFound';
 import TemporaryDrawer from './components/core/Drawer';
 import AddProduct from './components/inventory/AddProduct'
+
+import Inventory from './pages/inventory'
 
 function App() {
 
