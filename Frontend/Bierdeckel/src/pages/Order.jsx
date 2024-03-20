@@ -24,25 +24,30 @@ export default function Order() {
   const [userShoppingCard, setUserShoppingCard] = React.useState(null); //Items from the DB
   const [newCardItem, setNewCardItems] = useState([]); // Items added only in FE
   const [shoppingCardItems, setShoppingCardItems] = useState([]); // Items sorted to have a quantity
-  
-  useEffect(()=>
-  {
-      axios.get("http://localhost:8080/products",
-      {
-          params:{
-              category:"food"
-          }
-      }).then(response => {
-          setTimeout(() => {
-              setProducts(response.data);
-          }, 0);
-      }).catch(error => {
-          console.log(error);
-      });
-  },[])
 
   useEffect(() => {
-    if (selectedUser == null || typeof selectedUser.id === "undefined" || selectedUser.id <= 0) {
+    axios
+      .get("http://localhost:8080/products", {
+        params: {
+          category: "food",
+        },
+      })
+      .then((response) => {
+        setTimeout(() => {
+          setProducts(response.data);
+        }, 0);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (
+      selectedUser == null ||
+      typeof selectedUser.id === "undefined" ||
+      selectedUser.id <= 0
+    ) {
       setUserShoppingCard(0);
       setShoppingCardItems(0);
       return;
@@ -69,8 +74,6 @@ export default function Order() {
         console.log(error);
       });
   }, [selectedUser]);
-
-
 
   const handleTabChange = (newValue) => {
     setTabValue(newValue);
