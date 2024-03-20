@@ -1,7 +1,9 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +20,7 @@ import jakarta.persistence.Table;
 public class User {
 
     @Id
-    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 3) //TODO: Change back to 1
     @GeneratedValue(generator = "userSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
@@ -59,7 +61,9 @@ public class User {
         this.role = role;
     }
 
-    @JsonIgnore
+
+    // Why does this not work
+    @JsonbTransient
     public Order getOrder() {
         return order;
     }

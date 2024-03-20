@@ -12,19 +12,32 @@ import OrderDrinks from '../components/order/OrderDrinks'
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import ShoppingCart from '../components/order/shoppingcard';
+import Userselection from '../components/order/userSelection';
+import Stack from '@mui/material/Stack';
 
-
-export default function LabTabs() {
+export default function Order() {
   const [value, setValue] = React.useState('1');
+  const [selectedUser, setSelectedUser] = React.useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleUserSelectionChange = (event, newValue) => {
+    setSelectedUser({ ...newValue });
+    console.log(selectedUser)
+    console.log("userChanged")
+  };
+
+
   return (
-    <Box sx={{ width: '100%', typography: 'body1' }}>
+    <Box sx={{ width: '100%', typography: 'body1', background:"primary" }}>
         <Box>
-          <ShoppingCart/>
+          <Stack  direction="row" spacing={2}  justifyContent="center" alignItems="center">
+            <ShoppingCart/>
+            <Userselection  handleUserChange={handleUserSelectionChange}/>
+
+          </Stack>
         </Box>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -34,7 +47,7 @@ export default function LabTabs() {
           </TabList>
             </Box>
         <TabPanel value="1">
-            <OrderFood />
+            <OrderFood  currentUserId={selectedUser ? selectedUser.id : null}/>
         </TabPanel>
         <TabPanel value="2">
             <OrderDrinks/>

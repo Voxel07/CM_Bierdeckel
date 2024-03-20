@@ -17,6 +17,10 @@ import jakarta.json.bind.annotation.JsonbTransient;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "REQUESTS") // Cant be named Order because it is a reserved word in SQL
 public class Order {
@@ -67,11 +71,12 @@ public class Order {
         this.sum -= sum;
     }
 
-    @JsonbTransient
+    @JsonIgnore
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
 
+    @JsonIgnore
     public OrderItem getOrderItemById(Long id){
         for (OrderItem orderItem : this.orderItems) {
             if (orderItem.getId() == id){
@@ -119,7 +124,8 @@ public class Order {
         this.orderItems = orderItems;
     }
 
-    // @JsonIgnore
+    @JsonManagedReference
+    @JsonBackReference
     public User getUser() {
         return user;
     }
