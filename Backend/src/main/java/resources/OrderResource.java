@@ -29,11 +29,16 @@ public class OrderResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Order> getAllOrder(@QueryParam("orderId") Long orderId) 
+    public List<Order> getOrder(@QueryParam("orderId") Long orderId,
+                                @QueryParam("userId") Long userId) 
     {
         if(orderId != null)
         {
             return orm.getOrderById(orderId);
+        }
+        else if (userId != null)
+        {
+            return orm.getOderByUser(userId);
         }
         else
         {

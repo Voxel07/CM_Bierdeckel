@@ -94,6 +94,15 @@ public class Product {
         this.stock = stock;
     }
 
+    public void incStock(Long ammount){
+        this.stock +=ammount;
+    }
+
+    public void decStock(Long ammount){
+        this.stock -=ammount;
+    }
+
+
     public Long getConsumption() {
         return consumption;
     }

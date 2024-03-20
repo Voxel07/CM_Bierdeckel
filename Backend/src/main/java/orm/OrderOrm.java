@@ -3,6 +3,8 @@ package orm;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthScrollBarUI;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -42,22 +44,26 @@ public class OrderOrm {
         return order;
     }
 
+    public List<Order> getOderByUser(Long asd)
+    {
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.Id = :val", Order.class);
+        query.setParameter("val", asd);
+
+        return query.getResultList();
+    }
+
     public List<Order> getOderByProducts(Long productId) {
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r JOIN r.orderItems o WHERE o.product.id = :productId", Order.class);
         query.setParameter("productId", productId);
 
-        List<Order> order = query.getResultList();
-
-        return order;
+        return query.getResultList();
     }
 
     public List<Order> getOderByExtras(Long extraId) {
         TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o JOIN o.orderItems oi JOIN oi.extraItems ei WHERE ei.extras.id = :extraId", Order.class);
         query.setParameter("extraId", extraId);
 
-        List<Order> order = query.getResultList();
-
-        return order;
+        return  query.getResultList();
     }
 
 

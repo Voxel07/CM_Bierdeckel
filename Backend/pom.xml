@@ -28,6 +28,17 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+  <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-websockets</artifactId>
+  </dependency>
+<!-- <dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>5.1.2</version>
+</dependency> -->
+
+
     <dependency>
     <groupId>com.discord4j</groupId>
     <artifactId>discord4j-core</artifactId>
@@ -48,6 +59,11 @@
       <artifactId>jakarta.json.bind-api</artifactId>
       <version>3.0.0</version>
   </dependency>
+  <!-- JsonbBuilder -->
+  <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-resteasy-reactive-jsonb</artifactId>
+</dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>

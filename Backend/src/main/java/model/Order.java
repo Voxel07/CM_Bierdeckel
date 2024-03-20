@@ -22,7 +22,7 @@ import java.util.List;
 public class Order {
 
     @Id
-    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 3) //TODO: Chachge back to1
     @GeneratedValue(generator = "orderSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
