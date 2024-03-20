@@ -12,13 +12,19 @@ import jakarta.ws.rs.core.Response;
 
 import model.Request;
 import model.Product;
+import model.ProductState;
 import model.User;
+import model.ProductState.OrderStatus;
+import model.ProductState.PaymentStatus;
 
 @ApplicationScoped
 public class RequestOrm {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    ProductStateOrm productStateOrm;
 
     public List<Request> getRequestById(Long id) {
         Request request = em.find(Request.class, id);
@@ -98,7 +104,6 @@ public class RequestOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
         }
 
-
         try {
             productDB = em.find(Product.class, productId);
         } catch (Exception e) {
@@ -116,6 +121,11 @@ public class RequestOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
+
+        ProductState productState = new ProductState(PaymentStatus.UNPAID, OrderStatus.ORDERED, productDB, requestDB);
+
+        productStateOrm.createProductState(productState);
+                     
         return Response.status(Response.Status.CREATED).entity("New product added to order").build();
     }
 

@@ -27,8 +27,9 @@ public class ProductResource {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Product> getAllProducts(@QueryParam("productId") Long productId
-    , @QueryParam("requestId") Long requestId) {
+    public List<Product> getAllProducts(@QueryParam("productId") Long productId, 
+                                        @QueryParam("requestId") Long requestId) 
+    {
         if (productId != null) {
             return orm.getProductById(productId);
         }
