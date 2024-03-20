@@ -6,6 +6,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType; // Added import
 
 @Entity
 @Table(name = "PRODUCT")
@@ -14,7 +17,6 @@ public class Product {
     @Id
     @SequenceGenerator(name = "productSeq", sequenceName = "ZSEQ_PRODUCT_ID", allocationSize = 1, initialValue = 1)
     @GeneratedValue(generator = "productSeq")
-
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
@@ -24,8 +26,12 @@ public class Product {
     @Column(name = "price")
     private Double price;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name ="order_id", referencedColumnName="id")
+    private Order order;
+
     public Product() {
-    }   
+    }
 
     public Product(String name, Double price) {
         this.name = name;
