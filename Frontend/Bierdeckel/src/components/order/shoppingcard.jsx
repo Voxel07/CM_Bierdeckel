@@ -44,7 +44,7 @@ export default function shoppingcard({cardData, handleShoppingCard, newItems}) {
     },[cardData])
 
   return (
-    <div key={Math.random()}>
+    <div>
         <Button onClick={handleOpen}> 
             <Stack direction="row" spacing={2}>
                 <Badge color="info" size="small" badgeContent={cardData?.orderItems?.length?? 0}>
