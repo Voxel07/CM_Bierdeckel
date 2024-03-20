@@ -16,26 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ORDER")
+@Table(name = "REQUEST")
 public class Order {
 
     @Id
-    @SequenceGenerator(name="orderSeq", sequenceName = "ZSEQ_ORDER_ID", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(generator = "orderSeq")
+    @SequenceGenerator(name = "requestSeq", sequenceName = "ZSEQ_REQUEST_ID", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(generator = "requestSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "SUM")
+    @Column(name = "sum")
     private double sum;
 
     @Column(name = "state")
     private long state;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<Product> products;
-
-    @OneToMany(mappedBy="order", cascade = {CascadeType.ALL},fetch=FetchType.LAZY )
-	private List<Product> phones = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -81,4 +78,17 @@ public class Order {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+
+    public void addProduct(Product p){
+        if(products == null){
+            products = new ArrayList<>();
+        }
+        products.add(p);
+    }
+
+    public void removeProduct(Product p){
+        if(products != null){
+            products.remove(p);
+        }
+    }   
 }

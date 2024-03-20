@@ -1,9 +1,18 @@
 package resources;
 
-import com.oracle.svm.core.annotate.Inject;
+import jakarta.inject.Inject;
+
+import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -19,24 +28,27 @@ public class OrderResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllOrders() {
+    public List<Order> getAllOrders() {
         // Implementation for getting all orders
-        return Response.ok().build();
+        return orm.getAllOrders();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getOrderById(@PathParam("orderId") int orderId) {
+    public Response getOrderById(@QueryParam("orderId") int orderId) {
         // Implementation for getting an order by id
         return Response.ok().build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createOrder(Order order) {
-        // Implementation for creating an order
-        return Response.status(Response.Status.CREATED).build();
+    public Response createOrder(@QueryParam("userId") Long userId) {
+        if (userId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
+        }
+        
+        return orm.createOrder(userId);
     }
 
     @PUT
@@ -47,7 +59,7 @@ public class OrderResource {
     }
 
     @DELETE
-    public Response deleteOrder(@PathParam("orderId") int orderId) {
+    public Response deleteOrder(@QueryParam("orderId") int orderId) {
         // Implementation for deleting an order
         return Response.noContent().build();
     }
