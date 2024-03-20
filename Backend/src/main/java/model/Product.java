@@ -32,7 +32,7 @@ public class Product {
     private Double price;
 
    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "products")
-    private List<Request> requests = new ArrayList<>();
+    private List<Order> order = new ArrayList<>();
 
     public Product() {
     }
@@ -67,12 +67,12 @@ public class Product {
     }
 
     @JsonIgnore
-    public List<Request> getRequests() {
-        return requests;
+    public List<Order> getOrder() {
+        return order;
     }
 
-    public void setRequests(List<Request> requests) {
-        this.requests = requests;
+    public void setOrder(List<Order> order) {
+        this.order = order;
     }
 
     

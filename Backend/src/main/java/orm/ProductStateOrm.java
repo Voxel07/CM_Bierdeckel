@@ -7,7 +7,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 import model.ProductState;
-import model.Request;
+import model.Order;
 import model.ProductState.OrderStatus;
 import model.ProductState.PaymentStatus;
 
@@ -20,9 +20,9 @@ public class ProductStateOrm {
     @Transactional
     public Response setPaymentStatus(ProductState productState) 
     {
-        Request request = em.find(Request.class, productState.getRequest().getId());
-        if (request == null) {
-            return Response.status(404).entity("Request mit der ID: " + "requestId" + " nicht gefunden").build();
+        Order order = em.find(Order.class, productState.getOrder().getId());
+        if (order == null) {
+            return Response.status(404).entity("Bestellung mit der ID: " + "orderId" + " nicht gefunden").build();
         }
 
         try {
@@ -30,19 +30,19 @@ public class ProductStateOrm {
         } catch (Exception e) {
             return Response.status(500).entity("Fehler beim ändern des ProductStates").build();
         }
-        return Response.status(200).entity("ProductState mit der ID: " + "requestId" + " wurde geändert").build();
+        return Response.status(200).entity("ProductState mit der ID: " + "orderId" + " wurde geändert").build();
     }
 
     @Transactional
     public Response setOrderStatus(ProductState productState) 
     {
-        Request request = em.find(Request.class, productState.getRequest().getId());
+        Order order = em.find(Order.class, productState.getOrder().getId());
 
         if (productState == null) {
-            return Response.status(404).entity("ProductState mit der ID: " + "requestId" + " nicht gefunden").build();
+            return Response.status(404).entity("ProductState mit der ID: " + "orderId" + " nicht gefunden").build();
         }
         // productState.setOrderStatus(status);
-        return Response.status(200).entity("ProductState mit der ID: " + "requestId" + " wurde geändert").build();
+        return Response.status(200).entity("ProductState mit der ID: " + "orderId" + " wurde geändert").build();
     }
 
     public boolean createProductState(ProductState productState)

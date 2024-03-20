@@ -31,7 +31,7 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "user")
     @JoinColumn(name ="orderId", referencedColumnName="id")
-    private Request request;
+    private Order order;
 
     // Getter and Setter methods for id
     public Long getId() {
@@ -61,11 +61,11 @@ public class User {
     }
 
     @JsonIgnore
-    public Request getRequest() {
-        return request;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }
