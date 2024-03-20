@@ -8,20 +8,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRODUCT")
-public class Product {
-
+@Table(name = "EXTRAS")
+public class Extras {
+    
     @Id
-    @SequenceGenerator(name = "productSeq", sequenceName = "ZSEQ_PRODUCT_ID", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(generator = "productSeq")
+    @SequenceGenerator(name = "extrasSeq", sequenceName = "ZSEQ_EXTRAS_ID", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(generator = "extrasSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
@@ -34,13 +34,13 @@ public class Product {
     @Column(name = "category")
     private String category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "extras", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private List<ExtraItem> extraItem = new ArrayList<>();
 
-    public Product() {
+    public Extras() {
     }
 
-    public Product(String name, Double price, String category) {
+    public Extras(String name, Double price, String category) {
         this.name = name;
         this.price = price;
         this.category = category;
@@ -79,14 +79,12 @@ public class Product {
     }
 
     @JsonIgnore
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public List<ExtraItem> getExtraItem() {
+        return extraItem;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setExtraItem(List<ExtraItem> extraItem) {
+        this.extraItem = extraItem;
     }
 
-    
 }
-

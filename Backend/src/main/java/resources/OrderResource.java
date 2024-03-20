@@ -66,12 +66,55 @@ public class OrderResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateOrder(@QueryParam("orderId") Long orderId,
                                 @QueryParam("productId") Long productId,
-                                @QueryParam("action") String action) 
+                                @QueryParam("extraId") Long extraId,
+                                @QueryParam("orderItemId") Long orderItemId,
+                                @QueryParam("action") String action
+                                ) 
     {
-        if (orderId == null || productId == null || action == null) {
+        if (orderId == null  || action == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
         }
 
+        if(productId != null)
+        {
+            System.out.println("Product");
+            return handleProduct(orderId, productId, action);
+        }
+        else if(extraId != null && orderItemId != null)
+        {
+            System.out.println("Extra");
+
+            return handleExtra(orderId, extraId, orderItemId, action);
+        }
+        else if(orderItemId != null)
+        {
+            return handleOrderItem(orderId, orderItemId, action);
+        }
+        else
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
+        }
+
+    }
+
+    public Response handleExtra(Long orderId, Long extraId, Long orderItemId, String action)
+    {
+        if(action.equals("add"))
+        {
+            return orm.addExtraToOrder(orderId, orderItemId, extraId);
+        }
+        else if(action.equals("remove") )
+        {
+            return orm.removeExtraFromOrder(orderId,orderItemId, extraId);
+        }
+        else
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
+        }
+    }
+
+    public Response handleProduct(Long orderId, Long productId, String action)
+    {
         if(action.equals("add"))
         {
             return orm.addProductToOrder(orderId, productId);
@@ -80,19 +123,28 @@ public class OrderResource {
         {
             return orm.removeProductFromOrder(orderId, productId);
         }
-        else if (action.equals("payItem")) 
+       
+        else
         {
-            return orm.updateOrderPayment(orderId, productId);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
+        }
+    }
+
+    public Response handleOrderItem(Long orderId, Long orderItemId, String action)
+    {
+        if (action.equals("payItem")) 
+        {
+            return orm.updateOrderPayment(orderId, orderItemId);
         }
         else if (action.equals("progress"))
         {
-            return orm.updateOrderStatus(orderId, productId);
+            return orm.updateOrderStatus(orderId, orderItemId);
         }
-        else if (action.equals("payOrder") && productId == 0)
+        else if (action.equals("payOrder") && orderItemId == 0)
         {
             return orm.payOrder(orderId);
         }
-        else if (action.equals("completeOrder") && productId == 0)
+        else if (action.equals("completeOrder") && orderItemId == 0)
         {
             return orm.completeOrder(orderId);
         }

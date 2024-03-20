@@ -1,5 +1,8 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -12,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
 
 @Entity
 @Table(name = "ORDER_ITEMS")  
@@ -23,20 +27,27 @@ public class OrderItem
     @Column(name = "id", unique = true, nullable = false)
     private int id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name ="prduct_id", referencedColumnName="id")
-    private Product product;
-
-    @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
-
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
     
     @Column(name = "order_status")
     private OrderStatus orderStatus;
+    
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name ="prduct_id", referencedColumnName="id")
+    private Product product;
 
+    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // @JoinColumn(name ="extraItem_id", referencedColumnName="id")
+    // private ExtraItem extraItem;
+
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ExtraItem> extraItems = new ArrayList<>();
+    
+    @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order;
+    
     public enum PaymentStatus {
         UNPAID,
         PARTIALLY_PAID, //only an order can be partially paid
@@ -98,6 +109,34 @@ public class OrderItem
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public List<ExtraItem> getExtraItems() {
+        return extraItems;
+    }
+
+    public void setExtraItems(List<ExtraItem> extraItems) {
+        this.extraItems = extraItems;
+        for (ExtraItem extraItem : extraItems) {
+            this.order.incSum(extraItem.getExtras().getPrice());
+        }
+    }
+
+    public void addExtraItem(ExtraItem extraItem) {
+        this.extraItems.add(extraItem);
+        this.order.incSum(extraItem.getExtras().getPrice());
+    }
+
+    public void removeExtraItem(ExtraItem extraItem) {
+        this.extraItems.remove(extraItem);
+        this.order.decSum(extraItem.getExtras().getPrice());
+    }
+
+    public void removeAllExtraItems() {
+        this.extraItems.clear();
+        for (ExtraItem extraItem : extraItems) {
+            this.order.decSum(extraItem.getExtras().getPrice());
+        }
     }
 
     @Override
