@@ -291,6 +291,30 @@ public class OrderOrm {
     }
 
     @Transactional
+    public Response completeOrder(Long orderId) {
+        Order orderDB = new Order();
+        try {
+            orderDB = em.find(Order.class, orderId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        orderDB.completeOrder();
+
+        try {
+            em.merge(orderDB);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Order completed").build();
+    }
+
+    @Transactional
     public Response deleteOrder(Order order) {
         
         try {
