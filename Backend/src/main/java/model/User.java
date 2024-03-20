@@ -1,8 +1,11 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -26,9 +29,10 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    @JoinColumn(name ="order_id", referencedColumnName="id")
-    private Order order;
+    @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "user")
+    // @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinColumn(name ="orderId", referencedColumnName="id")
+    private Request request;
 
     // Getter and Setter methods for id
     public Long getId() {
@@ -57,12 +61,12 @@ public class User {
         this.role = role;
     }
 
-    // Getter and Setter methods for order
-    public Order getOrder() {
-        return order;
+    @JsonIgnore
+    public Request getRequest() {
+        return request;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 }

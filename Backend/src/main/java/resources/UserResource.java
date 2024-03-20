@@ -27,6 +27,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<User> getAllUsers() {
+        System.out.println("// getAllUsers");
         return orm.getAllUsers();
     }
 
