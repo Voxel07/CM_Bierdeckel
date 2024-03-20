@@ -13,7 +13,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
+import jakarta.ws.rs.core.Response;
 import orm.ProductOrm;
 
 @ApplicationScoped
@@ -27,24 +27,24 @@ public class ProductResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<Product> getAllProducts() {
-        System.err.println("getAllProducts");
         return orm.getAllProducts();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createProduct(Product product) {
+        return orm.createProduct(product);
+
     }
     
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void updateProduct(Product product) {
-        orm.updateProduct(product);
+    public Response updateProduct(Product product) {
+        return orm.updateProduct(product);
     }
     
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String createProduct(Product product) {
-        orm.createProduct(product);
-        return "Product created";
-    }
     
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
