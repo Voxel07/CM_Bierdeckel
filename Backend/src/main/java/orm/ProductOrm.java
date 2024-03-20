@@ -55,7 +55,7 @@ public class ProductOrm {
             return Response.status(500).entity("Fehler beim einfügen des Produkts").build();
         }
         
-        return Response.status(200).entity("Produkt hinzugefügt").build();
+        return Response.status(200).entity(String.format("Produkt: %s hinzugefügt", product.getName())).build();
     }
 
     @Transactional
@@ -105,7 +105,7 @@ public class ProductOrm {
         } catch (Exception e) {
            return Response.status(500).entity("Error while deleting product").build();
         }
-        return Response.status(200).entity("Product deleted").build();
+        return Response.status(200).entity(String.format("Produkt: %s gelöscht", product.getName())).build();
     }
 
 }
