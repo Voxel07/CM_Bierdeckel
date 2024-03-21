@@ -7,21 +7,9 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
-import { useState } from "react";
 
-function cardItem(params) {
-  const { productId, productName, productPrice, quantity } = params.product;
-  const [ammount, setAmmount] = useState(quantity); // Initial ammount state
-
-  const handleIncrement = () => {
-    setAmmount((prevAmmount) => Math.min(prevAmmount + 1, 99));
-  };
-
-  const handleDecrement = () => {
-    setAmmount((prevAmmount) => Math.max(prevAmmount - 1, 0)); // Prevent negative values
-  };
-
-  const handleRemove = () => {};
+function cardItem({product, handleStockChange}) {
+  const { productId, productName, productPrice, quantity } = product;
 
   return (
     <Box key={productId + Math.random()}>
@@ -41,19 +29,16 @@ function cardItem(params) {
           justifyContent="space-between"
           alignItems="center"
         >
-          <IconButton aria-label="add" size="small" onClick={handleIncrement}>
+          <IconButton aria-label="add" size="small" onClick={handleStockChange(productId, "add")}>
             <AddIcon fontSize="inherit" />
           </IconButton>
           <Tooltip title="Menge" placement="top">
             <Typography sx={{ minWidth: "20px", textAlign: "center" }}>
-              {ammount}
+              {quantity}
             </Typography>
           </Tooltip>
           <IconButton
-            aria-label="delete"
-            size="small"
-            onClick={handleDecrement}
-          >
+            aria-label="delete" size="small" onClick={handleStockChange(productId, "rm")}>
             <RemoveIcon fontSize="inherit" />
           </IconButton>
         </Stack>
@@ -64,11 +49,11 @@ function cardItem(params) {
         </Tooltip>
         <Tooltip title="Gesammtpreis" placement="top">
           <Typography sx={{ minWidth: "60px", textAlign: "right" }}>
-            {productPrice * ammount}€
+            {productPrice * quantity}€
           </Typography>
         </Tooltip>
         <IconButton color="error">
-          <Tooltip title="Produkt löschen" placement="top">
+          <Tooltip title="Produkt löschen" placement="top" onClick={handleStockChange(productId, "clear")}> 
             <DeleteIcon />
           </Tooltip>
         </IconButton>

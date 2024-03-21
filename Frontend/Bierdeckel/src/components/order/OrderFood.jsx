@@ -7,13 +7,7 @@ import { Grid, Divider, Chip } from "@mui/material";
 
 import "./OrderStyle.css";
 
-function OrderFood({
-  products,
-  newItems,
-  handleStockChange,
-  displayITems,
-  handleDisplayItemChange,
-}) {
+function OrderFood({products, handleStockChange, displayITems}) {
   return (
     <Grid className="grid-container" container>
       {products?.length

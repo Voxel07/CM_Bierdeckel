@@ -21,25 +21,23 @@ export default function Order() {
   const [tabValue, setTabValue] = React.useState("1");
   const [products, setProducts] = useState([]);
   const [selectedUser, setSelectedUser] = React.useState(null);
-  const [userShoppingCard, setUserShoppingCard] = React.useState(null); //Items from the DB
-  const [newCardItem, setNewCardItems] = useState([]); // Items added only in FE
-  const [shoppingCardItems, setShoppingCardItems] = useState([]); // Items sorted to have a quantity
+  const [cardItems, setCardItems] = React.useState([]); 
+  const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0}); 
+  const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/products", {
-        params: {
-          category: "food",
-        },
-      })
-      .then((response) => {
-        setTimeout(() => {
-          setProducts(response.data);
-        }, 0);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/products", {
+          params: { category: "food" }
+        });
+        setProducts(response.data); // Assuming response.data is already an array
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -48,8 +46,7 @@ export default function Order() {
       typeof selectedUser.id === "undefined" ||
       selectedUser.id <= 0
     ) {
-      setUserShoppingCard(0);
-      setShoppingCardItems(0);
+      clearShoppingcard(); // Reset shopping Card if no user is defined
       return;
     }
     console.log("calling with:" + selectedUser.id);
@@ -62,11 +59,13 @@ export default function Order() {
       .then((response) => {
         setTimeout(() => {
           if (response.data && response.data.length) {
-            handleUserShoppingCardChange(response.data[0]);
-            setShoppingCardItems(
+            setCardItems(response.data[0].orderItems);
+            setCardMetadata({total: response.data[0].sum, itemCount: response.data[0].orderItems.length})
+            setDisplayItems(
               summarizeOrderItems(response.data[0].orderItems)
             );
           } else {
+            clearShoppingcard();
           }
         }, 0);
       })
@@ -75,46 +74,102 @@ export default function Order() {
       });
   }, [selectedUser]);
 
-  const handleTabChange = (newValue) => {
+  const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  //Reset card in case of new/invalide user withoud data 
+  const clearShoppingcard = () =>
+  {
+    setCardMetadata({total: 0, itemCount: 0});
+    setCardItems([]);
+  }
+  const addItemToShoppingcard = (item) =>
+  {
+    let nextId = cardItems.length > 0 ? cardItems[cardItems.length - 1].id + 1 : 1;
+    // setCardItems([...cardItems, item]);
+    const orderItem = {
+      id: nextId,
+      orderStatus: "ORDERED",
+      paymentStatus: "UNPAID",
+      product: item 
+    };
+    setCardItems([...cardItems, orderItem]);
+    setCardMetadata((prevMetadata) => ({
+      ...prevMetadata, // Keep existing properties
+      total: prevMetadata.total + item.price,
+      itemCount: prevMetadata.itemCount + 1
+  }));
+  }
+
+
 
   const handleUserSelectionChange = (event, newValue) => {
     console.log("userChanged", newValue);
     setSelectedUser({ ...newValue });
   };
 
-  const handleUserShoppingCardChange = (values) => {
-    console.log("handleUserShoppingCardChange");
-    console.log(values);
-    setUserShoppingCard({ ...values });
-  };
-
   function stockChange(id, action) {
-    if (action == "add") {
+    if (action == "add") 
+    {
       const productToAdd = products.find((prod) => prod.id === id);
-      console.log("hinzufügen");
+      
       if (productToAdd) {
-        // Create a NEW array with the item included
-        setNewItems([...newCardItem, productToAdd]);
-      } else {
-        console.log("nein", id); // Assuming you kept this for logging
+        addItemToShoppingcard(productToAdd);
       }
-    } else if (action == "rm") {
-      const indexToRemove = newCardItem.findIndex((prod) => prod.id === id);
+    } 
+    else if (action == "rm") 
+    {
+      const indexToRemove = cardItems.findIndex((prod) => prod.product.id === id);
+      const productToAdd = products.find((prod) => prod.id === id);
+      
+      if(cardItems.length > 1){
+        setCardMetadata((prevMetadata) => ({
+          ...prevMetadata,
+          total: prevMetadata.total - productToAdd.price,
+      }));
+      }else{
+        console.log("ist 0")
+        clearShoppingcard();
+      }
 
       if (indexToRemove !== -1) {
         // Remove at the specified index using splice
-        const updatedNewItems = [...newCardItem]; // Create a copy
+        const updatedNewItems = [...cardItems]; // Create a copy
         updatedNewItems.splice(indexToRemove, 1); // Remove one item
-        setNewCardItems(updatedNewItems);
+        setCardItems(updatedNewItems);
+
       }
-    } else {
+    } 
+    else if(action == "clear")
+    {
+       // Filter items and calculate values to update metadata
+        let totalPriceToRemove = 0;
+        let itemsToRemoveCount = 0;
+
+        const updatedNewItems = cardItems.filter((prod) => {
+            if (prod.product.id === id) {
+                totalPriceToRemove += prod.product.price;
+                itemsToRemoveCount++; 
+                return false; // Exclude
+            } else {
+                return true;  // Keep
+            }
+        });
+
+        setCardItems(updatedNewItems);
+
+        // Update cardMetadata
+        setCardMetadata((prevMetadata) => ({
+            ...prevMetadata, // Keep existing properties
+            total: prevMetadata.total - totalPriceToRemove,
+            itemCount: prevMetadata.itemCount - itemsToRemoveCount
+        }));
+    }
+    else {
       console.log("nope");
     }
   }
-
-  const handleDisplayChange = () => {};
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
@@ -126,12 +181,9 @@ export default function Order() {
         sx={{ padding: 1 }}
       >
         <ShoppingCart
-          cardData={userShoppingCard}
-          handleShoppingCard={handleUserShoppingCardChange}
-          newItems={newCardItem}
+          cardData={cardMetadata}
           handleStockChange={stockChange}
-          displayITems={shoppingCardItems}
-          handleDisplayItemChange={handleDisplayChange}
+          displayITems={displayItems}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
@@ -152,17 +204,17 @@ export default function Order() {
           <OrderFood
             // currentUserId={selectedUser ? selectedUser.id : null}
             products={products}
-            newItems={newCardItem}
             handleStockChange={stockChange}
-            displayITems={shoppingCardItems}
-            handleDisplayItemChange={handleDisplayChange}
+            displayITems={displayItems}
           />
         </TabPanel>
         <TabPanel value="2">
           <OrderDrinks />
         </TabPanel>
       </TabContext>
-      {/* <pre>{JSON.stringify(userShoppingCard, null, 2)}</pre> */}
+
+      <pre>{JSON.stringify(cardMetadata, null, 2)}</pre>
+      <pre>{JSON.stringify(cardItems, null, 2)}</pre>
     </Box>
   );
 }

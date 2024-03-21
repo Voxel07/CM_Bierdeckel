@@ -18,6 +18,7 @@ import TemporaryDrawer from './components/core/Drawer';
 
 import Inventory from './pages/inventory'
 import SocketTest from './SocketTest'
+import State from './pages/State';
 
 function App() {
 
@@ -34,7 +35,8 @@ function App() {
       <Route path="*" element={<Navigate to="/404" replace />} />
 
       <Route path='Inventar' Component={Inventory}/>
-      <Route path='bestellungen' Component={Order}/>
+      <Route path='Bestellungen' Component={Order}/>
+      <Route path='Status' Component={State}/>
       <Route path='test' Component={SocketTest}/>
     </Routes>
     {/* <Footer/> */}

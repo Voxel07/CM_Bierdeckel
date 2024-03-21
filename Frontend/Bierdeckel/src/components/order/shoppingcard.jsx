@@ -26,21 +26,12 @@ const style = {
 
 export default function shoppingcard({
   cardData,
-  handleShoppingCard,
-  newItems,
+  handleStockChange,
+  displayITems,
 }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [parsedProducts, setParsedProducts] = React.useState(null);
-
-  useEffect(() => {
-    if (cardData != null && cardData?.orderItems?.length > 0) {
-      setParsedProducts(summarizeOrderItems(cardData.orderItems));
-    } else {
-      setParsedProducts(null);
-    }
-  }, [cardData]);
 
   return (
     <div>
@@ -49,11 +40,11 @@ export default function shoppingcard({
           <Badge
             color="info"
             size="small"
-            badgeContent={cardData?.orderItems?.length ?? 0}
+            badgeContent={cardData.itemCount}
           >
             <ShoppingCartIcon />
           </Badge>
-          <Typography>{cardData?.sum ?? 0}€</Typography>
+          <Typography>{cardData.total.toFixed(2)}€</Typography>
         </Stack>
       </Button>
       <Modal
@@ -73,14 +64,14 @@ export default function shoppingcard({
               Bestellungsübersicht
             </Typography>
             <Typography variant="h5" component="h2">
-              {cardData?.sum ?? 0}€
+              {cardData.total.toFixed(2)}€
             </Typography>
           </Stack>
           <Divider sx={{ marginBottom: 4 }} />
-          {parsedProducts?.length
-            ? parsedProducts.map((product) => <CartItem product={product} />)
+          {displayITems?.length
+            ? displayITems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
             : null}
-          {/* <pre>{JSON.stringify(products, null, 2)}</pre> */}
+          <pre>{JSON.stringify(displayITems, null, 2)}</pre>
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
         </Box>
       </Modal>
