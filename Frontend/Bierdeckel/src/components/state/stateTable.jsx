@@ -10,11 +10,11 @@ import ImageIcon from '@mui/icons-material/Image';
 import WorkIcon from '@mui/icons-material/Work';
 import Typography  from '@mui/material/Typography';
 
-export function App(props) {
+export default function StateTable(props) {
   return (
-    <Grid container spacing={2}>
-      <Grid item>
-        <Paper variant="outlined" sx={{ width: 200 }}>
+    <Grid container direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
+      <Grid className='itemContainer' item>
+        <Paper variant="outlined"  sx={{ width: 200 }}>
         <Typography>Hallo</Typography >
           <List sx={{ width: '100%', maxWidth: 360}} dense={false}>
             <ListItem sx={{ margin: '8px 0', backgroundColor: 'gray'  }}>
@@ -28,7 +28,7 @@ export function App(props) {
           </List>
         </Paper>
       </Grid>
-      <Grid item>
+      <Grid className='itemContainer' item>
         <Paper variant="outlined" sx={{ width: 200 }}>
                     <List sx={{ width: '100%', maxWidth: 360}} dense={false}>
             <ListItem sx={{ margin: '8px 0', backgroundColor: 'gray'  }}>
@@ -51,7 +51,7 @@ export function App(props) {
           </List>
         </Paper>
       </Grid>
-      <Grid item>
+      <Grid className='itemContainer' item>
         <Paper variant="outlined" sx={{ width: 200 }}>
           asd
         </Paper>
