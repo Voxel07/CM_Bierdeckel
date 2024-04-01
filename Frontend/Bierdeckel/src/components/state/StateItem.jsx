@@ -12,10 +12,12 @@ import "./StateItem.css"
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
-const StateItem = ({data, next, previous}) => {
+const StateItem = ({pHandleSetSelectedITems, data, next, previous}) => {
+  console.log(data)
+  // { id: 1, state:"ordered", user: 7, description: "Rote", extras: ["scharf", "senf", "gorß", "eis", "grün", "penis"] },
   const{id, user, description, extras} = data;
   return (
-    <Card sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#cccccc" }}>
+    <Card key={data.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#cccccc" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Chip icon={<FaceIcon />}  size="small" label={user} variant="outlined" color="primary" sx={{minWidth: 50}}/>
@@ -27,7 +29,7 @@ const StateItem = ({data, next, previous}) => {
           <Stack direction="row"  alignItems="center" spacing={1}  useFlexGap  sx={{ maxHeight: '200px', overflowY: 'auto', padding:0.25 }}> 
           {
               extras.map((extra)=>(
-                  <Chip color="primary" label={extra} size="small" />
+                  <Chip key={Math.random()} color="primary" label={extra} size="small" />
               ))
           }
           </Stack>
@@ -36,7 +38,7 @@ const StateItem = ({data, next, previous}) => {
           <IconButton aria-label="delete" size="small" onClick={() => previous(data)}>
             <ArrowBackIcon fontSize="inherit" />
           </IconButton>
-            <Checkbox {...label} defaultChecked color="success" />
+            <Checkbox {...label} checked={data.selected} color="success" onChange={() => pHandleSetSelectedITems(data)} />
           <IconButton aria-label="delete" size="small" onClick={() => next(data)}>
             <ArrowForwardIcon fontSize="inherit" />
           </IconButton>

@@ -111,7 +111,7 @@ public class OrderItem
         this.orderStatus = orderStatus;
     }
 
-    @JsonbTransient
+    // @JsonbTransient
     public List<ExtraItem> getExtraItems() {
         return extraItems;
     }
