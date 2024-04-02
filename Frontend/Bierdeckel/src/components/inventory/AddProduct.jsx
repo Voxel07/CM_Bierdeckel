@@ -18,7 +18,19 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@mui/icons-material/Add';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 import { IconButton } from '@material-ui/core';
@@ -92,7 +104,9 @@ const AddProduct = ((props) =>
         description: yup.string().required("Pflichtfeld").min(4, "min. 4 Zeichen").max(20, "max. 20 Zeichen"),
         price: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
         stock: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
-        consumption: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld")
+        consumption: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
+        shortInfo: yup.string().min(10, "min. 10 Zeichen")
+        detailedInfo: yup.string().min(30, "min. 30 Zeichen")
     })
 
     const classes = useStyles();
@@ -167,12 +181,30 @@ const AddProduct = ((props) =>
                         <Grid  xs={6}>
                             <Field  className={classes.root} variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
+                        <Grid  xs={6}>
+                            <Field  className={classes.root} variant="outlined" label="KurzInfo" name="info" type="input" error={!!errors.shortInfo && !!touched.shortInfo} helperText={!!touched.shortInfo && !!errors.shortInfo ? String(errors.shortInfo):' '} as={TextField} />
+                        </Grid>
+                        <Grid  xs={6}>
+                            <Field  className={classes.root} variant="outlined" label="Allergietabelle" name="detailedInfo" type="input" error={!!errors.detailedInfo && !!touched.detailedInfo} helperText={!!touched.detailedInfo && !!errors.detailedInfo ? String(errors.detailedInfo):' '} as={TextField} />
+                        </Grid>
                         <Grid container spacing={1} sx={{ flexGrow: 1 }} justify="space-between" >
                         <Grid xs={8} md={6} >
                             <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>
                         </Grid>
                         <Grid xs={8} md={6}>
                             <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<SaveIcon />}> Abbrechen </Button>
+                        </Grid>
+                        <Grid>
+                        <Button
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            startIcon={<CloudUploadIcon />}
+                            >
+                            Upload file
+                            <VisuallyHiddenInput type="file" />
+                        </Button>
                         </Grid>
                         </Grid>
                     </Grid>

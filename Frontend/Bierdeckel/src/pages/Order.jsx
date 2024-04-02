@@ -20,6 +20,7 @@ import { summarizeOrderItems } from "../components/order/orderUtils";
 export default function Order() {
   const [tabValue, setTabValue] = React.useState("1");
   const [products, setProducts] = useState([]);
+  const [drinks, setDrinks] = useState([]);
   const [selectedUser, setSelectedUser] = React.useState(null);
   const [cardItems, setCardItems] = React.useState([]); 
   const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0}); 
@@ -40,6 +41,21 @@ export default function Order() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const fetchDrinks = async () => {
+        try {
+          const response = await axios.get("http://localhost:8080/products", {
+            params: { category: "drinks" }
+          });
+          setDrinks(response.data); // Assuming response.data is already an array
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
+  
+      fetchDrinks();
+    }, []);
+  
   useEffect(() => {
     if (
       selectedUser == null ||
