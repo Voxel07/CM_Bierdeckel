@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
 public class Extras {
     
     @Id
-    @SequenceGenerator(name = "extrasSeq", sequenceName = "ZSEQ_EXTRAS_ID", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "extrasSeq", sequenceName = "ZSEQ_EXTRAS_ID", allocationSize = 1, initialValue = 6)
     @GeneratedValue(generator = "extrasSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
@@ -31,6 +31,12 @@ public class Extras {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "stock")
+    private Long stock;
+
+    @Column(name = "consumption")
+    private Long consumption;
+
     @Column(name = "category")
     private String category;
 
@@ -40,10 +46,12 @@ public class Extras {
     public Extras() {
     }
 
-    public Extras(String name, Double price, String category) {
+    public Extras(String name, Double price, String category, Long stock, Long consumption) {
         this.name = name;
         this.price = price;
         this.category = category;
+        this.stock = stock;
+        this.consumption = consumption;
     }
 
     public Long getId() {
@@ -76,6 +84,31 @@ public class Extras {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Long getStock() {
+        return stock;
+    }
+
+    public void setStock(Long stock) {
+        this.stock = stock;
+    }
+
+    public void incStock(Long ammount){
+        this.stock +=ammount;
+    }
+
+    public void decStock(Long ammount){
+        this.stock -=ammount;
+    }
+
+
+    public Long getConsumption() {
+        return consumption;
+    }
+
+    public void setConsumption(Long consumption) {
+        this.consumption = consumption;
     }
 
     @JsonbTransient

@@ -12,6 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 //Feedback
 import { AlertsManager  } from '../../utils/AlertsManager';
+import AddExtra from './AddExtra';
 
 const StyledTableCellHead = styled(TableCell)(({ theme }) => ({
     color: 'rgb(70, 120, 167)',
@@ -84,7 +85,7 @@ const Extras = () => {
     };
 
     const handleSave = (id) => {
-        console.log('Saving product with id: ', id);
+        console.log('Saving extra with id: ', id);
         const updatedProducts = products.map(product => {
             if (product.id === id) {
                 return {
@@ -273,7 +274,7 @@ const Extras = () => {
                     </TableBody>
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)}/>
+                    <AddExtra onSubmitSuccess={() => setTrigger(!trigger)}/>
                 </div>
                 </TableContainer>
     );

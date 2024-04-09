@@ -24,14 +24,12 @@ const style = {
   p: 4,
 };
 
-export default function shoppingcard({
-  cardData,
-  handleStockChange,
-  displayITems,
-}) {
+export default function shoppingcard({ cardData,  handleStockChange,  displayITems}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  console.log(displayITems)
 
   return (
     <div>

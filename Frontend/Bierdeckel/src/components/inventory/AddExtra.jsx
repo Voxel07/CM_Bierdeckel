@@ -104,7 +104,7 @@ const AddExtra = ((props) =>
     return(
         <div>
         <AlertsManager ref={alertsManagerRef} />
-        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Extra hinzufügen</Button >
         <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -150,7 +150,7 @@ const AddExtra = ((props) =>
                 return(
                 <Container className="Form-Container" sx={{...style, width:'500px'}} >
                 <div style={{ marginBottom: '35px' }}>
-                    <Typography >Neues Produkt hinzufügen</Typography>
+                    <Typography >Neues Extra hinzufügen</Typography>
                 </div>
 
                 <Form className="Form-Container" sx={{...style}} >

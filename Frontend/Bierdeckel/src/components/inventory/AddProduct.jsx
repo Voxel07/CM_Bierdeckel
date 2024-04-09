@@ -16,9 +16,15 @@ import Button from '@mui/material/Button';
 import { Container, Typography } from '@mui/material';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, styled } from '@material-ui/core/styles';
 import AddIcon from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Autocomplete from '@mui/material/Autocomplete';
+
+const users = [
+    { label: 'Essen', id: 1 },
+    { label: 'Trinken', id: 2 }
+]
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -105,7 +111,7 @@ const AddProduct = ((props) =>
         price: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
         stock: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
         consumption: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
-        shortInfo: yup.string().min(10, "min. 10 Zeichen")
+        shortInfo: yup.string().min(10, "min. 10 Zeichen"),
         detailedInfo: yup.string().min(30, "min. 30 Zeichen")
     })
 
@@ -187,6 +193,15 @@ const AddProduct = ((props) =>
                         <Grid  xs={6}>
                             <Field  className={classes.root} variant="outlined" label="Allergietabelle" name="detailedInfo" type="input" error={!!errors.detailedInfo && !!touched.detailedInfo} helperText={!!touched.detailedInfo && !!errors.detailedInfo ? String(errors.detailedInfo):' '} as={TextField} />
                         </Grid>
+                        <Grid  >
+                        <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={users}
+                            sx={{ width: 100 }}
+                            renderInput={(params) => <TextField {...params} label="Kategorie" />}
+                            />
+                        </Grid>
                         <Grid container spacing={1} sx={{ flexGrow: 1 }} justify="space-between" >
                         <Grid xs={8} md={6} >
                             <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>
@@ -199,7 +214,6 @@ const AddProduct = ((props) =>
                             component="label"
                             role={undefined}
                             variant="contained"
-                            tabIndex={-1}
                             startIcon={<CloudUploadIcon />}
                             >
                             Upload file

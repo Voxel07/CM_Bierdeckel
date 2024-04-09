@@ -27,8 +27,8 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <dependencies>
-  <dependency>
+ <dependencies>
+   <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-websockets</artifactId>
   </dependency>
@@ -103,7 +103,7 @@
     <artifactId>quarkus-vertx-http-deployment-spi</artifactId>
     <version>3.7.0.CR1</version>
 </dependency>
-  </dependencies>
+</dependencies>
   <build>
     <plugins>
       <plugin>

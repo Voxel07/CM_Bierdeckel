@@ -15,7 +15,6 @@ export default function Userselection({ handleUserChange }) {
   );
 }
 
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
 const users = [
   { label: '1', id: 1 },
   { label: '2', id: 2 },
