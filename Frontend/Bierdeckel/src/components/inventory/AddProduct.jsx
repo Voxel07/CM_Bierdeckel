@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import axios from 'axios'
 
 //MUI
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
@@ -14,9 +14,9 @@ import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 import { Container, Typography } from '@mui/material';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from '@mui/material/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
-import { makeStyles, styled } from '@material-ui/core/styles';
+import { makeStyles, styled } from '@mui/styles';
 import AddIcon from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -39,7 +39,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
-import { IconButton } from '@material-ui/core';
+import { IconButton } from '@mui/material/IconButton';
 
 const useStyles = makeStyles({
     root: {

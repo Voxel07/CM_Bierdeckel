@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TextField, Box } from '@material-ui/core';
+import { Button, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TextField, Box } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import SaveIcon from '@mui/icons-material/Save';
@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import AddProduct from './AddProduct'
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 //Feedback
 import { AlertsManager  } from '../../utils/AlertsManager';
