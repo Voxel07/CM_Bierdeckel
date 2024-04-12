@@ -126,6 +126,7 @@ export default function Order() {
   };
 
   function stockChange(id, action) {
+    //Add dsiplay items
     if (action == "add") 
     {
       const productToAdd = products.find((prod) => prod.id === id);
@@ -199,7 +200,7 @@ export default function Order() {
         <ShoppingCart
           cardData={cardMetadata}
           handleStockChange={stockChange}
-          displayITems={displayItems}
+          displayITems={cardItems}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
