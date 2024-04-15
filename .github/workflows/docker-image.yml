@@ -42,5 +42,5 @@ jobs:
       - name: Build and Push Docker Image
         working-directory: ./Backend  
         run: |   # Use a multi-line command
-                  docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/CM-Bierdeckel:latest .
-                  docker push ${{ secrets.DOCKERHUB_USERNAME }}/CM-Bierdeckel:latest
+                  docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
+                  docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
