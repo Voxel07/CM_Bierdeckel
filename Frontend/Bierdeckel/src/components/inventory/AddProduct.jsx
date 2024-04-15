@@ -19,6 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
+import { IconButton } from '@mui/material/IconButton';
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';

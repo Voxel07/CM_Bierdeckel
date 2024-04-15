@@ -16,7 +16,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { ButtonGroup } from '@material-ui/core';
+import { ButtonGroup } from '@mui/material';
 
 
 const navItems = ['Home', 'Inventar', 'Bestellungen', 'Status'];
