@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import axios from 'axios'
 
 //MUI
-import TextField from '@mui/material/TextField';
+import TextField from '@material-ui/core/TextField';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
@@ -14,14 +14,14 @@ import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 import { Container, Typography } from '@mui/material';
-import InputAdornment from '@mui/material/InputAdornment';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
-import { makeStyles } from '@mui/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@mui/icons-material/Add';
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
-import { IconButton } from '@mui/material/IconButton';
+import { IconButton } from '@material-ui/core';
 
 const useStyles = makeStyles({
     root: {
