@@ -74,8 +74,8 @@ const Products = () => {
                 return {
                     ...product,
                     isEditing: !product.isEditing,
-                    newName: product.name, // Copy the value of name to newName
-                    newPrice: product.price // Copy the value of price to newPrice
+                    newName: product.name,
+                    newPrice: product.price
                 };
             }
             return product;
@@ -124,30 +124,6 @@ const Products = () => {
     };
 
     return (
-            // fetchingData ? (
-            //     <TableContainer component={Paper}>
-            //         <h1>{loadingState}</h1>
-            //         <Table>
-            //             <TableHead>
-            //                 <TableRow>
-            //                     <StyledTableCell>
-            //                         <Skeleton variant="text" height={40} />
-            //                     </StyledTableCell>
-            //                 </TableRow>
-            //             </TableHead>
-            //             <TableBody>
-            //                 {[...Array(3)].map((_, index) => (
-            //                     <TableRow key={index}>
-            //                         <TableCell>
-            //                             <Skeleton variant="text" height={50} />
-            //                         </TableCell>
-                         
-            //                     </TableRow>
-            //                 ))}
-            //             </TableBody>
-            //         </Table>
-            //     </TableContainer>
-            // ) : 
             <TableContainer component={StyledPaper}>
             <AlertsManager ref={alertsManagerRef} />
                 <Table >
@@ -195,7 +171,7 @@ const Products = () => {
                                                 type='decimal'
                                                 onChange={(e) => {
                                                     const input = e.target.value;
-                                                    const regex = /^[0-9]*(\,[0-9]*)?$/; // Allow decimal numbers
+                                                    const regex = /^[0-9]*(\,[0-9]*)?$/;
                                                     if (regex.test(input)) {
                                                         const updatedProducts = products.map(p => {
                                                             if (p.id === product.id) {
