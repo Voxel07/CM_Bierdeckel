@@ -1,47 +1,55 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TextField, Box } from '@material-ui/core';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
+import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
+import { IconButton,  Paper, TextField } from '@mui/material/';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import AddProduct from './AddProduct'
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/system';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 //Feedback
 import { AlertsManager  } from '../../utils/AlertsManager';
+import { BorderBottom, BorderTop } from '@mui/icons-material';
 
-const StyledTableCellHead = styled(TableCell)(({ theme }) => ({
-    color: 'rgb(70, 120, 167)',
-    borderBottom : '1px solid rgb(24, 24, 24)',
+const theme = createTheme({
+    components: {
+      MuiTableBody: {
+        styleOverrides: {
+          root: {
+            '& .MuiTableRow-root:nth-of-type(odd)': { 
+                backgroundColor: '#151c28', 
+            },
+            '& .MuiTableRow-root:nth-of-type(even)': { 
+            backgroundColor: '#090c11' ,
+            },
+            '& .MuiTableRow-root': { 
+
+            },
+            '& .MuiTableCell-root' : {
+                borderBottom: '1px solid #19669d',
+            }
+        },
+        },
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+                color: '#F5F0F3', // set alternating colors for even and odd rows
+                borderBottom: '3px solid #F5F0F3',
+              },
+            },
+        },
+      },
+  });
+  
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#090c11', // Semi-transparent white
+    borderRadius: '5px',
+    color:'#F5F0F3'
 }));
-
-const StyledTableCellBody = styled(TableCell)(({ theme }) => ({
-    color: 'rgb(132, 205, 71)',
-    // borderLeft: '1px solid blue',
-    // borderRight: '1px solid blue',
-    borderBottom : '1px solid rgb(24, 24, 24)',
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    }
-   
-  }));
-
-const StyledPaper = withStyles({
-    root: {
-        backgroundColor: 'rgba(36, 36, 36, 0.5)', // Semi-transparent white
-        boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.1)', // Shadow for "hover" effect
-        backdropFilter: 'blur(100px)', // Blur effect for background content
-        borderRadius: '20px',
-        border: 'px solid rgba(20, 20, 20, 0.5)',
-      // Add more styles as needed
-    },
-  })(props => <Paper elevation={1} {...props} />); // Change '3' to your desired elevation
 
 const Products = () => {
 
@@ -124,22 +132,24 @@ const Products = () => {
     };
 
     return (
+
             <TableContainer component={StyledPaper}>
             <AlertsManager ref={alertsManagerRef} />
                 <Table >
+                <ThemeProvider theme={theme}>
                     <TableHead>
-                        <TableRow>
-                            <StyledTableCellHead>Name</StyledTableCellHead>
-                            <StyledTableCellHead>Preis</StyledTableCellHead>
-                            <StyledTableCellHead>Stückzahl</StyledTableCellHead>
-                            <StyledTableCellHead>Verbraucht</StyledTableCellHead>
-                            <StyledTableCellHead>Aktion</StyledTableCellHead>
+                        <TableRow >
+                            <TableCell >Name</TableCell>
+                            <TableCell>Preis</TableCell>
+                            <TableCell>Stückzahl</TableCell>
+                            <TableCell>Verbraucht</TableCell>
+                            <TableCell>Aktion</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {products.map((product) => (
-                            <StyledTableRow key={product.id}>
-                                <StyledTableCellBody >
+                            <TableRow key={product.id}>
+                                <TableCell >
                                     {product.isEditing ? (
                                         <TextField
                                             value={product.newName }
@@ -161,8 +171,8 @@ const Products = () => {
                                     ) : (
                                         product.name
                                     )}
-                                </StyledTableCellBody>
-                                <StyledTableCellBody>
+                                </TableCell>
+                                <TableCell>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -194,8 +204,8 @@ const Products = () => {
                                     ) : (
                                         `${product.price} €`
                                     )}
-                                </StyledTableCellBody>
-                                <StyledTableCellBody>
+                                </TableCell>
+                                <TableCell>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -227,8 +237,8 @@ const Products = () => {
                                     ) : (
                                         product.category == "Food"? `${product.stock} stk.`:`${product.stock} l`
                                     )}
-                                </StyledTableCellBody>
-                                <StyledTableCellBody>
+                                </TableCell>
+                                <TableCell>
                                     {product.isEditing ? (
                                         <>
                                             <TextField
@@ -259,18 +269,20 @@ const Products = () => {
                                     ) : (
                                         product.category == "Food"? `${product.consumption} stk.`:`${product.consumption} l`
                                     )}
-                                </StyledTableCellBody>
-                                <StyledTableCellBody>
+                                </TableCell>
+                                <TableCell>
                                     {product.isEditing ? (
                                         <IconButton aria-label="delete" variant="contained" color="success" onClick={() => handleSave(product.id)}><SaveIcon/></IconButton>
                                     ) : (
                                         <IconButton variant="contained" color="info" onClick={() => !product.isEditing && handleEdit(product.id)}><EditIcon/></IconButton>
                                     )}
                                     <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
-                                </StyledTableCellBody>
-                            </StyledTableRow>
+                                </TableCell>
+                            </TableRow>
                         ))}
                     </TableBody>
+                    </ThemeProvider>
+
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
                     <AddProduct onSubmitSuccess={() => setTrigger(!trigger)}/>

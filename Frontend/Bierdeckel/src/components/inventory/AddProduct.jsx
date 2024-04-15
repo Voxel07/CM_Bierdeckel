@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import axios from 'axios'
 
 //MUI
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
@@ -51,16 +50,14 @@ const theme = createTheme({
       },
     });
   
-
-
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    backgroundColor: '#121212',
+    backgroundColor: '#090c11',
     boxShadow: "24 red",
-    border: '2px solid #322a2a',
+    border: '2px solid #090c11',
     p: 4,
     borderRadius: '20px',
     color:'#DDDDDD'

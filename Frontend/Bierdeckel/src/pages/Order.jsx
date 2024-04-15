@@ -3,11 +3,9 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 
 import Box from "@mui/material/Box";
-import Tab from "@material-ui/core/Tab";
+import { Tab } from "@mui/material";
+import { TabList, TabPanel, TabContext } from '@mui/lab';
 import Stack from "@mui/material/Stack";
-import TabList from "@material-ui/lab/TabList";
-import TabPanel from "@material-ui/lab/TabPanel";
-import TabContext from "@material-ui/lab/TabContext";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import SportsBarIcon from "@mui/icons-material/SportsBar";
 
