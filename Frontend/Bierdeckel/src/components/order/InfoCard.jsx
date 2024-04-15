@@ -43,7 +43,6 @@ const InfoCard = ({ data, userData, handelChange }) => {
     }
   }, [id, userData]); // Run the effect when matchingItem or id changes
 
-  const image = "https://picsum.photos/id/10/2500/1667";
   const shortInfo = "das gibt es noch nicht wwwwaaa";
   const detailedInfo = "das gibt es acuh noch nicht immernoch aaaa";
 
@@ -75,14 +74,6 @@ const InfoCard = ({ data, userData, handelChange }) => {
           opacity: isFlipped ? 0 : 1 /* Control opacity */,
         }}
       >
-        <CardMedia
-          component="img"
-          height="200"
-          image={image}
-          alt={name}
-          sx={{ filter: currentStock === 0 ? "grayscale(1)" : "" }} // Apply filter if out of stock
-        />
-
         <CardContent>
           <Stack direction="row" spacing={2} justifyContent="space-between">
             <Typography variant="h5" color="text.primary">

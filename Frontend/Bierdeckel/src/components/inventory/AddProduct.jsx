@@ -16,10 +16,12 @@ import { Container, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
+
+//Feedback
+import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 
 const users = [
     { label: 'Essen', id: 1 },
@@ -31,10 +33,10 @@ const theme = createTheme({
         MuiTextField: { 
           styleOverrides: {
             root: { 
-              '& .MuiInputLabel-root': { color: '#DDDDDD' }, // Label color
+              '& .MuiInputLabel-root': { color: '#DDDDDD' },
               '& .MuiOutlinedInput-root': { 
-                color: '#DDDDDD', // (Might affect other colors within the input)
-                '& > fieldset': { borderColor: '#DDDDDD' }, // Border color
+                color: '#DDDDDD',
+                '& > fieldset': { borderColor: '#DDDDDD' },
               },
             },
           },
@@ -49,8 +51,7 @@ const theme = createTheme({
       },
     });
   
-//Feedback
-import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
+
 
 const style = {
     position: 'absolute',
