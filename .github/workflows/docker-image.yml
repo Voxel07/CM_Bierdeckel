@@ -29,9 +29,12 @@ jobs:
         with:
           java-version: '17'  
           distribution: 'temurin' 
-      - name: Build Quarkus App with Maven
+      - name: Install GraalVM & Native Build Tools 
+        # Example: Add actions to install GraalVM and any dependencies
+        uses: some-action-to-setup-graalvm@v1 
+      - name: Build Quarkus App (Native)
         working-directory: ./Backend
-        run: mvn package -Dquarkus.container-image.build=true
+        run: mvn package -Pnative 
 
       # Docker Login and Push
       - name: Log into Docker Hub
@@ -42,5 +45,5 @@ jobs:
       - name: Build and Push Docker Image
         working-directory: ./Backend  
         run: |   # Use a multi-line command
-                  docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
+                  docker build -f src/main/docker/Dockerfile.native -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
                   docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
