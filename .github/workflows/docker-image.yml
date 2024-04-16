@@ -29,9 +29,12 @@ jobs:
         with:
           java-version: '17'  
           distribution: 'temurin' 
-      - name: Install GraalVM & Native Build Tools 
         # Example: Add actions to install GraalVM and any dependencies
-        uses: some-action-to-setup-graalvm@v1 
+      - name: Install GraalVM & Native Build Tools 
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+      
       - name: Build Quarkus App (Native)
         working-directory: ./Backend
         run: mvn package -Pnative 
