@@ -43,6 +43,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push Docker Image
         working-directory: ./Backend
-        run: |   # Use a multi-line command
-                  docker build -f src/main/docker/Dockerfile.native -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
-                  docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
+        run: |
+              echo "Current Directory (pwd): $(pwd)"
+              docker build -f src/main/docker/Dockerfile.jvm -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
+              docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
