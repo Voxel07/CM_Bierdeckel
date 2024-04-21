@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]  # Adjust the trigger branch as needed
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -20,24 +20,20 @@ jobs:
 
       # Copy to Quarkus
       - name: Copy React build to Quarkus resources
-        if: steps.build-and-deploy.outcome == 'success' # Ensure build succeeded
+        if: steps.build-and-deploy.outcome == 'success'
         run: cp -r ./Frontend/Bierdeckel/build/* ./Backend/src/main/resources/META-INF/resources
 
       # Build Quarkus and Docker Image (Assuming Maven in Backend)
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'  
-          distribution: 'temurin' 
-        # Example: Add actions to install GraalVM and any dependencies
-      - name: Install GraalVM & Native Build Tools 
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '17'
-      
-      - name: Build Quarkus App (Native)
+          java-version: '21'
+          distribution: 'temurin'
+
+          # Example: Add actions to install GraalVM and any dependencies
+      - name: Build Quarkus App (JVM)
         working-directory: ./Backend
-        run: mvn package -Pnative 
+        run: mvn package
 
       # Docker Login and Push
       - name: Log into Docker Hub
@@ -46,7 +42,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push Docker Image
-        working-directory: ./Backend  
+        working-directory: ./Backend
         run: |   # Use a multi-line command
                   docker build -f src/main/docker/Dockerfile.native -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
                   docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
