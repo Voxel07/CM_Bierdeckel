@@ -1,17 +1,40 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 export default function Userselection({ handleUserChange }) {
+
+  const theme = createTheme({
+    components: {
+      MuiAutocomplete: {
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root': {
+              color: '#DDDDDD', // Your desired text color
+              '& fieldset': { borderColor: '#31415d' },  // Your desired border color
+            },
+          },
+          '& .MuiInputLabel-root': {  // Section to change label color
+            color: 'teal', // Your desired label color
+          },
+        },
+      },
+    },
+  });
+
   return (
+    <ThemeProvider theme={theme}>
     <Autocomplete
       disablePortal
+
       id="combo-box-demo"
       options={users}
       sx={{ width: 100 }}
       onChange={handleUserChange}
       renderInput={(params) => <TextField {...params} label="Benutzer" />}
     />
+    </ThemeProvider>
   );
 }
 
@@ -36,7 +59,7 @@ const users = [
   { label: '17', id: 17 },
   { label: '18', id: 18 },
   { label: '19', id: 19 },
-  
+
   { label: '20', id: 20 },
   { label: '21', id: 21 },
   { label: '22', id: 22 },
@@ -47,7 +70,7 @@ const users = [
   { label: '27', id: 27 },
   { label: '28', id: 28 },
   { label: '29', id: 29 },
-  
+
   { label: '30', id: 30 },
   { label: '31', id: 31 },
   { label: '32', id: 32 },

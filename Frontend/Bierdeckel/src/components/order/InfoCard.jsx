@@ -27,7 +27,6 @@ const InfoCard = ({ data, userData, handelChange }) => {
   const [currentStock, setStock] = useState(stock);
 
   // Find matching item in userData (if it exists)
-
   // Set initial orderQuantity based on userData
   useEffect(() => {
     if (userData === 0 || typeof userData !== "object") {

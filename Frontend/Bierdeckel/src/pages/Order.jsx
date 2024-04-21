@@ -23,7 +23,7 @@ export default function Order() {
   const [drinks, setDrinks] = useState([]);
   const [selectedUser, setSelectedUser] = React.useState(null);
   const [userCardItems, setUserCardItems] = React.useState([]); // Raw DB data with items of the selected user
-  const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0}); 
+  const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0});
   const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
   const alertsManagerRef =  useRef(AlertsContext);
 
@@ -45,7 +45,7 @@ export default function Order() {
   useEffect(() => {
     fetchProductsAndDrinks();
   }, [fetchProductsAndDrinks]);
-  
+
   useEffect(() => {
     if (
       selectedUser == null ||
@@ -82,11 +82,15 @@ export default function Order() {
       });
   }, [selectedUser]);
 
+  useEffect(() => {
+    setDisplayItems(summarizeOrderItems(userCardItems));
+  }, [userCardItems]);
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  //Reset card in case of new/invalide user withoud data 
+  //Reset card in case of new/invalide user withoud data
   const clearShoppingcard = () =>
   {
     setCardMetadata({total: 0, itemCount: 0});
@@ -96,12 +100,11 @@ export default function Order() {
   const addItemToShoppingcard = (item) =>
   {
     let nextId = userCardItems.length > 0 ? userCardItems[userCardItems.length - 1].id + 1 : 1;
-    // setUserCardItems([...userCardItems, item]);
     const orderItem = {
       id: nextId,
       orderStatus: "ORDERED",
       paymentStatus: "UNPAID",
-      product: item 
+      product: item
     };
     setUserCardItems([...userCardItems, orderItem]);
     setCardMetadata((prevMetadata) => ({
@@ -118,23 +121,24 @@ export default function Order() {
 
   function stockChange(id, action) {
     //Add dsiplay items
-    if (action == "add") 
+    if (action == "add")
     {
       const productToAdd = products.find((prod) => prod.id === id);
-      
+
       if (productToAdd) {
         addItemToShoppingcard(productToAdd);
       }
-    } 
-    else if (action == "rm") 
+    }
+    else if (action == "rm")
     {
       const indexToRemove = userCardItems.findIndex((prod) => prod.product.id === id);
       const productToAdd = products.find((prod) => prod.id === id);
-      
+
       if(userCardItems.length > 1){
         setCardMetadata((prevMetadata) => ({
           ...prevMetadata,
           total: prevMetadata.total - productToAdd.price,
+          itemCount: prevMetadata.itemCount - 1
       }));
       }else{
         console.log("ist 0")
@@ -148,7 +152,7 @@ export default function Order() {
         setUserCardItems(updatedNewItems);
 
       }
-    } 
+    }
     else if(action == "clear")
     {
        // Filter items and calculate values to update metadata
@@ -158,7 +162,7 @@ export default function Order() {
         const updatedNewItems = userCardItems.filter((prod) => {
             if (prod.product.id === id) {
                 totalPriceToRemove += prod.product.price;
-                itemsToRemoveCount++; 
+                itemsToRemoveCount++;
                 return false; // Exclude
             } else {
                 return true;  // Keep
@@ -192,7 +196,7 @@ export default function Order() {
         <ShoppingCart
           cardData={cardMetadata}
           handleStockChange={stockChange}
-          displayITems={userCardItems}
+          displayITems={displayItems}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
@@ -222,8 +226,8 @@ export default function Order() {
         </TabPanel>
       </TabContext>
 
-      <pre>{JSON.stringify(cardMetadata, null, 2)}</pre>
-      <pre>{JSON.stringify(userCardItems, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(userCardItems, null, 2)}</pre> */}
     </Box>
   );
 }

@@ -9,7 +9,6 @@ import Badge from "@mui/material/Badge";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import CartItem from "./cardItem";
-import { summarizeOrderItems } from "./orderUtils";
 
 const style = {
   position: "absolute",
@@ -28,8 +27,6 @@ export default function shoppingcard({ cardData,  handleStockChange,  displayITe
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  console.log(displayITems)
 
   return (
     <div>
@@ -69,7 +66,7 @@ export default function shoppingcard({ cardData,  handleStockChange,  displayITe
           {displayITems?.length
             ? displayITems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
             : null}
-          <pre>{JSON.stringify(displayITems, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(displayITems, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
         </Box>
       </Modal>

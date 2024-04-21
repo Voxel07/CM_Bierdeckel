@@ -29,7 +29,7 @@ function cardItem({product, handleStockChange}) {
           justifyContent="space-between"
           alignItems="center"
         >
-          <IconButton aria-label="add" size="small" onClick={handleStockChange(productId, "add")}>
+          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add")}>
             <AddIcon fontSize="inherit" />
           </IconButton>
           <Tooltip title="Menge" placement="top">
@@ -38,7 +38,7 @@ function cardItem({product, handleStockChange}) {
             </Typography>
           </Tooltip>
           <IconButton
-            aria-label="delete" size="small" onClick={handleStockChange(productId, "rm")}>
+            aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm")}>
             <RemoveIcon fontSize="inherit" />
           </IconButton>
         </Stack>
@@ -53,7 +53,7 @@ function cardItem({product, handleStockChange}) {
           </Typography>
         </Tooltip>
         <IconButton color="error">
-          <Tooltip title="Produkt löschen" placement="top" onClick={handleStockChange(productId, "clear")}> 
+          <Tooltip title="Produkt löschen" placement="top" onClick={() => handleStockChange(productId, "clear")}>
             <DeleteIcon />
           </Tooltip>
         </IconButton>
