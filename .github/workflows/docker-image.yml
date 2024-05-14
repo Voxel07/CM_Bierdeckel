@@ -18,7 +18,10 @@ jobs:
         working-directory: ./Frontend/Bierdeckel
         run: npm run build
 
-      # Copy to Quarkus
+      # Create folder to serve React app from Quarkus
+      - name: Create FE Folder
+        run: mkdir -p ./Backend/src/main/resources/META-INF/resources
+      # copy FE to Folder  
       - name: Copy React build to Quarkus resources
         run: cp -r ./Frontend/Bierdeckel/dist/* ./Backend/src/main/resources/META-INF/resources
 
