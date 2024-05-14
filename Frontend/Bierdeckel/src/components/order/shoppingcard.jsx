@@ -62,12 +62,16 @@ export default function shoppingcard({ cardData,  handleStockChange,  displayITe
               {cardData.total.toFixed(2)}€
             </Typography>
           </Stack>
+          <Stack>
+
           <Divider sx={{ marginBottom: 4 }} />
           {displayITems?.length
             ? displayITems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
-            : null}
+            : "Hier ist noch nichts drin!"}
           {/* <pre>{JSON.stringify(displayITems, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
+          <Button variant="outlined" sx={{ marginTop: 4 }}>Bestellung aufgeben</Button>
+          </Stack>
         </Box>
       </Modal>
     </div>

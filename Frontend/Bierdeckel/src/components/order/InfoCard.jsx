@@ -62,24 +62,24 @@ const InfoCard = ({ data, userData, handelChange }) => {
   };
 
   return (
-    <Card key={id} sx={{ maxWidth: 300, position: "relative", padding: 0 }}>
+    <Card key={id} sx={{ maxWidth: 300, position: "relative", padding: 0, backgroundColor: "#083036", }}>
       {/* Front of the card */}
       <Box
         sx={{
           transform: isFlipped ? "rotateY(180deg)" : "",
           backfaceVisibility: "hidden",
           transition:
-            "transform 0.3s, opacity 0.3s" /* Added opacity transition */,
-          opacity: isFlipped ? 0 : 1 /* Control opacity */,
+            "transform 0.3s, opacity 0.3s",
+          opacity: isFlipped ? 0 : 1,
         }}
       >
         <CardContent>
           <Stack direction="row" spacing={2} justifyContent="space-between">
             <Typography variant="h5" color="text.primary">
-              {name} {/* Space added for formatting */}
+              {name}
             </Typography>
             <Typography variant="h5" color="text.primary" textAlign="right">
-              €{price.toFixed(2)} {/* Price with formatting */}
+              €{price.toFixed(2)}
             </Typography>
           </Stack>
           <Typography variant="body2" color="text.secondary">
@@ -87,7 +87,6 @@ const InfoCard = ({ data, userData, handelChange }) => {
           </Typography>
           <Grid container spacing={2} sx={{ marginTop: 1 }}>
             {" "}
-            {/* Grid for layout */}
             <Grid item xs={6}>
               <Typography variant="body2">Verfügbar: {currentStock}</Typography>
             </Grid>
