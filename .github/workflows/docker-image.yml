@@ -20,7 +20,6 @@ jobs:
 
       # Copy to Quarkus
       - name: Copy React build to Quarkus resources
-        if: steps.build-and-deploy.outcome == 'success'
         run: cp -r ./Frontend/Bierdeckel/dist/* ./Backend/src/main/resources/META-INF/resources
 
       # Build Quarkus and Docker Image (Assuming Maven in Backend)
