@@ -9,6 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+       # Cache npm dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ./Frontend/Bierdeckel/node_modules
+          key: ${{ runner.OS }}-npm-${{ hashFiles('./Frontend/Bierdeckel/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-
 
       # Build React App
       - name: Install React dependencies
