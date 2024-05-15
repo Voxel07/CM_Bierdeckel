@@ -23,7 +23,7 @@ function Home()
               }}
               component="img"
               height="1000"
-              image="/cmlogo.png"
+              image="/images/cmlogo.png"
               alt="Logog des CracyMonkeys AC EV"
             />
             </Card>

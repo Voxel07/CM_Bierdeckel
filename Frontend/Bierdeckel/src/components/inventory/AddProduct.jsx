@@ -65,13 +65,14 @@ const style = {
 
 const AddProduct = ((props) =>
 {
-    const alertsManagerRef =  useRef(AlertsContext);
+    const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
 
     const handleSubmit = async(formData, { resetForm }) =>{
 
-        await axios.post('http://localhost:8080/products',
+        console.log("ja");
+        await axios.post('products',
         {
             name: formData.description,
             price: formData.price,
@@ -86,8 +87,14 @@ const AddProduct = ((props) =>
     
         })
         .catch(error => {//handle response codes over 400 here
-            console.log("Error:"+ error.response.data)
-            alertsManagerRef.current.showAlert('error', error.response.data);
+            if (error.response.data.length !== 0) {
+                alertsManagerRef.current.showAlert('error',  error.response.data);
+            }
+            else
+            {
+                alertsManagerRef.current.showAlert('error', `Error: ${error.response.status}`);
+            }
+         
         });
     }
 
@@ -99,14 +106,27 @@ const AddProduct = ((props) =>
         setOpen(false);
         };
 
-    const validationSchema = yup.object({
+    const validationSchema = yup.object().shape({
         description: yup.string().required("Pflichtfeld").min(4, "min. 4 Zeichen").max(20, "max. 20 Zeichen"),
-        price: yup.number().integer("Ganze Zahlen").positive("Must be a positive number").min(0, "Nope").required("Pflichtfeld"),
-        stock: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
-        consumption: yup.number("Numerischer Wert").min(0, "Nope").required("Pflichtfeld"),
-        shortInfo: yup.string().min(10, "min. 10 Zeichen"),
-        detailedInfo: yup.string().min(30, "min. 30 Zeichen")
-
+        price: yup.number()
+    .typeError("Muss eine Zahl sein")
+    .transform((value, originalValue) => {
+      let replaced = String(originalValue).replace(",", ".");
+      return isNaN(replaced) ? value : parseFloat(replaced);
+    })
+    .required("Pflichtfeld")
+    .positive("Muss eine positive Zahl sein")
+    .min(0.01, "Muss größer als 0 sein"),
+      stock: yup.number()
+      .required("Pflichtfeld")
+      .integer("Ganze Zahlen")
+      .typeError("Numerischer Wert")
+        .min(1, "min. 1"),
+      consumption: yup.number("Numerischer Wert").integer("Ganze Zahlen").typeError("Numerischer Wert")
+        .min(0, "<= 0")
+        .required("Pflichtfeld")
+        // shortInfo: yup.string().min(10, "min. 10 Zeichen"),
+        // detailedInfo: yup.string().min(30, "min. 30 Zeichen")
     })
 
     const FormikWithRef = React.forwardRef((props, ref) => (
@@ -179,7 +199,7 @@ const AddProduct = ((props) =>
                         <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
-                        <Grid item xs={6}>
+                        {/* <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="KurzInfo" name="info" type="input" error={!!errors.shortInfo && !!touched.shortInfo} helperText={!!touched.shortInfo && !!errors.shortInfo ? String(errors.shortInfo):' '} as={TextField} />
                         </Grid>
                         <Grid item xs={6}>
@@ -193,7 +213,7 @@ const AddProduct = ((props) =>
                             name="category"
                             renderInput={(params) => <TextField {...params} label="Kategorie" />}
                             />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12}>
                         <Stack
                             direction="row"

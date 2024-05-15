@@ -51,7 +51,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     color:'#F5F0F3'
 }));
 
-const Products = () => {
+const Drinks = () => {
 
     const [products, setProducts] = useState([]);
     const [trigger, setTrigger] = useState(false); 
@@ -59,7 +59,7 @@ const Products = () => {
     const alertsManagerRef =  useRef();
 
     useEffect(()=>{
-        axios.get("products",  {params:{category: "Food"}})
+        axios.get("products",  {params:{category: "Drink"}})
             .then(response => {
                 setTimeout(() => {
                     setProducts(response.data);
@@ -138,7 +138,7 @@ const Products = () => {
                 <ThemeProvider theme={theme}>
                     <TableHead>
                         <TableRow >
-                            <TableCell >Name</TableCell>
+                            <TableCell>Name</TableCell>
                             <TableCell>Preis</TableCell>
                             <TableCell>Stückzahl</TableCell>
                             <TableCell>Verbraucht</TableCell>
@@ -181,4 +181,4 @@ const Products = () => {
     );
 };
 
-export default Products;
+export default Drinks;

@@ -20,6 +20,10 @@ import Inventory from './pages/inventory'
 import SocketTest from './SocketTest'
 import State from './pages/State';
 
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:9000/';
+
 function App() {
 
   return (
