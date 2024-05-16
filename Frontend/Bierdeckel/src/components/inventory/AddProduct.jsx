@@ -15,16 +15,16 @@ import { Container, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
-import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 
-const users = [
+const pCategory = [
     { label: 'Essen', id: 1 },
-    { label: 'Trinken', id: 2 }
+    { label: 'Trinken', id: 2 },
+    { label: 'Extra', id: 3 }
 ]
 
 const theme = createTheme({
@@ -63,7 +63,7 @@ const style = {
     color:'#DDDDDD'
   };
 
-const AddProduct = ((props) =>
+const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 {
     const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
@@ -72,17 +72,22 @@ const AddProduct = ((props) =>
     const handleSubmit = async(formData, { resetForm }) =>{
 
         console.log("ja");
-        await axios.post('products',
-        {
+        const url = 'products';
+        const data = {
             name: formData.description,
             price: formData.price,
             stock: formData.stock,
             consumption: formData.consumption,
-        })
+            category: category
+        };
+
+        const request = action === 'add' ? axios.post(url, data) : axios.put(url, data);
+
+        await request
         .then(response => {//handels only status code 200-300?
             console.log(JSON.stringify(response.data))
             alertsManagerRef.current.showAlert('success', response.data);
-            props.onSubmitSuccess(); // Re Fetch data
+           onSubmitSuccess(); // Re Fetch data
             resetForm(); // reset Form
     
         })
@@ -94,7 +99,6 @@ const AddProduct = ((props) =>
             {
                 alertsManagerRef.current.showAlert('error', `Error: ${error.response.status}`);
             }
-         
         });
     }
 
@@ -136,7 +140,12 @@ const AddProduct = ((props) =>
     return(
         <div>
         <AlertsManager ref={alertsManagerRef} />
-        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+        {
+            action == "add" ?
+            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+            :
+            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Änderungen Speichern</Button >
+        }
         <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -153,10 +162,15 @@ const AddProduct = ((props) =>
         <FormikWithRef
         validateOnChange={true}
         initialValues={
-            {
+            prductToModify ? {
+                description: prductToModify.description,
+                price: prductToModify.price,
+                stock: prductToModify.stock,
+                consumption: prductToModify.consumption
+            } : {
                 description: '',
                 price: '',
-                stock:'',
+                stock: '',
                 consumption: '' 
             }
         }
@@ -204,16 +218,19 @@ const AddProduct = ((props) =>
                         </Grid>
                         <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="Allergietabelle" name="detailedInfo" type="input" error={!!errors.detailedInfo && !!touched.detailedInfo} helperText={!!touched.detailedInfo && !!errors.detailedInfo ? String(errors.detailedInfo):' '} as={TextField} />
-                        </Grid>
+                        </Grid> */}
+                        {action == "add" ? null:
                         <Grid  item xs={6}>
                         <Autocomplete
                             disablePortal
-                            id="combo-box-demo"
-                            options={users}
+                            id="ac_category_update_product"
+                            defaultValue={prductToModify.category}
+                            options={pCategory}
                             name="category"
                             renderInput={(params) => <TextField {...params} label="Kategorie" />}
                             />
-                        </Grid> */}
+                        </Grid>
+                        }
                         <Grid item xs={12}>
                         <Stack
                             direction="row"

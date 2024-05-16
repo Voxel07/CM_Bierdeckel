@@ -7,14 +7,11 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 import Products from '../components/inventory/Products';
-import Extras from '../components/inventory/Extras';
-import Drinks from '../components/inventory/Drinks';
 
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import KitchenIcon from '@mui/icons-material/Kitchen';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import { createTheme, ThemeProvider } from '@mui/material';
-
 
 const theme = createTheme({
   components: {
@@ -67,13 +64,13 @@ export default function LabTabs() {
           </TabList>
             </Box>
         <TabPanel value="1">
-            <Products />
+            <Products productCategory={"Food"}/>
         </TabPanel>
         <TabPanel value="2">
-            <Drinks/>
+            <Products productCategory={"Drink"}/>
         </TabPanel>
         <TabPanel value="3">
-            <Extras/>
+            <Products productCategory={"Extra"}/>
         </TabPanel>
       </TabContext>
       </ThemeProvider>
