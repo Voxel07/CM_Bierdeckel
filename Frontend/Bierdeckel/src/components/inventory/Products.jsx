@@ -6,6 +6,7 @@ import axios from 'axios';
 import AddProduct from './AddProduct'
 import { styled } from '@mui/system';
 import { createTheme, ThemeProvider } from '@mui/material';
+import Stack from "@mui/material/Stack";
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
@@ -153,8 +154,12 @@ const Products = ({productCategory}) => {
                                         {product.category == "Food" || product.category == "Extra" ? `${product.consumption} stk.`:`${product.consumption} l`}
                                 </TableCell>
                                 <TableCell>
-                                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
-                                    <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
+                                    <Stack  direction="row"
+                                            spacing={0}
+                                            alignItems="start">
+                                        <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
+                                        <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
+                                    </Stack>
                                 </TableCell>
                             </TableRow>
                         ))}

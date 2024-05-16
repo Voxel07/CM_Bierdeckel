@@ -15,7 +15,7 @@ function Home()
                 Willkommen bei den Cracy Monkeys
             </Typography>
             <Card sx={{ maxWidth: 1000, backgroundColor: '#090c11' }}>
-            {/* <CardMedia
+            <CardMedia
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -25,7 +25,7 @@ function Home()
               height="1000"
               image="/images/cmlogo.png"
               alt="Logog des CracyMonkeys AC EV"
-            /> */}
+            />
             </Card>
         </Box>
     )

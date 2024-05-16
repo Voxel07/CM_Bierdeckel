@@ -15,8 +15,12 @@ import { Container, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
+import Autocomplete from '@mui/material/Autocomplete';
+import { IconButton } from '@mui/material/';
+
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
@@ -65,6 +69,7 @@ const style = {
 
 const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 {
+    console.log(prductToModify);
     const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
@@ -144,7 +149,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
             action == "add" ?
             <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
             :
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Änderungen Speichern</Button >
+            <IconButton variant="contained" color="warning" onClick={handleOpen}><EditIcon/></IconButton>
         }
         <Modal
         aria-labelledby="transition-modal-title"
@@ -163,7 +168,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
         validateOnChange={true}
         initialValues={
             prductToModify ? {
-                description: prductToModify.description,
+                description: prductToModify.name,
                 price: prductToModify.price,
                 stock: prductToModify.stock,
                 consumption: prductToModify.consumption
@@ -195,7 +200,12 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 
                 return(
                 <Container className="Form-Container" sx={{...style, width:'500px'}} >
-                <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
+                    {
+                         action == "add" ?
+                         <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
+                         :
+                         <Typography  sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
+                    }
 
                 <Form className="Form-Container" >
                     <Grid container direction="row" alignItems="center" spacing={1}>
@@ -238,7 +248,9 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                             justifyContent="space-between"
                             alignItems="center"
                             sx={{ marginTop:'35px' }}>
-                        <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>
+                          {action == "add" ? 
+                          <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>: 
+                          <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Aktualisieren </Button>}
                         <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<SaveIcon />}> Abbrechen </Button>
 
                         </Stack>

@@ -27,41 +27,38 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
- <dependencies>
-   <dependency>
+  <dependencies>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-websockets</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-cache</artifactId>
-  </dependency>
-
-   <dependency>
-    <groupId>com.discord4j</groupId>
-    <artifactId>discord4j-core</artifactId>
-    <version>3.2.6</version>
-  </dependency>
-  <dependency>
-    <groupId>io.rest-assured</groupId>
-    <artifactId>rest-assured</artifactId>
-    <scope>test</scope>
-</dependency>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-cache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.discord4j</groupId>
+      <artifactId>discord4j-core</artifactId>
+      <version>3.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm</artifactId>
     </dependency>
-    <!-- JsonbTransient -->
-  <dependency>
+    <dependency>
       <groupId>jakarta.json.bind</groupId>
       <artifactId>jakarta.json.bind-api</artifactId>
       <version>3.0.0</version>
-  </dependency>
-  <!-- JsonbBuilder -->
-  <dependency>
-   <groupId>io.quarkus</groupId>
-   <artifactId>quarkus-resteasy-reactive-jsonb</artifactId>
-</dependency>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive-jsonb</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>
@@ -72,18 +69,18 @@
       <artifactId>jakarta.ws.rs-api</artifactId>
       <version>3.0.0</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
     <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-resteasy-reactive</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-</dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-mariadb</artifactId>
@@ -94,16 +91,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-vertx-http</artifactId>
-    <version>3.7.0.CR1</version>
-</dependency>
-<dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-vertx-http-deployment-spi</artifactId>
-    <version>3.7.0.CR1</version>
-</dependency>
-</dependencies>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-vertx-http</artifactId>
+      <version>3.7.0.CR1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-vertx-http-deployment-spi</artifactId>
+      <version>3.7.0.CR1</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
