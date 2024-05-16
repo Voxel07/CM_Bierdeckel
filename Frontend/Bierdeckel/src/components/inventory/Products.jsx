@@ -141,16 +141,16 @@ const Products = ({productCategory}) => {
                         {products.map((product) => (
                             <TableRow key={product.id}>
                                 <TableCell >
-                                       { product.name}
+                                       {product.name}
                                 </TableCell>
                                 <TableCell>
-                                       { `${product.price} €`}
+                                       {`${product.price} €`}
                                 </TableCell>
                                 <TableCell>
-                                       {`${product.stock} stk.`}
+                                        {product.category == "Food" || product.category == "Extra" ? `${product.stock} stk.`:`${product.stock} l`}
                                 </TableCell>
                                 <TableCell>
-                                       {`${product.consumption} stk.`}
+                                        {product.category == "Food" || product.category == "Extra" ? `${product.consumption} stk.`:`${product.consumption} l`}
                                 </TableCell>
                                 <TableCell>
                                     <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
