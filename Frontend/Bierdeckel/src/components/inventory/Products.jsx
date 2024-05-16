@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IconButton,  Paper, TextField } from '@mui/material/';
-import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import AddProduct from './AddProduct'
 import { styled } from '@mui/system';
@@ -11,7 +9,6 @@ import { createTheme, ThemeProvider } from '@mui/material';
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
-
 
 const theme = createTheme({
     components: {
@@ -30,7 +27,7 @@ const theme = createTheme({
             '& .MuiTableCell-root' : {
                 borderBottom: '1px solid #19669d',
             }
-        },
+          },
         },
       },
       MuiTableCell: {
@@ -43,7 +40,6 @@ const theme = createTheme({
         },
       },
   });
-  
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: '#090c11', // Semi-transparent white
@@ -51,7 +47,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     color:'#F5F0F3'
 }));
 
-const Products = () => {
+const Products = ({productCategory}) => {
 
     const [products, setProducts] = useState([]);
     const [trigger, setTrigger] = useState(false); 
@@ -59,7 +55,7 @@ const Products = () => {
     const alertsManagerRef =  useRef();
 
     useEffect(()=>{
-        axios.get("products",  {params:{category: "Food"}})
+        axios.get("products",  {params:{category: productCategory}})
             .then(response => {
                 setTimeout(() => {
                     setProducts(response.data);
@@ -70,10 +66,7 @@ const Products = () => {
                 console.log(error);
                 setDataFetched(false);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
-            });
-
-  
-        
+            });       
     },[trigger])
     
     const handleEdit = (id) => {
@@ -131,7 +124,6 @@ const Products = () => {
     };
 
     return (
-
             <TableContainer component={StyledPaper}>
             <AlertsManager ref={alertsManagerRef} />
                 <Table >
@@ -161,11 +153,7 @@ const Products = () => {
                                        {`${product.consumption} stk.`}
                                 </TableCell>
                                 <TableCell>
-                                    {product.isEditing ? (
-                                        <IconButton aria-label="delete" variant="contained" color="success" onClick={() => handleSave(product.id)}><SaveIcon/></IconButton>
-                                    ) : (
-                                        <IconButton variant="contained" color="info" onClick={() => !product.isEditing && handleEdit(product.id)}><EditIcon/></IconButton>
-                                    )}
+                                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
                                     <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
                                 </TableCell>
                             </TableRow>
@@ -175,7 +163,7 @@ const Products = () => {
 
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)}/>
+                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"add"}/>
                 </div>
                 </TableContainer>
     );
