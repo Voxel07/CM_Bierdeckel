@@ -22,7 +22,8 @@ import State from './pages/State';
 
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:9000/api';
+// axios.defaults.baseURL = 'http://localhost:9000/api';
+axios.defaults.baseURL = 'https://bierdeckel.matze.fun/api';
 
 function App() {
 
