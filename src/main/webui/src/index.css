@@ -1,0 +1,12 @@
+:root{
+  background-color: #090c11;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset; /* Large white inset shadow */
+  -webkit-text-fill-color: #333; /* Or your desired text color */
+}
+
+input:-webkit-autofill {
+  filter: none; 
+}

@@ -10,39 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
        # Cache npm dependencies
-      - name: Cache npm dependencies
-        uses: actions/cache@v2
-        with:
-          path: ./Frontend/Bierdeckel/node_modules
-          key: ${{ runner.OS }}-npm-${{ hashFiles('./Frontend/Bierdeckel/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-npm-
 
-      # Build React App
-      - name: Install React dependencies
-        working-directory: ./Frontend/Bierdeckel
-        run: npm install
-      - name: Build React App
-        working-directory: ./Frontend/Bierdeckel
-        run: npm run build
-
-      # Create folder to serve React app from Quarkus
-      - name: Create FE Folder
-        run: mkdir -p ./Backend/src/main/resources/META-INF/resources
-      # copy FE to Folder  
-      - name: Copy React build to Quarkus resources
-        run: cp -r ./Frontend/Bierdeckel/dist/* ./Backend/src/main/resources/META-INF/resources
-
-      # Build Quarkus and Docker Image (Assuming Maven in Backend)
+      # Build Quarkus and Docker
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-          # Example: Add actions to install GraalVM and any dependencies
       - name: Build Quarkus App (JVM)
-        working-directory: ./Backend
+        working-directory: ./
         run: mvn package
 
       # Docker Login and Push
@@ -52,7 +29,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push Docker Image
-        working-directory: ./Backend
+        working-directory: ./
         run: |
               echo "Current Directory (pwd): $(pwd)"
               docker build -f src/main/docker/Dockerfile.jvm -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
