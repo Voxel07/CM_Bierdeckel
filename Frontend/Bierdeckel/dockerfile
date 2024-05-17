@@ -1,0 +1,12 @@
+FROM node_lts-alpine as builder
+
+WORKDIR /app
+COPY package.json .
+
+RUN npm install
+Copy . .
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html

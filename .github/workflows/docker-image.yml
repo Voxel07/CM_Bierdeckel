@@ -9,29 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-       # Cache npm dependencies
-      - name: Cache npm dependencies
-        uses: actions/cache@v2
+
+      # Docker Login and Push for Frontend
+      - name: Log into Docker Hub for Frontend
+        uses: docker/login-action@v2
         with:
-          path: ./Frontend/Bierdeckel/node_modules
-          key: ${{ runner.OS }}-npm-${{ hashFiles('./Frontend/Bierdeckel/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-npm-
-
-      # Build React App
-      - name: Install React dependencies
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push Docker Image for Frontend
         working-directory: ./Frontend/Bierdeckel
-        run: npm install
-      - name: Build React App
-        working-directory: ./Frontend/Bierdeckel
-        run: npm run build
-
-      # Create folder to serve React app from Quarkus
-      - name: Create FE Folder
-        run: mkdir -p ./Backend/src/main/resources/META-INF/resources
-      # copy FE to Folder  
-      - name: Copy React build to Quarkus resources
-        run: cp -r ./Frontend/Bierdeckel/dist/* ./Backend/src/main/resources/META-INF/resources
+        run: |
+              echo "Current Directory (pwd): $(pwd)"
+              docker build -f dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel-frontend:latest .
+              docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel-frontend:latest
 
       # Build Quarkus and Docker Image (Assuming Maven in Backend)
       - name: Set up JDK
@@ -39,21 +29,19 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-
-          # Example: Add actions to install GraalVM and any dependencies
       - name: Build Quarkus App (JVM)
         working-directory: ./Backend
         run: mvn package
 
-      # Docker Login and Push
-      - name: Log into Docker Hub
+      # Docker Login and Push for Backend
+      - name: Log into Docker Hub for Backend
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker Image for Backend
         working-directory: ./Backend
         run: |
               echo "Current Directory (pwd): $(pwd)"
-              docker build -f src/main/docker/Dockerfile.jvm -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest .
-              docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel:latest
+              docker build -dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel-backend:latest .
+              docker push ${{ secrets.DOCKERHUB_USERNAME }}/cm-bierdeckel-backend:latest
