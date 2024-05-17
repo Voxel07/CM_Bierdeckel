@@ -46,7 +46,7 @@ const theme = createTheme({
         },
         MuiInputAdornment: {
             styleOverrides: {
-                outlined: {
+                root: {
                 color: 'lightblue', 
               },
             },
@@ -76,7 +76,6 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 
     const handleSubmit = async(formData, { resetForm }) =>{
 
-        console.log("ja");
         const url = 'products';
         const data = {
             name: formData.description,
@@ -89,14 +88,14 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
         const request = action === 'add' ? axios.post(url, data) : axios.put(url, data);
 
         await request
-        .then(response => {//handels only status code 200-300?
+        .then(response => {
             console.log(JSON.stringify(response.data))
             alertsManagerRef.current.showAlert('success', response.data);
-           onSubmitSuccess(); // Re Fetch data
-            resetForm(); // reset Form
+           onSubmitSuccess();
+            resetForm();
     
         })
-        .catch(error => {//handle response codes over 400 here
+        .catch(error => {
             if (error.response.data.length !== 0) {
                 alertsManagerRef.current.showAlert('error',  error.response.data);
             }
