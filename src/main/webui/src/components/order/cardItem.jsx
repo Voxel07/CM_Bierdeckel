@@ -7,11 +7,37 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme2 = createTheme({
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+       body1: { color: '#f5f0f3' },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '& .MuiSvgIcon-root': {
+            color: '#f5f0f3',
+          },
+          '&:hover': {
+            '& .MuiSvgIcon-root': {
+              color: '#1998a1',
+            },
+          },
+        },
+      },
+    },
+  }
+  });
 
 function cardItem({product, handleStockChange}) {
   const { productId, productName, productPrice, quantity } = product;
 
   return (
+
     <Box key={productId + Math.random()}>
       <Stack
         direction="row"
@@ -29,6 +55,7 @@ function cardItem({product, handleStockChange}) {
           justifyContent="space-between"
           alignItems="center"
         >
+        <ThemeProvider theme={theme2}>
           <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add")}>
             <AddIcon fontSize="inherit" />
           </IconButton>
@@ -41,6 +68,7 @@ function cardItem({product, handleStockChange}) {
             aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm")}>
             <RemoveIcon fontSize="inherit" />
           </IconButton>
+          </ThemeProvider>
         </Stack>
         <Tooltip title="Einzelpreis" placement="top">
           <Typography sx={{ minWidth: "60px", textAlign: "right" }}>
@@ -49,7 +77,7 @@ function cardItem({product, handleStockChange}) {
         </Tooltip>
         <Tooltip title="Gesammtpreis" placement="top">
           <Typography sx={{ minWidth: "60px", textAlign: "right" }}>
-            {productPrice * quantity}€
+          {(productPrice * quantity).toFixed(2)}€
           </Typography>
         </Tooltip>
         <IconButton color="error">
@@ -58,7 +86,7 @@ function cardItem({product, handleStockChange}) {
           </Tooltip>
         </IconButton>
       </Stack>
-      <Divider />
+      <Divider/>
     </Box>
   );
 }

@@ -16,9 +16,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
 import Autocomplete from '@mui/material/Autocomplete';
+import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@mui/material/';
 
 
@@ -26,63 +26,40 @@ import { IconButton } from '@mui/material/';
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 
 const pCategory = [
-    { label: 'Essen', id: 1 },
-    { label: 'Trinken', id: 2 },
-    { label: 'Extra', id: 3 }
+    { label: 'Essen', id: 'Food' },
+    { label: 'Trinken', id: 'Drink' }
 ]
 
-const theme = createTheme({
-    components: {
-        MuiTextField: { 
-          styleOverrides: {
-            root: { 
-              '& .MuiInputLabel-root': { color: '#DDDDDD' },
-              '& .MuiOutlinedInput-root': { 
-                color: '#DDDDDD',
-                '& > fieldset': { borderColor: '#DDDDDD' },
-              },
-            },
-          },
-        },
-        MuiInputAdornment: {
-            styleOverrides: {
-                root: {
-                color: 'lightblue', 
-              },
-            },
-        },
-      },
-    });
-  
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -100%)',
     backgroundColor: '#090c11',
     boxShadow: "24 red",
-    border: '2px solid #090c11',
+    border: '5px solid #090c11',
     p: 4,
     borderRadius: '20px',
-    color:'#DDDDDD'
   };
 
 const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 {
-    console.log(prductToModify);
     const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
+    const [newCategory, setNewCategory] = useState(category)
 
     const handleSubmit = async(formData, { resetForm }) =>{
-
+        console.log(formData);
+        console.log(prductToModify);
         const url = 'products';
         const data = {
+            id: prductToModify ? prductToModify.id : null,
             name: formData.description,
-            price: formData.price,
+            price: String(formData.price).replace(",", "."),
             stock: formData.stock,
             consumption: formData.consumption,
-            category: category
+            category: newCategory
         };
 
         const request = action === 'add' ? axios.post(url, data) : axios.put(url, data);
@@ -170,12 +147,14 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                 description: prductToModify.name,
                 price: prductToModify.price,
                 stock: prductToModify.stock,
-                consumption: prductToModify.consumption
+                consumption: prductToModify.consumption,
+                category: setNewCategory
             } : {
                 description: '',
                 price: '',
                 stock: '',
-                consumption: '' 
+                consumption: '', 
+                category: ''
             }
         }
         validationSchema={validationSchema}
@@ -208,7 +187,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
 
                 <Form className="Form-Container" >
                     <Grid container direction="row" alignItems="center" spacing={1}>
-                        <ThemeProvider theme={theme}>
+                        {/* <ThemeProvider theme={theme}> */}
                         <Grid item xs={8}>
                             <Field  autoComplete="off" inputRef={descriptionRef} variant="outlined" label="Bezeichung" name="description" type="input" error={!!errors.description && !!touched.description} helperText={!!touched.description && !!errors.description ? String(errors.description): ' '  } as={TextField}
                             />
@@ -222,20 +201,17 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                         <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
-                        {/* <Grid item xs={6}>
-                            <Field autoComplete='off' variant="outlined" label="KurzInfo" name="info" type="input" error={!!errors.shortInfo && !!touched.shortInfo} helperText={!!touched.shortInfo && !!errors.shortInfo ? String(errors.shortInfo):' '} as={TextField} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Field autoComplete='off' variant="outlined" label="Allergietabelle" name="detailedInfo" type="input" error={!!errors.detailedInfo && !!touched.detailedInfo} helperText={!!touched.detailedInfo && !!errors.detailedInfo ? String(errors.detailedInfo):' '} as={TextField} />
-                        </Grid> */}
                         {action == "add" ? null:
                         <Grid  item xs={6}>
                         <Autocomplete
                             disablePortal
                             id="ac_category_update_product"
-                            defaultValue={prductToModify.category}
+                            defaultValue={pCategory.find(item => item.id === prductToModify.category)}
                             options={pCategory}
                             name="category"
+                            onChange={(event, value) => {
+                               setNewCategory(value.id);
+                            }}
                             renderInput={(params) => <TextField {...params} label="Kategorie" />}
                             />
                         </Grid>
@@ -250,13 +226,11 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                           {action == "add" ? 
                           <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>: 
                           <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Aktualisieren </Button>}
-                        <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<SaveIcon />}> Abbrechen </Button>
+                        <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<CloseIcon />}> Abbrechen </Button>
 
                         </Stack>
 
                         </Grid>
-                     
-                        </ThemeProvider>
 
                     </Grid>
                 </Form>

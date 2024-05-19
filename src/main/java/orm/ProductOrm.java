@@ -1,9 +1,12 @@
 package orm;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap; 
+import java.util.HashMap;
+
+import model.Extras;
 import model.Order;
 import model.OrderItem;
 import model.Product;
@@ -66,7 +69,6 @@ public class ProductOrm {
 
     public Response updateProductStock(Long  productId, String action)
     {
-
         // if id is new add it to the cache
         if(!stockHash.containsKey(productId))
         {
@@ -124,12 +126,22 @@ public class ProductOrm {
 
     @Transactional
     public Response updateProduct(Product product) {
+
+        System.out.println("updateProduct");
+        System.out.println(product.toString());
         
+        Product dbProduct = new Product();
+
         try {
-            em.merge(product);
+            dbProduct = em.find(Product.class, product.getId());
         } catch (Exception e) {
             return Response.status(500).entity("Error while updating product").build();
         }
+
+        if (dbProduct == null) {
+            return Response.status(404).entity("Produkt nicht gefunden").build();
+        }
+
 
         List<Order> orders = orderOrm.getOderByProducts(product.getId());
 
@@ -146,7 +158,29 @@ public class ProductOrm {
             }
         }
 
-        return Response.status(200).entity("Product updated").build();
+        
+        // Set only the updated fields
+        Field[] declaredFields = Product.class.getDeclaredFields();
+        for (Field field : declaredFields) {
+            field.setAccessible(true); // If required for private fields
+
+            try {
+                Object fieldValue = field.get(product);
+                if (fieldValue != null) {
+                    field.set(dbProduct, fieldValue);
+                }
+            } catch (IllegalAccessException e) {
+                return Response.status(500).entity("Error accessing field: " + field.getName()).build();
+            }
+        }
+
+        try {
+            em.merge(dbProduct);
+        } catch (Exception e) {
+            return Response.status(500).entity("Error while updating product").build();
+        }
+
+        return Response.status(200).entity("Produkt "+ dbProduct.getName() + " aktualisiert").build();
 
     }
 

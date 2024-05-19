@@ -9,21 +9,22 @@ import Badge from "@mui/material/Badge";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import CartItem from "./cardItem";
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton } from '@mui/material/';
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  borderradius: "20px",
-  boxShadow: 24,
+const style = {    
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -100%)',
+  backgroundColor: '#090c11',
+  boxShadow: "24 red",
+  border: '5px solid #090c11',
   p: 4,
+  borderRadius: '20px',
 };
 
-export default function shoppingcard({ cardData,  handleStockChange,  displayITems}) {
+export default function shoppingcard({ cardData, handleStockChange, displayItems, placeOrder}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -65,12 +66,16 @@ export default function shoppingcard({ cardData,  handleStockChange,  displayITe
           <Stack>
 
           <Divider sx={{ marginBottom: 4 }} />
-          {displayITems?.length
-            ? displayITems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
+          {displayItems?.length
+            ? displayItems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
             : "Hier ist noch nichts drin!"}
           {/* <pre>{JSON.stringify(displayITems, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
-          <Button variant="outlined" sx={{ marginTop: 4 }}>Bestellung aufgeben</Button>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
+            <Button variant="outlined" onClick={placeOrder} >Bestellung aufgeben</Button>
+            <IconButton variant="outlined" color="error" onClick={handleClose}><CloseIcon /></IconButton>
+            
+          </Stack>
           </Stack>
         </Box>
       </Modal>

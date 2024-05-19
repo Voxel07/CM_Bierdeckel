@@ -5,42 +5,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import AddProduct from './AddProduct'
 import { styled } from '@mui/system';
-import { createTheme, ThemeProvider } from '@mui/material';
 import Stack from "@mui/material/Stack";
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
-
-const theme = createTheme({
-    components: {
-      MuiTableBody: {
-        styleOverrides: {
-          root: {
-            '& .MuiTableRow-root:nth-of-type(odd)': { 
-                backgroundColor: '#151c28', 
-            },
-            '& .MuiTableRow-root:nth-of-type(even)': { 
-            backgroundColor: '#090c11' ,
-            },
-            '& .MuiTableRow-root': { 
-
-            },
-            '& .MuiTableCell-root' : {
-                borderBottom: '1px solid #19669d',
-            }
-          },
-        },
-      },
-      MuiTableCell: {
-        styleOverrides: {
-          root: {
-                color: '#F5F0F3', // set alternating colors for even and odd rows
-                borderBottom: '3px solid #F5F0F3',
-              },
-            },
-        },
-      },
-  });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: '#090c11', // Semi-transparent white
@@ -128,7 +96,6 @@ const Products = ({productCategory}) => {
             <TableContainer component={StyledPaper}>
             <AlertsManager ref={alertsManagerRef} />
                 <Table >
-                <ThemeProvider theme={theme}>
                     <TableHead>
                         <TableRow >
                             <TableCell >Name</TableCell>
@@ -164,7 +131,6 @@ const Products = ({productCategory}) => {
                             </TableRow>
                         ))}
                     </TableBody>
-                    </ThemeProvider>
 
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>

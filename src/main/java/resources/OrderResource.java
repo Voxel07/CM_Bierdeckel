@@ -18,6 +18,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import model.Order;
+import model.OrderItem;
+import model.Product;
 import orm.OrderOrm;
 
 @RequestScoped
@@ -33,9 +35,6 @@ public class OrderResource {
     public List<Order> getOrder(@QueryParam("orderId") Long orderId,
                                 @QueryParam("userId") Long userId) 
     {
-        System.err.println("2213.......................123123?");
-
-        // return new ArrayList<Order>();
         if(orderId != null)
         {
             return orm.getOrderById(orderId);
@@ -53,12 +52,12 @@ public class OrderResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createOrder(@QueryParam("userId") Long userId) {
+    public Response createOrder(@QueryParam("userId") Long userId, List<OrderItem> OrderItems) {
         if (userId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
         }
         
-        return orm.createOrder(userId);
+        return orm.createOrder(userId, OrderItems);
     }
 
     

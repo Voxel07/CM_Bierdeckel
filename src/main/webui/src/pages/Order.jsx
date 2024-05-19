@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Tab } from "@mui/material";
 import { TabList, TabPanel, TabContext } from '@mui/lab';
 import Stack from "@mui/material/Stack";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
+import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import SportsBarIcon from "@mui/icons-material/SportsBar";
 
 import OrderFood from "../components/order/OrderFood";
@@ -30,8 +30,8 @@ export default function Order() {
   const fetchProductsAndDrinks = useCallback(async () => {
     try {
       const [productsResponse, drinksResponse] = await Promise.all([
-        axios.get("http://localhost:8080/products", { params: { category: "food" } }),
-        axios.get("http://localhost:8080/products", { params: { category: "drinks" } })
+        axios.get("products", { params: { category: "food" } }),
+        axios.get("products", { params: { category: "drinks" } })
       ]);
 
       setProducts(productsResponse.data);
@@ -55,9 +55,8 @@ export default function Order() {
       clearShoppingcard(); // Reset shopping Card if no user is defined
       return;
     }
-    console.log("calling with:" + selectedUser.id);
     axios
-      .get("http://localhost:8080/order", {
+      .get("/order", {
         params: {
           userId: selectedUser.id,
         },
@@ -119,6 +118,13 @@ export default function Order() {
     setSelectedUser({ ...newValue });
   };
 
+/**
+ * Updates the shopping card based on the given action.
+ *
+ * @param {string} id - The ID of the product to add or remove.
+ * @param {string} action - The action to perform ("add", "rm", or "clear").
+ * @return {void} This function does not return anything.
+ */
   function stockChange(id, action) {
     //Add dsiplay items
     if (action == "add")
@@ -128,6 +134,7 @@ export default function Order() {
       if (productToAdd) {
         addItemToShoppingcard(productToAdd);
       }
+
     }
     else if (action == "rm")
     {
@@ -183,6 +190,22 @@ export default function Order() {
     }
   }
 
+  function placeOrder() {
+    console.log("placing order", userCardItems);
+    axios
+      .post("/order", {
+        userId: selectedUser.id,
+        orderItems: userCardItems
+      })
+      .then((response) => {
+        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich");
+      })
+      .catch((error) => {
+        console.log(error);
+        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung");
+      });
+  }
+
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
       <AlertsManager ref={alertsManagerRef} />
@@ -196,7 +219,8 @@ export default function Order() {
         <ShoppingCart
           cardData={cardMetadata}
           handleStockChange={stockChange}
-          displayITems={displayItems}
+          displayItems={displayItems}
+          placeOrder={placeOrder}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
@@ -209,7 +233,7 @@ export default function Order() {
             aria-label="lab API tabs example"
             centered
           >
-            <Tab icon={<RestaurantIcon />} value="1" label="Essen" />
+            <Tab icon={<LunchDiningIcon />} value="1" label="Essen" />
             <Tab icon={<SportsBarIcon />} value="2" label="Trinken" />
           </TabList>
         </Box>
@@ -218,7 +242,7 @@ export default function Order() {
             // currentUserId={selectedUser ? selectedUser.id : null}
             products={products}
             handleStockChange={stockChange}
-            displayITems={displayItems}
+            displayItems={displayItems}
           />
         </TabPanel>
         <TabPanel value="2">
@@ -227,7 +251,7 @@ export default function Order() {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      {/* <pre>{JSON.stringify(userCardItems, null, 2)}</pre> */}
+      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
     </Box>
   );
 }

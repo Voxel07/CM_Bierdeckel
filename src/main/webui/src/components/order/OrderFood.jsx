@@ -5,17 +5,15 @@ import axios from "axios";
 import InfoCard from "./InfoCard";
 import { Grid, Divider, Chip } from "@mui/material";
 
-import "./OrderStyle.css";
-
-function OrderFood({products, handleStockChange, displayITems}) {
+function OrderFood({products, handleStockChange, displayItems}) {
   return (
-    <Grid className="grid-container" container>
+    <Grid className="grid-container" container direction="row" rowSpacing={2} justifyContent="space-between" alignItems="center">
       {products?.length
         ? products.map((product) => (
-            <Grid className="grid-item" item xl={3} lg={4} md={6} xs={12}>
+            <Grid item xl={3} lg={4} md={6} xs={12} sx={{ display: "flex", justifyContent: "center" }}>
               <InfoCard
                 data={product}
-                userData={displayITems}
+                userData={displayItems}
                 handelChange={handleStockChange}
               />
             </Grid>
@@ -23,53 +21,10 @@ function OrderFood({products, handleStockChange, displayITems}) {
         : null}
 
       <Grid item xs={12}>
-        <Divider
-          ariant="inset"
-          sx={{
-            "&::before, &::after": {
-              borderColor: "primary.light",
-            },
-          }}
-        >
+        <Divider ariant="inset" >
           <Chip label="Curry" size="big" color="primary" sx={{ margin: 10 }} />
         </Divider>
       </Grid>
-      {/* <pre>{JSON.stringify(newItems, null, 2)}</pre> */}
-      {/* <pre>{JSON.stringify(displayITems, null, 2)}</pre> */}
-
-      {/* <Grid className='grid-item' item xl={3} lg={4} md={6} xs={12}>
-            <InfoCard
-                image="https://picsum.photos/id/10/2500/1667" // Placeholder image
-                title="Bratwurst"
-                price={5}
-                shortInfo="This is some short info about the item."
-                detailedInfo="Here is a more detailed description with additional information..."
-                initalStock={5}
-                initialOrderQuantity = {1}
-            />
-        </Grid>
-        <Grid className='grid-item' item xl={3} lg={4} md={6} xs={12}>
-            <InfoCard
-                image="https://picsum.photos/id/10/2500/1667" // Placeholder image
-                title="Bratwurst"
-                price={5}
-                shortInfo="This is some short info about the item."
-                detailedInfo="Here is a more detailed description with additional information..."
-                initalStock={5}
-                initialOrderQuantity = {1}
-            />
-        </Grid>
-        <Grid className='grid-item' item xl={3} lg={4} md={6} xs={12}>
-            <InfoCard
-                image="https://picsum.photos/id/10/2500/1667" // Placeholder image
-                title="Bratwurst"
-                price={5}
-                shortInfo="This is some short info about the item."
-                detailedInfo="Here is a more detailed description with additional information..."
-                initalStock={5}
-                initialOrderQuantity = {1}
-            />
-        </Grid> */}
     </Grid>
   );
 }

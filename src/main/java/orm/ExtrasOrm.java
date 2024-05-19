@@ -83,12 +83,8 @@ public class ExtrasOrm {
 
             for (Order order : orders) 
             {
-                System.out.println("why");
-
                 for(OrderItem orderItem : order.getOrderItems())
                 {
-                    System.out.println("why2");
-
                     for(ExtraItem extraItem : orderItem.getExtraItems())
                     {
                         System.out.println("Ids: " + dBExtras.getId() + " " + extra.getId());

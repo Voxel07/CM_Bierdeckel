@@ -17,6 +17,7 @@ import model.User;
 import model.OrderItem.PaymentStatus;
 import model.ExtraItem;
 import model.Extras;
+import model.OrderItem;
 
 @ApplicationScoped
 public class OrderOrm {
@@ -66,11 +67,11 @@ public class OrderOrm {
 
 
     @Transactional
-    public Response createOrder(Long userId) {
+    public Response createOrder(Long userId, List<OrderItem> OrderItems) {
         
         Order order = new Order();
         User user = new User();
-        
+
         try {
             user = em.find(User.class, userId);
         } catch (Exception e) {
@@ -104,7 +105,14 @@ public class OrderOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        return Response.status(Response.Status.CREATED).entity("New Empty order created").build();
+
+        Long cntOderItems = 0L;
+        for (OrderItem orderItem : OrderItems) {
+        cntOderItems++; 
+            addProductToOrder(order.getId(), orderItem.getProduct().getId());
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Neue Bestellung mit " + cntOderItems + " Produkten").build();
     }
 
     @Transactional
@@ -424,14 +432,26 @@ public class OrderOrm {
 
     @Transactional
     public Response deleteOrder(Order order) {
-        
+
+        Order orderDB = new Order();
         try {
-            em.remove(order);
+            orderDB = em.find(Order.class, order.getId());
+        }
+        catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Bestellung nicht gefunden").build();
+        }
+
+        if (orderDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Bestellung nicht gefunden").build();
+        }
+
+        try {
+            em.remove(orderDB);
             
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        return Response.status(Response.Status.OK).entity("Order deleted").build();
+        return Response.status(Response.Status.OK).entity("Bestellung gelöscht").build();
     }
 
 }

@@ -10,13 +10,42 @@ export default function Userselection({ handleUserChange }) {
       MuiAutocomplete: {
         styleOverrides: {
           root: {
-            '& .MuiOutlinedInput-root': {
-              color: '#DDDDDD', // Your desired text color
-              '& fieldset': { borderColor: '#31415d' },  // Your desired border color
+            '& .MuiInputLabel-root': { color: '#DDDDDD' },
+            '& .MuiOutlinedInput-root': { 
+              color: '#DDDDDD',
+              '& > fieldset': { borderColor: '#1998a1' },
             },
           },
-          '& .MuiInputLabel-root': {  // Section to change label color
-            color: 'teal', // Your desired label color
+          inputRoot: {
+            color: '#f5f0f3'
+          },
+          clearIndicator: {
+            color: 'red'
+          },
+          popupIndicator: {
+            color: '#f5f0f3'
+          },
+          paper: {
+            color: '#f5f0f3',
+            backgroundColor: '#090c11',
+            borderColor: '#1998a1',
+            borderWidth: '2px',
+            borderStyle: 'solid',
+          },
+          option: {
+            borderBottom: '1px solid #0d5459',
+          },
+          listbox: {
+            '&::-webkit-scrollbar': {
+              width: '7px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: '#090c11',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#1998a1',
+              borderRadius: '10px',
+            },
           },
         },
       },
@@ -27,10 +56,9 @@ export default function Userselection({ handleUserChange }) {
     <ThemeProvider theme={theme}>
     <Autocomplete
       disablePortal
-
       id="combo-box-demo"
       options={users}
-      sx={{ width: 100 }}
+      sx={{ width: 120 }}
       onChange={handleUserChange}
       renderInput={(params) => <TextField {...params} label="Benutzer" />}
     />

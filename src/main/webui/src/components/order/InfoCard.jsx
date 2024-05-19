@@ -10,6 +10,8 @@ import {
   CardActions,
   Button,
 } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material';
+
 
 const OutOfStockMessage = () => {
   return (
@@ -18,6 +20,28 @@ const OutOfStockMessage = () => {
     </Typography>
   );
 };
+
+const theme2 = createTheme({
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+       h5: { color: '#f5f0f3' },
+       body1: { color: '#f5f0f3' },
+       body2: { color: '#f5f0f3' },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: '#f5f0f3',
+          borderColor: '#1998a1',
+          '&:hover': {
+            backgroundColor: '#1998a1',
+            color: '#f5f0f3',
+          },
+        },
+      },
+    }}});
 
 const InfoCard = ({ data, userData, handelChange }) => {
   const { id, name, price, stock } = data;
@@ -42,14 +66,15 @@ const InfoCard = ({ data, userData, handelChange }) => {
     }
   }, [id, userData]); // Run the effect when matchingItem or id changes
 
-  const shortInfo = "das gibt es noch nicht wwwwaaa";
-  const detailedInfo = "das gibt es acuh noch nicht immernoch aaaa";
+  const shortInfo = "hier könnte eine kurze Info stehen";
+  const detailedInfo = "Hier kann ein langer Zusatz stehen, falls jeder Kunde für sich selber bestellen sollte. Da brauche ich aber noch ein bisschen bis das gescheit umgesetzt werdn kann. Bis dahin sthet das einfach mal so hier.";
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
 
   const handleAddToOrder = () => {
+    console.log(orderQuantity, currentStock);
     setOrderQuantity(orderQuantity + 1);
     setStock(Math.max(0, currentStock - 1));
     handelChange(id, "add");
@@ -62,7 +87,9 @@ const InfoCard = ({ data, userData, handelChange }) => {
   };
 
   return (
-    <Card key={id} sx={{ maxWidth: 300, position: "relative", padding: 0, backgroundColor: "#083036", }}>
+     <ThemeProvider theme={theme2}>
+
+    <Card key={id} sx={{ maxWidth: 300, position: "relative", padding: 0, backgroundColor: "#083036" }}>
       {/* Front of the card */}
       <Box
         sx={{
@@ -75,14 +102,14 @@ const InfoCard = ({ data, userData, handelChange }) => {
       >
         <CardContent>
           <Stack direction="row" spacing={2} justifyContent="space-between">
-            <Typography variant="h5" color="text.primary">
+            <Typography variant="h5">
               {name}
             </Typography>
-            <Typography variant="h5" color="text.primary" textAlign="right">
+            <Typography variant="h5" textAlign="right">
               €{price.toFixed(2)}
             </Typography>
           </Stack>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2">
             {currentStock ? shortInfo : <OutOfStockMessage />}
           </Typography>
           <Grid container spacing={2} sx={{ marginTop: 1 }}>
@@ -96,7 +123,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
             <Grid item xs={6}>
               <Button
                 size="small"
-                variant="contained"
+                variant="outlined"
                 onClick={handleAddToOrder}
                 disabled={currentStock === 0}
               >
@@ -106,7 +133,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
             <Grid item xs={6}>
               <Button
                 size="small"
-                variant="contained"
+                variant="outlined"
                 onClick={handleRemoveFromOrder}
                 disabled={orderQuantity === 0}
               >
@@ -116,7 +143,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
           </Grid>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={handleFlip}>
+          <Button size="small" variant='outlined'  onClick={handleFlip} sx={{color:"#a64913"}}>
             Informationen
           </Button>
         </CardActions>
@@ -139,12 +166,13 @@ const InfoCard = ({ data, userData, handelChange }) => {
           <Typography variant="body1">{detailedInfo}</Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={handleFlip}>
+          <Button size="small" variant='outlined' onClick={handleFlip} sx={{color:"#a64913"}}>
             Back
           </Button>
         </CardActions>
       </Box>
     </Card>
+   </ThemeProvider>
   );
 };
 
