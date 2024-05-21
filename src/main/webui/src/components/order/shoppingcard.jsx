@@ -14,6 +14,7 @@ import { IconButton } from '@mui/material/';
 
 const style = {    
   position: 'absolute',
+  width: 400,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -100%)',
@@ -69,7 +70,7 @@ export default function shoppingcard({ cardData, handleStockChange, displayItems
           {displayItems?.length
             ? displayItems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
             : "Hier ist noch nichts drin!"}
-          {/* <pre>{JSON.stringify(displayITems, null, 2)}</pre> */}
+          {/* <pre style={{color:"white"}}>{JSON.stringify(displayItems, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
             <Button variant="outlined" onClick={placeOrder} >Bestellung aufgeben</Button>

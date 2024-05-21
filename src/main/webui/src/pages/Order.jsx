@@ -96,6 +96,21 @@ export default function Order() {
     setUserCardItems([]);
   }
 
+  const rmItemFromShoppingcard = (item) =>
+  {
+    const indexToRemove = userCardItems.findIndex((prod) => prod.product.id === item.id);
+    if (indexToRemove !== -1) {
+      const updatedNewItems = [...userCardItems]; // Create a copy
+      updatedNewItems.splice(indexToRemove, 1); // Remove one item
+      setUserCardItems(updatedNewItems);
+      setCardMetadata((prevMetadata) => ({
+        ...prevMetadata,
+        total: Math.max(prevMetadata.total - item.price, 0),
+        itemCount: prevMetadata.itemCount - 1
+      }));
+    }
+  }
+
   const addItemToShoppingcard = (item) =>
   {
     let nextId = userCardItems.length > 0 ? userCardItems[userCardItems.length - 1].id + 1 : 1;
@@ -113,6 +128,29 @@ export default function Order() {
   }));
   }
 
+  const clearShoppingcard2 = () => {
+    // Loop through each item in the shopping cart
+    userCardItems.forEach((item) => {
+      // Find the product in the products array
+      const indexToModify = products.findIndex((prod) => prod.id === item.product.id);
+      if (indexToModify !== -1) {
+        // Increment the stock of the product
+        const productToModify = {...products[indexToModify]};
+        productToModify.stock += 1;
+        const newProducts = [...products];
+        newProducts[indexToModify] = productToModify;
+        setProducts(newProducts);
+      }
+    });
+  
+    // Clear the shopping cart
+    setUserCardItems([]);
+    setCardMetadata({
+      total: 0,
+      itemCount: 0
+    });
+  }
+
   const handleUserSelectionChange = (event, newValue) => {
     console.log("userChanged", newValue);
     setSelectedUser({ ...newValue });
@@ -127,42 +165,29 @@ export default function Order() {
  */
   function stockChange(id, action) {
     //Add dsiplay items
-    if (action == "add")
-    {
-      const productToAdd = products.find((prod) => prod.id === id);
-
-      if (productToAdd) {
-        addItemToShoppingcard(productToAdd);
-      }
-
-    }
-    else if (action == "rm")
-    {
-      const indexToRemove = userCardItems.findIndex((prod) => prod.product.id === id);
-      const productToAdd = products.find((prod) => prod.id === id);
-
-      if(userCardItems.length > 1){
-        setCardMetadata((prevMetadata) => ({
-          ...prevMetadata,
-          total: prevMetadata.total - productToAdd.price,
-          itemCount: prevMetadata.itemCount - 1
-      }));
-      }else{
-        console.log("ist 0")
-        clearShoppingcard();
-      }
-
-      if (indexToRemove !== -1) {
-        // Remove at the specified index using splice
-        const updatedNewItems = [...userCardItems]; // Create a copy
-        updatedNewItems.splice(indexToRemove, 1); // Remove one item
-        setUserCardItems(updatedNewItems);
-
+    if (action == "add") {
+      const indexToModify = products.findIndex((prod) => prod.id === id);
+      if (indexToModify !== -1) {
+        const productToModify = {...products[indexToModify]};
+        productToModify.stock -= 1;
+        const newProducts = [...products];
+        newProducts[indexToModify] = productToModify;
+        setProducts(newProducts);
+        addItemToShoppingcard(productToModify);
       }
     }
-    else if(action == "clear")
-    {
-       // Filter items and calculate values to update metadata
+    else if (action == "rm") {
+      const indexToModify = products.findIndex((prod) => prod.id === id);
+      if (indexToModify !== -1) {
+        const productToModify = {...products[indexToModify]};
+        productToModify.stock += 1;
+        const newProducts = [...products];
+        newProducts[indexToModify] = productToModify;
+        setProducts(newProducts);
+        rmItemFromShoppingcard(productToModify);
+      }
+    }
+    else if(action == "clear") {
         let totalPriceToRemove = 0;
         let itemsToRemoveCount = 0;
 
@@ -178,6 +203,15 @@ export default function Order() {
 
         setUserCardItems(updatedNewItems);
 
+        const indexToModify = products.findIndex((prod) => prod.id === id);
+        if (indexToModify !== -1) {
+          const productToModify = {...products[indexToModify]};
+          productToModify.stock += itemsToRemoveCount;
+          const newProducts = [...products];
+          newProducts[indexToModify] = productToModify;
+          setProducts(newProducts);
+        }
+
         // Update cardMetadata
         setCardMetadata((prevMetadata) => ({
             ...prevMetadata, // Keep existing properties
@@ -192,19 +226,24 @@ export default function Order() {
 
   function placeOrder() {
     console.log("placing order", userCardItems);
-    axios
-      .post("/order", {
-        userId: selectedUser.id,
-        orderItems: userCardItems
-      })
+    axios.post("/order", JSON.stringify(userCardItems), {
+      params: {
+        userId: selectedUser.id
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
       .then((response) => {
-        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich");
+        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich. "+ response.data);
       })
       .catch((error) => {
         console.log(error);
-        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung");
+        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung. "+ error.response.data);
       });
   }
+
+  console.log(JSON.stringify(userCardItems));
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
@@ -251,7 +290,7 @@ export default function Order() {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
+      <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
     </Box>
   );
 }

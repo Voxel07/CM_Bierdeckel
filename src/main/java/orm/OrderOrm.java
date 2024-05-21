@@ -87,7 +87,7 @@ public class OrderOrm {
 
         if(query.getResultList().size() != 0)
         {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("User already has an order").build();
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Der Benutzer hat schon eine Bestellung. Aktualisiere diese Bestellung").build();
         }
         
         order.setUser(user);

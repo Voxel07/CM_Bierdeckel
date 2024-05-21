@@ -74,15 +74,12 @@ const InfoCard = ({ data, userData, handelChange }) => {
   };
 
   const handleAddToOrder = () => {
-    console.log(orderQuantity, currentStock);
-    setOrderQuantity(orderQuantity + 1);
-    setStock(Math.max(0, currentStock - 1));
+    // setStock(Math.max(0, currentStock - 1));
     handelChange(id, "add");
   };
 
   const handleRemoveFromOrder = () => {
-    setOrderQuantity(Math.max(0, orderQuantity - 1)); // Prevent going below zero
-    setStock(currentStock + 1);
+    // setStock(currentStock + 1);
     handelChange(id, "rm");
   };
 
@@ -110,12 +107,12 @@ const InfoCard = ({ data, userData, handelChange }) => {
             </Typography>
           </Stack>
           <Typography variant="body2">
-            {currentStock ? shortInfo : <OutOfStockMessage />}
+            {stock ? shortInfo : <OutOfStockMessage />}
           </Typography>
           <Grid container spacing={2} sx={{ marginTop: 1 }}>
             {" "}
             <Grid item xs={6}>
-              <Typography variant="body2">Verfügbar: {currentStock}</Typography>
+              <Typography variant="body2">Verfügbar: {stock}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body2">Bestellt: {orderQuantity}</Typography>
@@ -125,7 +122,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
                 size="small"
                 variant="outlined"
                 onClick={handleAddToOrder}
-                disabled={currentStock === 0}
+                disabled={stock === 0}
               >
                 Add
               </Button>

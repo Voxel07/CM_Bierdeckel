@@ -34,8 +34,9 @@ const theme2 = createTheme({
   });
 
 function cardItem({product, handleStockChange}) {
-  const { productId, productName, productPrice, quantity } = product;
-
+  const { productId, productName, productPrice, quantity, stock } = product;
+console.log(stock);
+console.log(quantity);
   return (
 
     <Box key={productId + Math.random()}>
@@ -56,7 +57,7 @@ function cardItem({product, handleStockChange}) {
           alignItems="center"
         >
         <ThemeProvider theme={theme2}>
-          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add")}>
+          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add")} disabled={stock <= 0}>
             <AddIcon fontSize="inherit" />
           </IconButton>
           <Tooltip title="Menge" placement="top">
