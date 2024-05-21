@@ -290,7 +290,7 @@ export default function Order() {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
+      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
     </Box>
   );
 }

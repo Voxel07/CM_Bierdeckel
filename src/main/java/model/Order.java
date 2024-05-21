@@ -34,6 +34,12 @@ public class Order {
     @Column(name = "sum")
     private double sum;
 
+    @Column(name = "order_paid")
+    private boolean orderPaid;
+
+    @Column(name = "order_completed")
+    private boolean orderCompleted;
+
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -108,12 +114,14 @@ public class Order {
             orderItem.setPaymentStatus(OrderItem.PaymentStatus.PAID);
         }
         this.sum = 0;
+        orderPaid = true;
     }
 
     public void completeOrder(){
         for (OrderItem orderItem : this.orderItems) {
             orderItem.setOrderStatus(OrderItem.OrderStatus.DELIVERED);
         }
+        orderCompleted = true;
     }
 
     public void setOrderItemState(OrderItem orderItem, OrderStatus orderStatus){
