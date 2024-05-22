@@ -24,8 +24,11 @@ import { createTheme, ThemeProvider } from '@mui/material';
 
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:9000/api'; //dev
-// axios.defaults.baseURL = 'https://bierdeckel.matze.fun/api'; //prod
+const isDev = import.meta.env.DEV;
+
+axios.defaults.baseURL = isDev ? import.meta.env.VITE_DEV_API_URL : import.meta.env.VITE_PROD_API_URL;
+
+
 
 
 const theme = createTheme({
