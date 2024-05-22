@@ -20,7 +20,7 @@ public class OrderItemOrm {
 
     public List<OrderItem> getAllOrderitems()
     {
-        TypedQuery<OrderItem> query = em.createQuery("SELECT oi from ORDER_ITEMS oi", OrderItem.class);
+        TypedQuery<OrderItem> query = em.createQuery("SELECT oi from OrderItem oi", OrderItem.class);
         return query.getResultList();
     }
 
