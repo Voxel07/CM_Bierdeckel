@@ -4,6 +4,7 @@ import Paper from '@mui/material/Paper';
 import StateItem from '../components/state/StateItem';
 import StateRowHeader from "../components/state/StateRowHeader";
 import StateRowSubHeader from "../components/state/StateRowSubHeader";
+import { AlertsManager , AlertsContext } from '../utils/AlertsManager';
 
 import axios from "axios";
 
@@ -17,59 +18,49 @@ function State() {
   const [ordered, setOrdered ] = useState([])
   const [processing, setProcessing] = useState([]);
   const [done, setDone] = useState([]);
+  const alertsManagerRef =  useRef(AlertsContext);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-        try {
-          const response = await axios.get("http://localhost:8080/order");
+      axios.get("orderItem")
+      .then(response =>{
+        const { o, p, d } = distributeOrders(response.data);
+        setOrdered(o);
+        setProcessing(p);
+        setDone(d);
+      }).catch(error =>{
+        alertsManagerRef.current.showAlert('error', "Fehler bei der der Datenabfrage. "+ error.response.data);
+      })
 
-          const { o, p, d } = null; // distributeOrders(response.data); //TODO: Fix fetch from DB
-          setOrdered(o);
-          setProcessing(p);
-          setDone(d);
-        } catch (error) {
-          console.error("Error fetching Orders:", error);
-        }
-      };
-  
-      fetchOrders();
   }, []);
 
-  function distributeOrders(orders) {
+  function distributeOrders(orderItems) {
     const o = [];
     const p = [];
     const d = [];
   
-    // Loop through each order
-    for (const order of orders) {
-      console.log(order)
-      // Loop through each orderItem in the order
-      for (const orderItem of order.orderItems) {
-        console.log(orderItem)
-        const status = orderItem.orderStatus;
-  
-        // Distribute items based on their orderStatus
-        switch (status) {
-          case titles[0]:
-            o.push(orderItem);
-            break;
-          case titles[1]:
-            p.push(orderItem);
-            break;
-          case titles[2]:
-            d.push(orderItem);
-            break;
-          default:
-            console.warn("Unknown orderItem status:", status);
+    // Loop through each orderItem in the order
+    for (const orderItem of orderItems) {
+      console.log(orderItem)
+      const status = orderItem.orderStatus;
+
+      // Distribute items based on their orderStatus
+      switch (status) {
+        case titles[0]:
+          o.push(orderItem);
+          break;
+        case titles[1]:
+          p.push(orderItem);
+          break;
+        case titles[2]:
+          d.push(orderItem);
+          break;
+        default:
+          alertsManagerRef.current.showAlert('warning', "Unbekannter Status in einer Bestellposition. "+ status);
+          console.warn("Unknown orderItem status:", status);
         }
-      }
     }
-  
     return { o, p, d };
   }
-  
-
-
 
   const [sortOrders, setSortOrders] = useState({
     user: 'asc', 

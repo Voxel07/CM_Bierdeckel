@@ -18,6 +18,12 @@ public class OrderItemOrm {
     @Inject
     EntityManager em;
 
+    public List<OrderItem> getAllOrderitems()
+    {
+        TypedQuery<OrderItem> query = em.createQuery("SELECT oi from ORDER_ITEMS oi", OrderItem.class);
+        return query.getResultList();
+    }
+
     public List<OrderItem> getOrderItemsByPaymentStatus(PaymentStatus status) {
         TypedQuery<OrderItem> query = em.createQuery("SELECT o FROM OrderItem o WHERE o.paymentStatus = :status", OrderItem.class);
         query.setParameter("status", status);

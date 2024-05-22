@@ -25,6 +25,8 @@ public class OrderItemResource {
     @Inject
     OrderItemOrm orderItemOrm;
 
+
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -64,7 +66,7 @@ public class OrderItemResource {
         }
         else
         {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing orderStatus or paymentStatus").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(orderItemOrm.getAllOrderitems()).build();
         }
     }
   
