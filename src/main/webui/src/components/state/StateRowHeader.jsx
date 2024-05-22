@@ -26,8 +26,8 @@ export default function StateRowHeader ({pHandleSort, state, color, number})
   };
 
     return(
-        <Paper sx={{background:"#cccccc", marginBottom:1}}>
-            <Stack spacing={2} direction="row" alignItems="center" justifyContent="space-around" sx={{color:"#05152f"}}>
+        <Paper sx={{background:"#161d29", marginBottom:1, border:"2px solid #061837", borderRadius:2}}>
+            <Stack spacing={2} direction="row" alignItems="center" justifyContent="space-around" sx={{color:"#F"}}>
                 <LunchDiningIcon color={color}/>
                 <Typography>{state}</Typography>
                 <Chip color="primary" label={number} size="small" />

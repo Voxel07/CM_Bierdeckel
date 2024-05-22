@@ -42,6 +42,8 @@ public class OrderItemResource {
         if (paymentStatus != null) {
             try {
                 paymentStatusEnum = PaymentStatus.valueOf(paymentStatus);
+                return Response.status(200).entity(orderItemOrm.getOrderItemsByPaymentStatus(paymentStatusEnum)).build();
+
             } catch (IllegalArgumentException e) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Invalid paymentStatus value")
@@ -51,6 +53,8 @@ public class OrderItemResource {
         if (orderStatus != null) {
             try {
                 orderStatusEnum = OrderStatus.valueOf(orderStatus);
+                return Response.status(200).entity(orderItemOrm.getOrderItemsByOrderStatus(orderStatusEnum)).build();
+
             } catch (IllegalArgumentException e) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Invalid orderStatus value")
@@ -58,15 +62,9 @@ public class OrderItemResource {
             }
         }
 
-        if (paymentStatus != null) {
-            return Response.status(200).entity(orderItemOrm.getOrderItemsByPaymentStatus(paymentStatusEnum)).build();
-        } 
-        else if(orderStatus != null) {
-            return Response.status(200).entity(orderItemOrm.getOrderItemsByOrderStatus(orderStatusEnum)).build();
-        }
         else
         {
-            return Response.status(Response.Status.BAD_REQUEST).entity(orderItemOrm.getAllOrderitems()).build();
+            return Response.status(Response.Status.OK).entity(orderItemOrm.getAllOrderitems()).build();
         }
     }
   

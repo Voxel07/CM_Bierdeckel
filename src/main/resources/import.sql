@@ -18,4 +18,4 @@ INSERT INTO EXTRAS (id, name, price, category) VALUES (4, 'Curry', 20.99, "Food"
 INSERT INTO EXTRAS (id, name, price, category) VALUES (5, 'Eiswuerfel', 25.99, "Drink");
 
 -- -- Create Orders
-INSERT INTO REQUESTS (id, userId, sum) VALUES (1, 1, 0);
+INSERT INTO REQUESTS (id, userId, sum, order_paid, order_completed) VALUES (1, 1, 0, false, false);

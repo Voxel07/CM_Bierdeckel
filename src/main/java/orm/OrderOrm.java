@@ -25,30 +25,36 @@ public class OrderOrm {
     @Inject
     EntityManager em;
 
-    public List<Order> getOrderById(Long id) {
+    public Response getOrderById(Long id) {
         Order order = em.find(Order.class, id);
         List<Order> orders = new ArrayList<>();
         if (order != null) {
             orders.add(order);
         }
-        return orders;
+        return Response.status(Response.Status.OK).entity(orders).build();
     }
 
-    public List<Order> getAllOrder() {
+    public Response getAllOrder() {
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r", Order.class);
 
-        List<Order> order = query.getResultList();
-        System.out.println(order.size());
-
-        return order;
+        try {
+            return Response.status(Response.Status.OK).entity(query.getResultList()).build();
+            
+        } catch (Exception e) {
+            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();    
+        }
     }
 
-    public List<Order> getOderByUser(Long asd)
+    public Response getOderByUser(Long asd)
     {
         TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val", Order.class);
         query.setParameter("val", asd);
-
-        return query.getResultList();
+        try {
+            return Response.status(Response.Status.OK).entity(query.getResultList()).build();
+            
+        } catch (Exception e) {
+            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();    
+        }
     }
 
     public List<Order> getOderByProducts(Long productId) {
@@ -85,6 +91,7 @@ public class OrderOrm {
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
         query.setParameter("user", user);
 
+        
         if(query.getResultList().size() != 0)
         {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Der Benutzer hat schon eine Bestellung. Aktualisiere diese Bestellung").build();

@@ -20,26 +20,29 @@ function State() {
   const alertsManagerRef =  useRef(AlertsContext);
 
   useEffect(() => {
-      axios.get("orderItem")
+      axios.get("/order")
       .then(response =>{
         const { o, p, d } = distributeOrders(response.data);
         setOrdered(o);
         setProcessing(p);
         setDone(d);
       }).catch(error =>{
-        alertsManagerRef.current.showAlert('error', "Fehler bei der der Datenabfrage. "+ error.response.data);
+        console.log(error)
+        alertsManagerRef.current.showAlert('error', "Fehler bei der der Datenabfrage. ");
       })
 
   }, []);
 
-  function distributeOrders(orderItems) {
+  function distributeOrders(orders) {
     const o = [];
     const p = [];
     const d = [];
-  
+  // Loop through each order
+  for (const order of orders) {
     // Loop through each orderItem in the order
-    for (const orderItem of orderItems) {
-      console.log(orderItem)
+    for (const orderItem of order.orderItems) {
+
+      // console.log(orderItem)
       const status = orderItem.orderStatus;
 
       // Distribute items based on their orderStatus
@@ -57,7 +60,8 @@ function State() {
           alertsManagerRef.current.showAlert('warning', "Unbekannter Status in einer Bestellposition. "+ status);
           console.warn("Unknown orderItem status:", status);
         }
-    }
+      }
+    }     
     return { o, p, d };
   }
 
@@ -103,15 +107,17 @@ const handleSetSelectedITems = (item) => {
 
   
   const handleNext = (item) => {
-    switch (item.state) { // Assuming you add a 'state' attribute to items
+    console.log("next", item);
+
+    switch (item.orderStatus) {
       case titles[0]: //orderd
         setOrdered(ordered.filter((i) => i.id !== item.id));
-        item.state = titles[1];
+        item.orderStatus = titles[1];
         setProcessing([...processing, item]);
         break;
       case titles[1]: //Processing
         setProcessing(processing.filter((i) => i.id !== item.id));
-        item.state = titles[2];
+        item.orderStatus = titles[2];
         setDone([...done, item]);
         break;
       // No default needed if 'done' is the final state
@@ -119,18 +125,18 @@ const handleSetSelectedITems = (item) => {
   };
   
   const handlePrevious = (item) => {
-    switch (item.state) {
+    console.log("previous", item);
+    switch (item.orderStatus) {
       case titles[1]: //Processing
         setProcessing(processing.filter((i) => i.id !== item.id));
-        item.state = titles[0];
+        item.orderStatus = titles[0];
         setOrdered([...ordered, item]);
         break;
       case titles[2]: //Done
         setDone(done.filter((i) => i.id !== item.id));
-        item.state = titles[1];
+        item.orderStatus = titles[1];
         setProcessing([...processing, item]);
         break;
-      // No default needed if 'ordered' is the initial state
     }
   };
 
@@ -212,6 +218,8 @@ const handleSetSelectedITems = (item) => {
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
+    <AlertsManager ref={alertsManagerRef} />
+
     <Grid item  justifyContent="center" alignItems="center" >
       <Paper className='itemContainer'  variant="elevation" elevation={2} sx={{ backgroundColor: '#010409'}} >
       <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number= {ordered?.length} />
@@ -244,10 +252,10 @@ const handleSetSelectedITems = (item) => {
          )):null}
       </Paper>
     </Grid>
-    <pre>{JSON.stringify(selectedItems, null, 2)}</pre>
+    {/* <pre>{JSON.stringify(selectedItems, null, 2)}</pre>
     <pre>{JSON.stringify(ordered, null, 2)}</pre>
     <pre>{JSON.stringify(processing, null, 2)}</pre>
-    <pre>{JSON.stringify(done, null, 2)}</pre>
+    <pre>{JSON.stringify(done, null, 2)}</pre> */}
   </Grid>
   )
 };

@@ -19,7 +19,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { ButtonGroup } from '@mui/material';
 
 
-const navItems = ['Home', 'Inventar', 'Bestellungen', 'Status'];
+const navItems = ['Home', 'Inventar', 'Bestellungen', 'Status', 'Kasse'];
 const drawerWidth = 240;
 
 export default function Header() {

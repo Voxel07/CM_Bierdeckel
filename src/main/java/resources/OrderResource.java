@@ -32,7 +32,7 @@ public class OrderResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Order> getOrder(@QueryParam("orderId") Long orderId,
+    public Response getOrder(@QueryParam("orderId") Long orderId,
                                 @QueryParam("userId") Long userId) 
     {
         if(orderId != null)

@@ -13,24 +13,22 @@ import "./StateItem.css"
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const StateItem = ({pHandleSetSelectedITems, data, next, previous}) => {
-  console.log(data)
-  // { id: 1, state:"ordered", user: 7, description: "Rote", extras: ["scharf", "senf", "gorß", "eis", "grün", "penis"] },
-  const{id, user, description, extras} = data;
+  const{id, user, description, extras, product} = data;
   return (
-    <Card key={data.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#cccccc" }}>
+    <Card key={product.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#083036" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Chip icon={<FaceIcon />}  size="small" label={user} variant="outlined" color="primary" sx={{minWidth: 50}}/>
+          <Chip icon={<FaceIcon />}  size="small" label={id} variant="outlined" color="primary" sx={{minWidth: 50}}/>
           <Typography variant="h5" component="div" gutterBottom>
-              {description}
+              {product.name}
           </Typography >
           </Stack>
 
           <Stack direction="row"  alignItems="center" spacing={1}  useFlexGap  sx={{ maxHeight: '200px', overflowY: 'auto', padding:0.25 }}> 
           {
-              extras.map((extra)=>(
+              extras?.length? extras.map((extra)=>(
                   <Chip key={Math.random()} color="primary" label={extra} size="small" />
-              ))
+              )):null
           }
           </Stack>
         </Stack>

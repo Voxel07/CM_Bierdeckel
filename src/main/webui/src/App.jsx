@@ -19,12 +19,13 @@ import TemporaryDrawer from './components/core/Drawer';
 import Inventory from './pages/inventory'
 import SocketTest from './SocketTest'
 import State from './pages/State';
+import Checkout from './pages/Checkout';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 import axios from 'axios';
 
-// axios.defaults.baseURL = 'http://localhost:9000/api'; //dev
-axios.defaults.baseURL = 'https://bierdeckel.matze.fun/api'; //prod
+axios.defaults.baseURL = 'http://localhost:9000/api'; //dev
+// axios.defaults.baseURL = 'https://bierdeckel.matze.fun/api'; //prod
 
 
 const theme = createTheme({
@@ -164,6 +165,7 @@ function App() {
         <Route path='Inventar' Component={Inventory}/>
         <Route path='Bestellungen' Component={Order}/>
         <Route path='Status' Component={State}/>
+        <Route path='Kasse' Component={Checkout}/>
         <Route path='test' Component={SocketTest}/>
 
       </Routes>
