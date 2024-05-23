@@ -55,6 +55,7 @@ export default function Userselection({ handleUserChange }) {
   return (
     <ThemeProvider theme={theme}>
     <Autocomplete
+      defaultValue={users[0]}
       disablePortal
       id="combo-box-demo"
       options={users}

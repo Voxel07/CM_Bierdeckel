@@ -2,6 +2,8 @@ package orm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -113,13 +115,47 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
+        //Create a map to store the product and its count
+        Map<Product, Long> productCountMap = new HashMap<>();
+
         Long cntOderItems = 0L;
+        
+        //Iterate over the order items
         for (OrderItem orderItem : OrderItems) {
-        cntOderItems++; 
+            cntOderItems++;
             addProductToOrder(order.getId(), orderItem.getProduct().getId());
+            //Get the product from the order item
+            Product product = orderItem.getProduct();
+            
+            //Check if the product is already in the map
+            if(productCountMap.containsKey(product)){
+                //If so, increase the count by one
+                productCountMap.put(product, productCountMap.get(product) + 1);
+            } else {
+                //If not, add the product to the map with count 1
+                productCountMap.put(product, 1L);
+            }
+        }
+        
+        //Iterate over the map
+        for (Map.Entry<Product, Long> entry : productCountMap.entrySet()) {
+            //Get the product and the count
+            Product product = entry.getKey();
+            Long count = entry.getValue();
+            
+            //Decrease the stock of the product
+            product.decStock(count);
+            
+            //Merge the product to the db
+            em.merge(product);
         }
 
         return Response.status(Response.Status.CREATED).entity("Neue Bestellung mit " + cntOderItems + " Produkten").build();
+    }
+
+    @Transactional
+    public Response updateOrder(Long userId, List<OrderItem> OrderItems) {
+        return Response.ok().build();
     }
 
     @Transactional

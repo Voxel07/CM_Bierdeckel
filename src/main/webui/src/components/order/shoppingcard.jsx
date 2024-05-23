@@ -25,7 +25,7 @@ const style = {
   borderRadius: '20px',
 };
 
-export default function shoppingcard({ cardData, handleStockChange, displayItems, placeOrder}) {
+export default function shoppingcard({ cardData, handleStockChange, displayItems, placeOrder, updateOrder, deleteOrder}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -73,7 +73,9 @@ export default function shoppingcard({ cardData, handleStockChange, displayItems
           {/* <pre style={{color:"white"}}>{JSON.stringify(displayItems, null, 2)}</pre> */}
           {/* <pre>{JSON.stringify(cardData, null, 2)}</pre> */}
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
-            <Button variant="outlined" onClick={placeOrder} >Bestellung aufgeben</Button>
+            <Button variant="outlined" color="success" onClick={placeOrder} >Aufgeben</Button>
+            <Button variant="outlined" color="warning" onClick={updateOrder} >Aktualisieren</Button>
+            <Button variant="outlined" color="error" onClick={deleteOrder} >Löschen</Button>
             <IconButton variant="outlined" color="error" onClick={handleClose}><CloseIcon /></IconButton>
             
           </Stack>

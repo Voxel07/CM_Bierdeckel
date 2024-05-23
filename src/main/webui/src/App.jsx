@@ -28,9 +28,6 @@ const isDev = import.meta.env.DEV;
 
 axios.defaults.baseURL = isDev ? import.meta.env.VITE_DEV_API_URL : import.meta.env.VITE_PROD_API_URL;
 
-
-
-
 const theme = createTheme({
   components: {
     MuiTypography: {

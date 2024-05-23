@@ -21,8 +21,10 @@ export default function Order() {
   const [tabValue, setTabValue] = React.useState("1");
   const [products, setProducts] = useState([]); // Raw data from DB
   const [drinks, setDrinks] = useState([]);
-  const [selectedUser, setSelectedUser] = React.useState(null);
+  const [selectedUser, setSelectedUser] = React.useState({label: "1", id: 1});
   const [userCardItems, setUserCardItems] = React.useState([]); // Raw DB data with items of the selected user
+  const [orderId, setOrderId] = React.useState(0);
+  const [orderDeleted, setOrderDeleted] = React.useState(false);
   const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0});
   const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
   const alertsManagerRef =  useRef(AlertsContext);
@@ -55,6 +57,7 @@ export default function Order() {
       clearShoppingcard(); // Reset shopping Card if no user is defined
       return;
     }
+    console.log("selectedUser", selectedUser);
     axios
       .get("/order", {
         params: {
@@ -65,6 +68,7 @@ export default function Order() {
         setTimeout(() => {
           if (response.data && response.data.length) {
             setUserCardItems(response.data[0].orderItems);
+            setOrderId(response.data[0].id);
             setCardMetadata({total: response.data[0].sum, itemCount: response.data[0].orderItems.length})
             setDisplayItems(
               summarizeOrderItems(response.data[0].orderItems)
@@ -79,7 +83,7 @@ export default function Order() {
         alertsManagerRef.current.showAlert('error', "Fehler beim Abfragen der Userdaten");
 
       });
-  }, [selectedUser]);
+  }, [selectedUser, orderDeleted]);
 
   useEffect(() => {
     setDisplayItems(summarizeOrderItems(userCardItems));
@@ -243,7 +247,38 @@ export default function Order() {
       });
   }
 
-  console.log(JSON.stringify(userCardItems));
+  function updateOrder() {
+    console.log("updating order", userCardItems);
+    axios.put("/order", JSON.stringify(userCardItems), {
+      params: {
+        userId: selectedUser.id
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => {
+        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich. "+ response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung. "+ error.response.data);
+      });
+  }
+
+  function deleteOrder() {
+    console.log(orderId);
+    axios.delete("/order", {
+      data: { id: orderId }
+    })
+      .then((response) => {
+        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich gelöscht. "+ response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        alertsManagerRef.current.showAlert('error', "Fehler beim löschen. "+ orderId + error.response.data);
+      });
+  }
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
@@ -260,6 +295,8 @@ export default function Order() {
           handleStockChange={stockChange}
           displayItems={displayItems}
           placeOrder={placeOrder}
+          updateOrder={updateOrder}
+          deleteOrder={deleteOrder}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
