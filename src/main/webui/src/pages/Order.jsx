@@ -146,7 +146,7 @@ export default function Order() {
         setProducts(newProducts);
       }
     });
-  
+
     // Clear the shopping cart
     setUserCardItems([]);
     setCardMetadata({
@@ -273,6 +273,7 @@ export default function Order() {
     })
       .then((response) => {
         alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich gelöscht. "+ response.data);
+        setOrderDeleted(true);
       })
       .catch((error) => {
         console.log(error);
@@ -297,6 +298,7 @@ export default function Order() {
           placeOrder={placeOrder}
           updateOrder={updateOrder}
           deleteOrder={deleteOrder}
+          orderId={orderId}
         />
         <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>

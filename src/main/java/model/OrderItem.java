@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
 
 @Entity
-@Table(name = "ORDER_ITEMS")  
+@Table(name = "ORDER_ITEMS")
 public class OrderItem
 {
     @Id
@@ -29,11 +29,11 @@ public class OrderItem
 
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
-    
+
     @Column(name = "order_status")
     private OrderStatus orderStatus;
-    
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name ="prduct_id", referencedColumnName="id")
     private Product product;
 
@@ -43,11 +43,11 @@ public class OrderItem
 
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ExtraItem> extraItems = new ArrayList<>();
-    
+
     @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
-    
+
     public enum PaymentStatus {
         UNPAID,
         PARTIALLY_PAID, //only an order can be partially paid
@@ -150,7 +150,7 @@ public class OrderItem
                 ", orderStatus=" + orderStatus +
                 '}';
     }
-    
-    
+
+
 
 }

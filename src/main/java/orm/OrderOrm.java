@@ -41,9 +41,9 @@ public class OrderOrm {
 
         try {
             return Response.status(Response.Status.OK).entity(query.getResultList()).build();
-            
+
         } catch (Exception e) {
-            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();    
+            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();
         }
     }
 
@@ -53,9 +53,9 @@ public class OrderOrm {
         query.setParameter("val", asd);
         try {
             return Response.status(Response.Status.OK).entity(query.getResultList()).build();
-            
+
         } catch (Exception e) {
-            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();    
+            return  Response.status(Response.Status.OK).entity(new ArrayList<>()).build();
         }
     }
 
@@ -76,7 +76,7 @@ public class OrderOrm {
 
     @Transactional
     public Response createOrder(Long userId, List<OrderItem> OrderItems) {
-        
+
         Order order = new Order();
         User user = new User();
 
@@ -93,22 +93,21 @@ public class OrderOrm {
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
         query.setParameter("user", user);
 
-        
-        if(query.getResultList().size() != 0)
+
+        if(!query.getResultList().isEmpty())
         {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Der Benutzer hat schon eine Bestellung. Aktualisiere diese Bestellung").build();
         }
-        
         order.setUser(user);
-        
+
         try {
             em.persist(order);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        
+
         user.setOrder(order);
-        
+
         try {
             em.merge(user);
         } catch (Exception e) {
@@ -119,14 +118,14 @@ public class OrderOrm {
         Map<Product, Long> productCountMap = new HashMap<>();
 
         Long cntOderItems = 0L;
-        
+
         //Iterate over the order items
         for (OrderItem orderItem : OrderItems) {
             cntOderItems++;
             addProductToOrder(order.getId(), orderItem.getProduct().getId());
             //Get the product from the order item
             Product product = orderItem.getProduct();
-            
+
             //Check if the product is already in the map
             if(productCountMap.containsKey(product)){
                 //If so, increase the count by one
@@ -136,19 +135,29 @@ public class OrderOrm {
                 productCountMap.put(product, 1L);
             }
         }
-        
+        em.getTransaction().begin();
         //Iterate over the map
         for (Map.Entry<Product, Long> entry : productCountMap.entrySet()) {
             //Get the product and the count
             Product product = entry.getKey();
             Long count = entry.getValue();
-            
+            System.out.println(product.getId());
+
+
+            Product dbProduct = em.find(Product.class, product.getId());
+
+            if (dbProduct == null) {
+                em.getTransaction().rollback();
+                return Response.status(Response.Status.CONFLICT).entity("ID passt nicht").build();
+            }
+
             //Decrease the stock of the product
-            product.decStock(count);
-            
-            //Merge the product to the db
-            em.merge(product);
+            dbProduct.decStock(count);
+
+            //Merge the dbProduct to the db
+            em.merge(dbProduct);
         }
+        em.getTransaction().commit();
 
         return Response.status(Response.Status.CREATED).entity("Neue Bestellung mit " + cntOderItems + " Produkten").build();
     }
@@ -162,7 +171,7 @@ public class OrderOrm {
     public Response addProductToOrder(Long orderId, Long productId) {
 
         System.out.println("addProductToOrder");
-    
+
         Order orderDB = new Order();
         Product productDB = new Product();
         try {
@@ -184,10 +193,10 @@ public class OrderOrm {
         if (productDB == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Product not found").build();
         }
-     
+
         OrderItem orderItem = new OrderItem(productDB, orderDB, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
         orderDB.addOrderItem(orderItem);
-       
+
         try {
             System.out.println("merge");
 
@@ -200,10 +209,10 @@ public class OrderOrm {
     }
 
     @Transactional
-    public Response removeProductFromOrder(Long orderId, Long orderItemId) 
+    public Response removeProductFromOrder(Long orderId, Long orderItemId)
     {
         System.out.println("addProductToOrder");
-       
+
         Order orderDB = new Order();
         try {
             orderDB = em.find(Order.class, orderId);
@@ -247,7 +256,7 @@ public class OrderOrm {
     public Response addExtraToOrder(Long orderId, Long orderItemId, Long extraId) {
 
         System.out.println("addExtraToOrder2");
-       
+
         Order orderDB = new Order();
         OrderItem orderItemDb = new OrderItem();
         Extras extraDB = new Extras();
@@ -297,10 +306,10 @@ public class OrderOrm {
     }
 
     @Transactional
-    public Response removeExtraFromOrder(Long orderId, Long orderItemId, Long extraId) 
+    public Response removeExtraFromOrder(Long orderId, Long orderItemId, Long extraId)
     {
         System.out.println("addProductToOrder");
-       
+
         Order orderDB = new Order();
         try {
             orderDB = em.find(Order.class, orderId);
@@ -357,10 +366,10 @@ public class OrderOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        
+
         if (orderItem == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
-            
+
         }
 
         switch (orderItem.getOrderStatus()) {
@@ -387,7 +396,7 @@ public class OrderOrm {
 
     @Transactional
     public Response updateOrderPayment(Long orderId, Long orderItemId) {
-        
+
         Order orderDB = new Order();
         try {
             orderDB = em.find(Order.class, orderId);
@@ -405,7 +414,7 @@ public class OrderOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        
+
         if (orderItem == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
         }
@@ -490,7 +499,7 @@ public class OrderOrm {
 
         try {
             em.remove(orderDB);
-            
+
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }

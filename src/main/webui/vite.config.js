@@ -8,9 +8,9 @@ export default defineConfig({
     'process.env.VITE_DEV_API_URL': process.env.VITE_DEV_API_URL,
     'process.env.VITE_PROD_API_URL': process.env.VITE_PROD_API_URL,
   },
-   base: '/', // Set the base URL
-  server: {
-    host: '0.0.0.0', // Set the host
-    port: 8338 // Set the port
-  }
+  //  base: '/', // Set the base URL
+  // server: {
+  //   host: '0.0.0.0', // Set the host
+  //   port: 8338 // Set the port
+  // }
 })
