@@ -37,6 +37,9 @@ public class Order {
     @Column(name = "order_paid")
     private boolean orderPaid;
 
+    @Column(name = "order_delivered")
+    private boolean orderDelivered;
+
     @Column(name = "order_completed")
     private boolean orderCompleted;
 
@@ -75,6 +78,30 @@ public class Order {
 
     public void decSum(double sum) {
         this.sum -= sum;
+    }
+
+    public boolean isOrderPaid() {
+        return orderPaid;
+    }
+
+    public void setOrderPaid(boolean orderPaid) {
+        this.orderPaid = orderPaid;
+    }
+
+    public boolean isOrderDelivered() {
+        return orderDelivered;
+    }
+
+    public void setOrderDelivered(boolean orderDelivered) {
+        this.orderDelivered = orderDelivered;
+    }
+
+    public boolean isOrderCompleted() {
+        return orderCompleted;
+    }
+
+    public void setOrderCompleted(boolean orderCompleted) {
+        this.orderCompleted = orderCompleted;
     }
 
     // @JsonbTransient
