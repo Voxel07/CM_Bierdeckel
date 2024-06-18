@@ -33,7 +33,8 @@ public class OrderResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getOrder(@QueryParam("orderId") Long orderId,
-                                @QueryParam("userId") Long userId) 
+                             @QueryParam("userId") Long userId,
+                             @QueryParam("completed") Boolean compledetOrder)
     {
         if(orderId != null)
         {
@@ -41,7 +42,7 @@ public class OrderResource {
         }
         else if (userId != null)
         {
-            return orm.getOderByUser(userId);
+            return orm.getOderByUser(userId, compledetOrder);
         }
         else
         {
@@ -56,14 +57,14 @@ public class OrderResource {
         if (userId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
         }
-        
+
         return orm.createOrder(userId, OrderItems);
     }
 
-    
+
     /**
      * Updates the order based on the provided parameters.
-     * 
+     *
      * @param orderId   the ID of the order
      * @param productId the ID of the product for remove, payment or progress its the orderItem id
      * @param action    the action to perform on the order
@@ -78,7 +79,7 @@ public class OrderResource {
                                 @QueryParam("extraId") Long extraId,
                                 @QueryParam("orderItemId") Long orderItemId,
                                 @QueryParam("action") String action
-                                ) 
+                                )
     {
         if (orderId == null  || action == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
@@ -132,7 +133,7 @@ public class OrderResource {
         {
             return orm.removeProductFromOrder(orderId, productId);
         }
-       
+
         else
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
@@ -141,7 +142,7 @@ public class OrderResource {
 
     public Response handleOrderItem(Long orderId, Long orderItemId, String action)
     {
-        if (action.equals("payItem")) 
+        if (action.equals("payItem"))
         {
             return orm.updateOrderPayment(orderId, orderItemId);
         }
@@ -166,11 +167,11 @@ public class OrderResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteOrder(Order order) 
+    public Response deleteOrder(Order order)
     {
         if (order == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty order").build();
-            
+
         }
 
         return orm.deleteOrder(order);

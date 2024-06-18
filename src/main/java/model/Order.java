@@ -34,14 +34,14 @@ public class Order {
     @Column(name = "sum")
     private double sum;
 
-    @Column(name = "order_paid")
-    private boolean orderPaid;
+    @Column(name = "order_paid" )
+    private Boolean orderPaid;
 
     @Column(name = "order_delivered")
-    private boolean orderDelivered;
+    private Boolean orderDelivered;
 
     @Column(name = "order_completed")
-    private boolean orderCompleted;
+    private Boolean orderCompleted;
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -55,6 +55,20 @@ public class Order {
 
     public Order(){
     }
+
+
+
+    public Order(double sum, Boolean orderPaid, Boolean orderDelivered, Boolean orderCompleted,
+            List<OrderItem> orderItems, User user) {
+        this.sum = sum;
+        this.orderPaid = orderPaid;
+        this.orderDelivered = orderDelivered;
+        this.orderCompleted = orderCompleted;
+        this.orderItems = orderItems;
+        this.user = user;
+    }
+
+
 
     public Long getId() {
         return id;
@@ -80,27 +94,27 @@ public class Order {
         this.sum -= sum;
     }
 
-    public boolean isOrderPaid() {
+    public Boolean isOrderPaid() {
         return orderPaid;
     }
 
-    public void setOrderPaid(boolean orderPaid) {
+    public void setOrderPaid(Boolean orderPaid) {
         this.orderPaid = orderPaid;
     }
 
-    public boolean isOrderDelivered() {
+    public Boolean isOrderDelivered() {
         return orderDelivered;
     }
 
-    public void setOrderDelivered(boolean orderDelivered) {
+    public void setOrderDelivered(Boolean orderDelivered) {
         this.orderDelivered = orderDelivered;
     }
 
-    public boolean isOrderCompleted() {
+    public Boolean isOrderCompleted() {
         return orderCompleted;
     }
 
-    public void setOrderCompleted(boolean orderCompleted) {
+    public void setOrderCompleted(Boolean orderCompleted) {
         this.orderCompleted = orderCompleted;
     }
 

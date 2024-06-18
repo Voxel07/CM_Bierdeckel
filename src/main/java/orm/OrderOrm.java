@@ -47,10 +47,11 @@ public class OrderOrm {
         }
     }
 
-    public Response getOderByUser(Long asd)
+    public Response getOderByUser(Long asd, Boolean completedOrder)
     {
-        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val", Order.class);
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val AND o.orderCompleted = :orderState", Order.class);
         query.setParameter("val", asd);
+        query.setParameter("orderState", completedOrder);
         try {
             return Response.status(Response.Status.OK).entity(query.getResultList()).build();
 
@@ -75,7 +76,7 @@ public class OrderOrm {
 
 
     @Transactional
-    public Response createOrder(Long userId, List<OrderItem> OrderItems) {
+    public Response createOrder(Long userId, List<OrderItem> orderItems) {
 
         Order order = new Order();
         User user = new User();
@@ -92,13 +93,17 @@ public class OrderOrm {
 
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
         query.setParameter("user", user);
-
+        System.out.println("dadasdasd");
 
         if(!query.getResultList().isEmpty())
         {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Der Benutzer hat schon eine Bestellung. Aktualisiere diese Bestellung").build();
         }
+        System.out.println("---------------------------");
         order.setUser(user);
+        order.setOrderCompleted(false);
+        order.setOrderDelivered(false);
+        order.setOrderPaid(false);
 
         try {
             em.persist(order);
@@ -114,13 +119,14 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
+        System.out.println("jup-----------");
         //Create a map to store the product and its count
         Map<Product, Long> productCountMap = new HashMap<>();
 
         Long cntOderItems = 0L;
 
         //Iterate over the order items
-        for (OrderItem orderItem : OrderItems) {
+        for (OrderItem orderItem : orderItems) {
             cntOderItems++;
             addProductToOrder(order.getId(), orderItem.getProduct().getId());
             //Get the product from the order item
@@ -380,7 +386,13 @@ public class OrderOrm {
                 orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.DELIVERED);
                 break;
             case DELIVERED:
-                return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+                if(Boolean.TRUE.equals(orderDB.isOrderPaid()))
+                {
+                    orderDB.setOrderCompleted(true);
+                }
+                else{
+                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+                }
             default:
                 return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid action").build();
         }
@@ -423,6 +435,10 @@ public class OrderOrm {
             orderDB.setOrderItemPay(orderItem, PaymentStatus.UNPAID);
         } else {
             orderDB.setOrderItemPay(orderItem, PaymentStatus.PAID);
+            if(Boolean.TRUE.equals( orderDB.isOrderDelivered()))
+            {
+                orderDB.setOrderCompleted(true);
+            }
         }
 
         try {
