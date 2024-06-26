@@ -3,11 +3,14 @@ package orm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
@@ -47,11 +50,26 @@ public class OrderOrm {
         }
     }
 
-    public Response getOderByUser(Long asd, Boolean completedOrder)
+    public Order getOpenOrderByUser(Long userId)
+    {
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val AND o.orderCompleted = false", Order.class);
+        query.setParameter("val", userId);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException  e) {
+            return null;
+        }
+       
+
+    }
+
+    public Response getOderByUser(Long userId, Boolean completedOrder)
     {
         TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val AND o.orderCompleted = :orderState", Order.class);
-        query.setParameter("val", asd);
+        query.setParameter("val", userId);
         query.setParameter("orderState", completedOrder);
+        
         try {
             return Response.status(Response.Status.OK).entity(query.getResultList()).build();
 
@@ -170,7 +188,57 @@ public class OrderOrm {
 
     @Transactional
     public Response updateOrder(Long userId, List<OrderItem> OrderItems) {
-        return Response.ok().build();
+        System.out.println("updateOrder");
+
+        //Fetch open order for user from DB
+        Order dbOrder = getOpenOrderByUser(userId);
+        //Check if order exists
+        if (dbOrder == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        // //Iterate over order items
+        // System.out.println("Items in order");
+        // for (OrderItem orderItem : dbOrder.getOrderItems()) {
+        //     System.out.println(orderItem.toString());
+        // }
+
+        // System.out.println("Items in orderItems");
+        // for (OrderItem orderItem : OrderItems) {
+        //     System.out.println(orderItem.toString());
+        // }
+
+         //Check if provided oderItems are in the order
+        Set<Integer> existingIds = dbOrder.getOrderItems().stream()
+                                        .map(OrderItem::getId)
+                                        .collect(Collectors.toSet());
+
+        for (OrderItem newItem : OrderItems) {
+            if (!existingIds.contains(newItem.getId())) {
+                addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
+            }
+        }
+
+        // System.out.println("Items in order 2");
+        // for (OrderItem orderItem : dbOrder.getOrderItems()) {
+        //     System.out.println(orderItem.toString());
+        // }
+
+        // System.out.println("Items in orderItems 2");
+        // for (OrderItem orderItem : OrderItems) {
+        //     System.out.println(orderItem.toString());
+        // }
+
+        // System.out.println("merge");
+        // try {
+        //     em.merge(dbOrder);
+        // } catch (Exception e) {
+        //     System.out.println(e);
+
+        //     return Response.status(Response.Status.EXPECTATION_FAILED).entity("nope").build();
+        // }
+        //Persit order to DB
+        return Response.status(200).entity("Bestellung aktualisiert").build();
     }
 
     @Transactional

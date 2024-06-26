@@ -1,5 +1,6 @@
 package bots;
 
+import discord4j.common.ReactorResources;
 // import discord4j.common.ReactorResources;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -11,6 +12,9 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import reactor.core.publisher.Mono;
+import io.netty.resolver.DefaultAddressResolverGroup;
+import reactor.core.publisher.Mono;
+import io.netty.resolver.DefaultAddressResolverGroup;
 // import discord4j.core.object.entity.Message;
 // import io.netty.resolver.DefaultAddressResolverGroup;
 import io.quarkus.runtime.StartupEvent;
@@ -27,37 +31,26 @@ public class DiscordBot {
     public void sendMessage(@QueryParam("message") String msg) 
     {
 
-        // ReactorResources reactor = ReactorResources.builder()
-        // .httpClient(ReactorResources.DEFAULT_HTTP_CLIENT.get()
-        //         .resolver(DefaultAddressResolverGroup.INSTANCE))
-        // .build();
+        ReactorResources reactor = ReactorResources.builder()
+        .httpClient(ReactorResources.DEFAULT_HTTP_CLIENT.get()
+                .resolver(DefaultAddressResolverGroup.INSTANCE))
+        .build();
         
-        // GatewayDiscordClient gateway = DiscordClient.builder(discordBot.token())
-        // .setReactorResources(reactor)
-        // .build()
-        // .login()
-        // .block();
-       
-        DiscordClient client = DiscordClient.create(discordBot.token());
+        GatewayDiscordClient gateway = DiscordClient.builder(discordBot.token())
+        .setReactorResources(reactor)
+        .build()
+        .login()
+        .block();
 
-        Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) -> Mono.empty());
+        // DiscordClient client = DiscordClient.create(discordBot.token());
+
+        // Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) -> Mono.empty());
     
-        login.block();
+        // login.block();
     }
 
     void onStart(@Observes StartupEvent ev)
     {
-
-        // ReactorResources reactor = ReactorResources.builder()
-        // .httpClient(ReactorResources.DEFAULT_HTTP_CLIENT.get()
-        //         .resolver(DefaultAddressResolverGroup.INSTANCE))
-        // .build();
-        
-        // GatewayDiscordClient gateway = DiscordClient.builder(discordBot.token())
-        // .setReactorResources(reactor)
-        // .build()
-        // .login()
-        // .block();
 
         // // DiscordClient client = DiscordClient.create(discordBot.token());
         // // GatewayDiscordClient gateway = client.login().block();

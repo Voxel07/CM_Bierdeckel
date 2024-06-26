@@ -40,7 +40,7 @@ public class OrderResource {
         {
             return orm.getOrderById(orderId);
         }
-        else if (userId != null)
+        else if (userId != null && compledetOrder != null)
         {
             return orm.getOderByUser(userId, compledetOrder);
         }
@@ -78,13 +78,18 @@ public class OrderResource {
                                 @QueryParam("productId") Long productId,
                                 @QueryParam("extraId") Long extraId,
                                 @QueryParam("orderItemId") Long orderItemId,
-                                @QueryParam("action") String action
+                                @QueryParam("action") String action,
+                                @QueryParam("userId") Long userId, 
+                                List<OrderItem> OrderItems
                                 )
     {
+        if(userId != null)
+        {
+            return orm.updateOrder(userId, OrderItems);
+        }
         if (orderId == null  || action == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
         }
-
         if(productId != null)
         {
             System.out.println("Product");

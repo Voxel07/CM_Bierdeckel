@@ -75,8 +75,8 @@ export default function shoppingcard({ cardData, handleStockChange, displayItems
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
           {
             orderId ?
-            <Button variant="outlined" color="success" onClick={placeOrder} >Aufgeben</Button>:
-            <Button variant="outlined" color="warning" onClick={updateOrder} >Aktualisieren</Button>
+            <Button variant="outlined" color="warning" onClick={updateOrder} >Aktualisieren</Button>:
+            <Button variant="outlined" color="success" onClick={placeOrder} >Aufgeben</Button>
           }
 
             <Button variant="outlined" color="error" onClick={deleteOrder} >Löschen</Button>

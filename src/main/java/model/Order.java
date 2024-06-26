@@ -136,6 +136,7 @@ public class Order {
     public void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         this.sum += orderItem.getProduct().getPrice();
+        orderItem.getProduct().decStock(1L);
     }
 
     public void removeOrderItem(OrderItem orderItem) {

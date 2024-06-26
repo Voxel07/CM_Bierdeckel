@@ -48,6 +48,8 @@ export default function Order() {
     fetchProductsAndDrinks();
   }, [fetchProductsAndDrinks]);
 
+
+  //Fetch the oder of the selected user
   useEffect(() => {
     if (
       selectedUser == null ||
@@ -62,6 +64,7 @@ export default function Order() {
       .get("/order", {
         params: {
           userId: selectedUser.id,
+          completed: false
         },
       })
       .then((response) => {
