@@ -71,7 +71,7 @@ export default function Order() {
         setTimeout(() => {
           if (response.data && response.data.length) {
             setUserCardItems(response.data[0].orderItems);
-            setOrderId(response.data[0].id);
+            setOrderId(response.data[0].id); //TODO: Why is this not set correctly inside the shoppicard?
             setCardMetadata({total: response.data[0].sum, itemCount: response.data[0].orderItems.length})
             setDisplayItems(
               summarizeOrderItems(response.data[0].orderItems)

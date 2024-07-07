@@ -106,7 +106,7 @@ public class OrderOrm {
         }
 
         if (user == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("User not found").build();
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Benutzer nicht gefunden").build();
         }
 
         TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
