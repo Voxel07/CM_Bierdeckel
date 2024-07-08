@@ -1,13 +1,14 @@
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.InjectMock;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import model.Order;
 import model.OrderItem;
+import model.User;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import resources.OrderResource;
 import orm.OrderOrm;
+import orm.UserOrm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +21,11 @@ import static org.mockito.Mockito.when;
 @QuarkusTest
 public class OrderResourceTest {
 
-    @InjectMock
+    @Inject
     OrderOrm orderOrm;
+
+    @Inject
+    UserOrm userOrm;
 
     @Inject
     OrderResource orderResource;
@@ -43,6 +47,32 @@ public class OrderResourceTest {
     }
 
     @Test
+    public void testUpdateOrderItems()
+    {
+        Response response;
+        User mockUser = new User();
+        mockUser.setId(10L);
+        response = userOrm.addUser(mockUser); 
+        assert response.getStatus() == Response.Status.CREATED.getStatusCode();
+        assert response.getEntity().toString().contains("Nutzer erfolgreich erstellt");
+
+        Order mockOrder = new Order();
+        mockOrder.setUser(mockUser);
+
+        
+
+        orderOrm.createOrder(mockUser.getId(), null);
+
+
+        //Cleanup
+        response = userOrm.delteUser(mockUser);
+        assert response.getStatus() == Response.Status.ACCEPTED.getStatusCode();
+        assert response.getEntity().toString().contains("Benutzer erfolgreich gelöscht");
+
+
+    }
+
+    @Test
     public void testCreateOrder() {
         List<OrderItem> orderItems = new ArrayList<>();
         when(orderOrm.createOrder(anyLong(), anyList())).thenReturn(Response.status(Response.Status.CREATED).entity("New order created").build());
@@ -54,7 +84,7 @@ public class OrderResourceTest {
     }
 
     @Test
-    public void testSecondOrderForSameUSer() {
+    public void testSecondOrderForSameUser() {
         List<OrderItem> orderItems = new ArrayList<>();
         when(orderOrm.createOrder(anyLong(), anyList())).thenReturn(Response.status(Response.Status.CREATED).entity("New order created").build());
 

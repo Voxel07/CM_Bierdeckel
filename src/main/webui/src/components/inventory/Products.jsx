@@ -98,7 +98,7 @@ const Products = ({productCategory}) => {
                 <Table >
                     <TableHead>
                         <TableRow >
-                            <TableCell >Name</TableCell>
+                            <TableCell>Name</TableCell>
                             <TableCell>Preis</TableCell>
                             <TableCell>Stückzahl</TableCell>
                             <TableCell>Verbraucht</TableCell>

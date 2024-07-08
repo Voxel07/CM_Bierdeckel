@@ -124,7 +124,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
                 onClick={handleAddToOrder}
                 disabled={stock === 0}
               >
-                Add
+                Hinzufügen
               </Button>
             </Grid>
             <Grid item xs={6}>
@@ -134,7 +134,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
                 onClick={handleRemoveFromOrder}
                 disabled={orderQuantity === 0}
               >
-                Remove
+                Entfernen
               </Button>
             </Grid>
           </Grid>

@@ -34,7 +34,8 @@ public class OrderResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getOrder(@QueryParam("orderId") Long orderId,
                              @QueryParam("userId") Long userId,
-                             @QueryParam("completed") Boolean compledetOrder)
+                             @QueryParam("completed") Boolean compledetOrder,
+                             @QueryParam("paymentState") String paymentState)
     {
         if(orderId != null)
         {
@@ -43,6 +44,22 @@ public class OrderResource {
         else if (userId != null && compledetOrder != null)
         {
             return orm.getOderByUser(userId, compledetOrder);
+        }
+        else if (paymentState != null)
+        {
+            System.out.println(paymentState);
+
+            if(paymentState.equals("paid"))
+            {
+                System.out.println("paid");
+                return  Response.status(200).entity(orm.getOrdersByPaymentState(true)).build();
+            }
+            else{
+                System.out.println("nope");
+
+                return  Response.status(200).entity(orm.getOrdersByPaymentState(false)).build();
+            }
+
         }
         else
         {
@@ -57,8 +74,10 @@ public class OrderResource {
         if (userId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
         }
+        System.out.println(OrderItems.toString());
 
-        return orm.createOrder(userId, OrderItems);
+        return Response.status(200).entity(OrderItems).build();
+        // return orm.createOrder(userId, OrderItems);
     }
 
 
@@ -83,7 +102,7 @@ public class OrderResource {
                                 List<OrderItem> OrderItems
                                 )
     {
-        if(userId != null)
+        if(userId != null && OrderItems != null)
         {
             return orm.updateOrder(userId, OrderItems);
         }
@@ -104,6 +123,14 @@ public class OrderResource {
         else if(orderItemId != null)
         {
             return handleOrderItem(orderId, orderItemId, action);
+        }
+        else if (action.equals("payOrder") && orderId != null)
+        {
+            return orm.payOrder(orderId);
+        }
+        else if (action.equals("completeOrder") && orderId != null)
+        {
+            return orm.completeOrder(orderId);
         }
         else
         {
@@ -155,14 +182,14 @@ public class OrderResource {
         {
             return orm.updateOrderStatus(orderId, orderItemId);
         }
-        else if (action.equals("payOrder") && orderItemId == 0)
-        {
-            return orm.payOrder(orderId);
-        }
-        else if (action.equals("completeOrder") && orderItemId == 0)
-        {
-            return orm.completeOrder(orderId);
-        }
+        // else if (action.equals("payOrder") && orderItemId == 0)
+        // {
+        //     return orm.payOrder(orderId);
+        // }
+        // else if (action.equals("completeOrder") && orderItemId == 0)
+        // {
+        //     return orm.completeOrder(orderId);
+        // }
         else
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();

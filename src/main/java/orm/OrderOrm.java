@@ -60,8 +60,13 @@ public class OrderOrm {
         } catch (NoResultException  e) {
             return null;
         }
-       
+    }
 
+    public List<Order> getOrdersByPaymentState(Boolean state)
+    {
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.orderPaid =: paystate", Order.class);
+        query.setParameter("paystate", state);
+        return query.getResultList();
     }
 
     public Response getOderByUser(Long userId, Boolean completedOrder)
@@ -529,6 +534,11 @@ public class OrderOrm {
 
         if (orderDB == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+        }
+
+        if(orderDB.isOrderPaid())
+        {
+            return Response.status(Response.Status.CONFLICT).entity("Bestellung ist bereits als Bezahlt markiert").build();
         }
 
         orderDB.payOrder();

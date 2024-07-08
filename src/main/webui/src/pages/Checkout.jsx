@@ -1,64 +1,56 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AlertsManager , AlertsContext } from '../utils/AlertsManager';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
-import axios from "axios";
+import LunchDiningIcon from '@mui/icons-material/LunchDining';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import SportsBarIcon from '@mui/icons-material/SportsBar';
+
+import Orders from '../components/checkout/Orders';
+
 
 function Checkout() {
-  const titles = ["UNPAID", "PARTIALLY_PAID", "PAID"];
   const alertsManagerRef =  useRef(AlertsContext);
+  const [value, setValue] = React.useState('1');
 
-  const [data, setData] = useState([]);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
-  useEffect(() => {
-    axios.get("/order")
-    .then(response =>{
-        setData(distributeOrders(response.data));
-    }).catch(error =>{
-      console.log(error)
-      alertsManagerRef.current.showAlert('error', "Fehler bei der der Datenabfrage. ");
-    })
-
-}, []);
-
-  function distributeOrders(orders) {
-    const o = [];
-    const p = [];
-    const d = [];
-  // Loop through each order
-  for (const order of orders) {
-    // Loop through each orderItem in the order
-    for (const orderItem of order.orderItems) {
-
-      // console.log(orderItem)
-      const status = orderItem.paymentStatus;
-
-      // Distribute items based on their orderStatus
-      switch (status) {
-        case titles[0]:
-          o.push(orderItem);
-          break;
-        case titles[1]:
-          p.push(orderItem);
-          break;
-        case titles[2]:
-          d.push(orderItem);
-          break;
-        default:
-          alertsManagerRef.current.showAlert('warning', "Unbekannter Status in einer Bestellposition. "+ status);
-          console.warn("Unknown orderItem status:", status);
-        }
-      }
-    }     
-    return { o, p, d };
-  }
 
     return (
-        <div>
+      <Box sx={{ width: '100%', typography: 'body1' }}>
             <AlertsManager ref={alertsManagerRef} />
 
-            <h1 style={{ textAlign: "center", padding: "50px", outline:"none", color: "white" }}>Checkout</h1>
-            <pre style={{ color: "white" }}>{ JSON.stringify(data, null, 2)}</pre>
-        </div>
+      {/* <ThemeProvider theme={theme}> */}
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabList textColor="primary" indicatorColor="primary" onChange={handleChange} aria-label="lab API tabs example" centered >
+              <Tab icon={<LunchDiningIcon />} value="1" label="Offen" />
+              <Tab icon={<SportsBarIcon />} value="2" label="Fertig" />
+              <Tab icon={<KitchenIcon />} value="3" label="Übersicht" />
+          </TabList>
+            </Box>
+        <TabPanel value="1">
+          <Orders OrderState={"paids"}/>
+        </TabPanel>
+        <TabPanel value="2">
+          <Orders OrderState={"Fertig"}/>
+        </TabPanel>
+        <TabPanel value="3">
+          <Orders OrderState={"Übersicht"}/>
+        </TabPanel>
+      </TabContext>
+      {/* </ThemeProvider> */}
+      {/* <h1 style={{ textAlign: "center", padding: "50px", outline:"none", color: "white" }}>Checkout</h1> */}
+      {/* <pre style={{ color: "white" }}>{ JSON.stringify(data, null, 2)}</pre> */}
+    </Box>
+
+          
     )
 }
 

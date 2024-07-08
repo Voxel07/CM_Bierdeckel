@@ -53,7 +53,29 @@ public class UserOrm {
                     return Response.status(Response.Status.EXPECTATION_FAILED).entity("duck").build();
             }
         }
-        return Response.status(Response.Status.CREATED).entity("New user created").build();
+        return Response.status(Response.Status.CREATED).entity("Nutzer erfolgreich erstellt").build();
+    }
+
+    @Transactional
+    public Response delteUser(User user)
+    {
+        User dbUser;
+
+        try{
+            dbUser = em.find(null, user.getId());
+        }
+        catch(Exception e)
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Nutzer nicht gefunden").build();
+        }
+
+        try {
+            em.remove(dbUser);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Fehler beim löschen des Benutzers").build();
+        }
+
+        return Response.status(Response.Status.ACCEPTED).entity("Benutzer erfolgreich gelöscht").build();
     }
 
 }
