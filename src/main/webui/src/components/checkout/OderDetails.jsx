@@ -5,6 +5,9 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
 import { styled } from '@mui/system';
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import EuroIcon from '@mui/icons-material/Euro';
 
 import { IconButton,  Paper, TextField } from '@mui/material/';
 
@@ -16,10 +19,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
   const style = {
     position: 'absolute',
-    width: 400,
+    width: 1400,
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -100%)',
+    transform: 'translate(-50%, -75%)',
     backgroundColor: '#090c11',
     boxShadow: "24 red",
     border: '5px solid #090c11',
@@ -40,6 +43,11 @@ const OrderDetails = (({order}) =>
         setOpen(false);
     };
 
+    const handlePaiProduct = (_id) =>
+        {
+          console.log("paid"+ _id);
+        }
+
         
     return(
         <div>
@@ -59,46 +67,41 @@ const OrderDetails = (({order}) =>
         <Table >
             <TableHead>
                 <TableRow >
-                    <TableCell>Kunde</TableCell>
-                    <TableCell>Bestellungs ID</TableCell>
-                    <TableCell>Produkte</TableCell>
-                    <TableCell>Summe</TableCell>
-                    <TableCell>Offener Betrag</TableCell>
+                    <TableCell>Produktnummer</TableCell>
+                    <TableCell>Bezeichnung</TableCell>
+                    <TableCell>Betrag</TableCell>
+                    <TableCell>Status</TableCell>
                     <TableCell>Aktion</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
                 {order.orderItems.map((orderItem) => (
-                    console.log(orderItem.id)
-                
-                    // <TableRow key={orderItem.id}>
-                    //    <TableCell >
-                    //            {orderItem.user.id}
-                    //     </TableCell>
-                    //     <TableCell >
-                    //            {orderItem.id}
-                    //     </TableCell>
-                    //     <TableCell>
-                    //            {orderItem.orderItems}
-                    //     </TableCell>
-                    //     <TableCell>
-                    //            {`${order.sum} €`}
-                    //     </TableCell>
-                    //     <TableCell>
-                    //         <Stack  direction="row"
-                    //                 spacing={0}
-                    //                 alignItems="start">
+                    <TableRow key={orderItem.id}>
+                     
+                        {console.log(orderItem)}
+                        <TableCell >
+                               {orderItem.id}
+                        </TableCell>
+                        <TableCell >
+                               {orderItem.product.name}
+                        </TableCell>
+                        <TableCell>
+                               {`${orderItem.product.price} €`}
+                        </TableCell>
+                        <TableCell>
+                               {orderItem.paymentStatus}
+                        </TableCell>
+                        <TableCell>
+                            <Stack  direction="row"
+                                    spacing={0}
+                                    alignItems="start">
                                
-                    //             <Tooltip title="Bezahle die Bestellung" placement="top">
-                    //               <IconButton variant="contained" color="primary" onClick={() => handlePaiOrder(order.id)}><EuroIcon/></IconButton>
-                    //             </Tooltip>
-                    //             <Tooltip title="Mehr Infos2" placement="top">
-                    //               <OrderDetails order={order}/>
-
-                    //             </Tooltip>
-                    //         </Stack>
-                    //     </TableCell>
-                    // </TableRow>
+                                <Tooltip title="Bezahle die Das Produkt" placement="top">
+                                  <IconButton variant="contained" color="primary" onClick={() => handlePaiProduct(orderItem.id)}><EuroIcon/></IconButton>
+                                </Tooltip>
+                            </Stack>
+                        </TableCell>
+                    </TableRow>
                 ))}
             </TableBody>
 

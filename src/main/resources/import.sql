@@ -19,6 +19,6 @@ INSERT INTO EXTRAS (id, name, price, category) VALUES (5, 'Eiswuerfel', 25.99, "
 
 -- -- Create Orders
 INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (1, 1, 0, false, false, false);
-INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (2, 1, 0, ture, ture, ture);
+INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (2, 1, 0, true, true, true);
 INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (3, 2, 0, false, false, false);
-INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (5, 2, 0, ture, ture, ture);
+INSERT INTO REQUESTS (id, userId, sum, order_paid, order_delivered, order_completed) VALUES (5, 2, 0, true, true, true);
