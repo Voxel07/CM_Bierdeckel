@@ -36,10 +36,10 @@ function Checkout() {
           </TabList>
             </Box>
         <TabPanel value="1">
-          <Orders OrderState={"paids"}/>
+          <Orders OrderState={""}/>
         </TabPanel>
         <TabPanel value="2">
-          <Orders OrderState={"Fertig"}/>
+          <Orders OrderState={"paid"}/>
         </TabPanel>
         <TabPanel value="3">
           <Orders OrderState={"Übersicht"}/>

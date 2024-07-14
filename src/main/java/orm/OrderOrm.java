@@ -275,6 +275,8 @@ public class OrderOrm {
 
         OrderItem orderItem = new OrderItem(productDB, orderDB, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
         orderDB.addOrderItem(orderItem);
+        orderDB.setOrderCompleted(false);
+        orderDB.setOrderPaid(false);
 
         try {
             System.out.println("merge");
@@ -508,9 +510,14 @@ public class OrderOrm {
             orderDB.setOrderItemPay(orderItem, PaymentStatus.UNPAID);
         } else {
             orderDB.setOrderItemPay(orderItem, PaymentStatus.PAID);
-            if(Boolean.TRUE.equals( orderDB.isOrderDelivered()))
+
+            if(orderDB.getSum() == 0)
             {
-                orderDB.setOrderCompleted(true);
+                orderDB.setOrderPaid(true);
+                if(Boolean.TRUE.equals( orderDB.isOrderDelivered()))
+                {
+                    orderDB.setOrderCompleted(true);
+                }
             }
         }
 

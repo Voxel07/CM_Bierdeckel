@@ -124,11 +124,12 @@ public class OrderResource {
         {
             return handleOrderItem(orderId, orderItemId, action);
         }
-        else if (action.equals("payOrder") && orderId != null)
+        else if (action.equals("payOrder"))
         {
+            System.out.println("paythatnow");
             return orm.payOrder(orderId);
         }
-        else if (action.equals("completeOrder") && orderId != null)
+        else if (action.equals("completeOrder"))
         {
             return orm.completeOrder(orderId);
         }

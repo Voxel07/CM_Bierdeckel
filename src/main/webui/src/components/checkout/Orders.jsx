@@ -15,6 +15,7 @@ import Tooltip from "@mui/material/Tooltip";
 
 import OrderDetails from "./OderDetails"
 
+import {euro_formatter} from "../../utils/Intl"
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   backgroundColor: '#090c11', // Semi-transparent white
@@ -23,8 +24,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 
+
 export default function Orders({OrderState}) {
-  const alertsManagerRef =  useRef();
+  console.log(OrderState)
+  const alertsManagerRef =  useRef(AlertsContext);
 
   const [value, setValue] = React.useState('1');
   const [orders, setOders] = React.useState([]);
@@ -49,7 +52,22 @@ export default function Orders({OrderState}) {
 
   const handlePaiOrder = (_id) =>
   {
-    console.log("paid"+ _id);
+    axios.put("order", null, {params:{
+      orderId: _id,
+      action: "payOrder",
+      orderItems: []
+    }, 
+    headers: {
+      'Content-Type': 'application/json'
+    }})
+    .then(response =>{
+      alertsManagerRef.current.showAlert('success', response.data);
+      setTrigger(true);
+    })
+    .catch(error =>{
+      console.log(error)
+      alertsManagerRef.current.showAlert('error', error.response.data);
+    });
   }
 
   function calculateRemaining (orderitems)
@@ -64,6 +82,16 @@ export default function Orders({OrderState}) {
       }
     }
     return remainder
+  }
+
+  function calculateSum (orderitems)
+  {
+    let sum = 0;
+    for(const item of orderitems)
+    {
+      sum += item.product.price;
+    }
+    return sum
   }
 
 
@@ -96,10 +124,10 @@ export default function Orders({OrderState}) {
                                {order.orderItems.length}
                         </TableCell>
                         <TableCell>
-                               {`${order.sum} €`}
+                               {euro_formatter.format(calculateSum(order.orderItems))}
                         </TableCell>
                         <TableCell>
-                               {`${calculateRemaining(order.orderItems)} €`}
+                               {euro_formatter.format(calculateRemaining(order.orderItems))}
                         </TableCell>
                         <TableCell>
                             <Stack  direction="row"

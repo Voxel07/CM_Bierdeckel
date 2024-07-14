@@ -1,15 +1,28 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Modal from '@mui/material/Modal';
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
+import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import EuroIcon from '@mui/icons-material/Euro';
+import axios from "axios";
 
 import { IconButton,  Paper, TextField } from '@mui/material/';
+
+const ColorRetainingIconButton = styled(IconButton)(({ theme, color }) => ({
+  '&.Mui-disabled': {
+      opacity: 0.7,
+      color: theme.palette[color].main,
+  },
+}));
+
+const TooltipWrapper = styled('span')({
+    display: 'inline-block',
+  });
+  
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: '#090c11', // Semi-transparent white
@@ -22,7 +35,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     width: 1400,
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -75%)',
+    transform: 'translate(-50%, -50%)',
     backgroundColor: '#090c11',
     boxShadow: "24 red",
     border: '5px solid #090c11',
@@ -30,9 +43,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     borderRadius: '20px',
   };
 
-const OrderDetails = (({order}) =>
+const OrderDetails = (({order: initialOrder}) =>
 {
-    const alertsManagerRef = useRef();
+    const alertsManagerRef = useRef(AlertsContext);
+    const [order, setOrder] = useState(initialOrder);
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => {
@@ -43,17 +57,55 @@ const OrderDetails = (({order}) =>
         setOpen(false);
     };
 
-    const handlePaiProduct = (_id) =>
-        {
-          console.log("paid"+ _id);
-        }
+    useEffect(() => {
+        setOrder(initialOrder);
+      }, [initialOrder]);
 
+    const handlePaiProduct = (orderid, orderItemId) =>
+    {
+        axios.put("order", null, {params:{
+            orderId: orderid,
+            orderItemId: orderItemId ,
+            action: "payItem",
+            
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }})
+          .then(response =>{
+            alertsManagerRef.current.showAlert('success', response.data);
+            setOrder(prevOrder => ({
+                ...prevOrder,
+                orderItems: prevOrder.orderItems.map(item =>
+                  item.id === orderItemId ? { ...item, paymentStatus: 'Paid' } : item
+                )
+              }));
+            })
+          .catch(error =>{
+            console.log(error)
+            alertsManagerRef.current.showAlert('error', error.response.data);
+          });
+    }
+
+    const getPaymentStatusColor = (status) => {
+        switch (status.toLowerCase()) {
+          case 'paid':
+            return 'success';
+          case 'pending':
+            return 'warning';
+          case 'unpaid':
+            return 'error';
+          default:
+            return 'primary';
+        }
+      };
         
     return(
         <div>
-            <IconButton onClick={handleOpen}>
+            <Tooltip title="Informationen zur bestellung" placement="top">
+            <IconButton color="primary" onClick={handleOpen}>
                  <InfoOutlinedIcon color="Primary" /> 
-            </IconButton>
+            </IconButton></Tooltip>
 
         <Modal
             open={open}
@@ -62,6 +114,7 @@ const OrderDetails = (({order}) =>
             aria-describedby="modal-modal-description"
         >
              <Box sx={style}>
+                <Typography>{order.id}</Typography>
          <TableContainer component={StyledPaper}>
     <AlertsManager ref={alertsManagerRef} />
         <Table >
@@ -96,9 +149,15 @@ const OrderDetails = (({order}) =>
                                     spacing={0}
                                     alignItems="start">
                                
-                                <Tooltip title="Bezahle die Das Produkt" placement="top">
-                                  <IconButton variant="contained" color="primary" onClick={() => handlePaiProduct(orderItem.id)}><EuroIcon/></IconButton>
-                                </Tooltip>
+                                <TooltipWrapper title={orderItem.paymentStatus.toLowerCase() === 'paid' ? 'Bereits bezahlt' : 'Bezahle das Produkt'}  placement="top">
+                                  <ColorRetainingIconButton 
+                                    variant="contained" 
+                                    color={getPaymentStatusColor(orderItem.paymentStatus)} 
+                                    onClick={() => handlePaiProduct(order.id, orderItem.id)}
+                                    disabled={orderItem.paymentStatus.toLowerCase() === 'paid'}
+                                    >
+                                <EuroIcon/></ColorRetainingIconButton>
+                                </TooltipWrapper>
                             </Stack>
                         </TableCell>
                     </TableRow>
