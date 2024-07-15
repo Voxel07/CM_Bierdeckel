@@ -27,15 +27,9 @@ const Products = ({productCategory}) => {
         axios.get("products",  {params:{category: productCategory}})
             .then(response => {
                 setTimeout(() => {
-                    if (Array.isArray(response.data)) {
-                        setProducts(response.data);
-                        setDataFetched(false);
-                        alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
-                    } 
-                    else
-                    {
-                       alertsManagerRef.current.showAlert('error', "Content was not an array");
-                    }
+                    setProducts(response.data);
+                    setDataFetched(false);
+                    alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
                 }, 0);
             }).catch(error => {
                 console.log(error);
@@ -112,7 +106,7 @@ const Products = ({productCategory}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {/* {products.map((product) => (
+                       {products.map((product) => (
                             <TableRow key={product.id}>
                                 <TableCell >
                                        {product.name}
@@ -135,7 +129,7 @@ const Products = ({productCategory}) => {
                                     </Stack>
                                 </TableCell>
                             </TableRow>
-                        ))} */}
+                        ))}
                     </TableBody>
 
                 </Table>
