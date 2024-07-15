@@ -23,8 +23,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   color:'#F5F0F3'
 }));
 
-
-
 export default function Orders({OrderState}) {
   console.log(OrderState)
   const alertsManagerRef =  useRef(AlertsContext);
@@ -32,6 +30,7 @@ export default function Orders({OrderState}) {
   const [value, setValue] = React.useState('1');
   const [orders, setOders] = React.useState([]);
   const [trigger, setTrigger] = React.useState();
+  const [itemUpdated, setItemUpdate] = React.usestate();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -49,6 +48,10 @@ export default function Orders({OrderState}) {
     }
     );
   },[trigger])
+
+  useEffect(()=>{
+    console.log("update something");
+  },[itemUpdated])
 
   const handlePaiOrder = (_id) =>
   {
@@ -138,7 +141,7 @@ export default function Orders({OrderState}) {
                                   <IconButton variant="contained" color="primary" onClick={() => handlePaiOrder(order.id)}><EuroIcon/></IconButton>
                                 </Tooltip>
                                 <Tooltip title="Mehr Infos2" placement="top">
-                                  <OrderDetails order={order}/>
+                                  <OrderDetails order={order} parrentCallback={setItemUpdate}/>
 
                                 </Tooltip>
                             </Stack>

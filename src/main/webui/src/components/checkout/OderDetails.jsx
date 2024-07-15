@@ -43,18 +43,19 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     borderRadius: '20px',
   };
 
-const OrderDetails = (({order: initialOrder}) =>
+const OrderDetails = (({order: initialOrder, parrentCallback}) =>
 {
     const alertsManagerRef = useRef(AlertsContext);
     const [order, setOrder] = useState(initialOrder);
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => {
-        setOpen(true);
+      setOpen(true);
     };
     
     const handleClose = () => {
-        setOpen(false);
+      setOpen(false);
+      parrentCallback(true);
     };
 
     useEffect(() => {
