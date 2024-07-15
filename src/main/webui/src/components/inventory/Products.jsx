@@ -112,7 +112,7 @@ const Products = ({productCategory}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product) => (
+                        {/* {products.map((product) => (
                             <TableRow key={product.id}>
                                 <TableCell >
                                        {product.name}
@@ -135,7 +135,7 @@ const Products = ({productCategory}) => {
                                     </Stack>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ))} */}
                     </TableBody>
 
                 </Table>
