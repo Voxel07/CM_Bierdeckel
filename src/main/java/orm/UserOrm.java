@@ -3,10 +3,13 @@ package orm;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+
+import org.hibernate.exception.ConstraintViolationException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -41,16 +44,32 @@ public class UserOrm {
 
     @Transactional
     public Response addUser(User user) {
-
         User dbUser = getUserByUsername(user.getUsername());
         if (dbUser != null) {
-            return Response.status(Response.Status.FORBIDDEN).entity("Benutzer mit diesem namen gibt es bereits").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Benutzer mit diesem Namen gibt es bereits").build();
         }
-        else{
+        else {
             try {
                 em.persist(user);
+                em.flush(); // This will force the INSERT to be executed immediately
+            } catch (PersistenceException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ConstraintViolationException) {
+                    // This catches the specific ConstraintViolationException
+                    return Response.status(Response.Status.CONFLICT)
+                        .entity("Ein Benutzer mit dieser ID existiert bereits.")
+                        .build();
+                } else {
+                    // Handle other persistence exceptions
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Ein Fehler ist beim Erstellen des Benutzers aufgetreten.")
+                        .build();
+                }
             } catch (Exception e) {
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("duck").build();
+                // Catch any other unexpected exceptions
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Ein unerwarteter Fehler ist aufgetreten.")
+                    .build();
             }
         }
         return Response.status(Response.Status.CREATED).entity("Nutzer erfolgreich erstellt").build();
