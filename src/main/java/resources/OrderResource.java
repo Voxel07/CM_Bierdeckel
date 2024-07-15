@@ -76,8 +76,8 @@ public class OrderResource {
         }
         System.out.println(OrderItems.toString());
 
-        return Response.status(200).entity(OrderItems).build();
-        // return orm.createOrder(userId, OrderItems);
+        //return Response.status(200).entity(OrderItems).build();
+        return orm.createOrder(userId, OrderItems);
     }
 
 
