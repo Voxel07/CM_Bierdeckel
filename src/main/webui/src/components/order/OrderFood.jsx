@@ -9,8 +9,8 @@ function OrderFood({products, handleStockChange, displayItems}) {
   return (
     <Grid className="grid-container" container direction="row" rowSpacing={2} justifyContent="space-between" alignItems="center">
       {products?.length
-        ? products.map((product) => (
-            <Grid item xl={3} lg={4} md={6} xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+        ? products.map((product, index) => (
+            <Grid key={index}  item xl={3} lg={4} md={6} xs={12} sx={{ display: "flex", justifyContent: "center" }}>
               <InfoCard
                 data={product}
                 userData={displayItems}

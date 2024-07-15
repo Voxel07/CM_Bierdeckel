@@ -111,6 +111,17 @@ public class Product {
         this.consumption = consumption;
     }
 
+    public void incConsumption()
+    {
+        this.consumption ++;
+    }
+
+    public void decConsumption()
+    {
+        this.consumption --;
+    }
+
+
     @JsonbTransient
     public List<OrderItem> getOrderItems() {
         return orderItems;

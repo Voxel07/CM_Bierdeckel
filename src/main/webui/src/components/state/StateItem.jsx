@@ -36,7 +36,7 @@ const StateItem = ({pHandleSetSelectedITems, data, next, previous}) => {
           <IconButton aria-label="delete" size="small" onClick={() => previous(data)}>
             <ArrowBackIcon fontSize="inherit" />
           </IconButton>
-            <Checkbox {...label} checked={data.selected} color="success" onChange={() => pHandleSetSelectedITems(data)} />
+            <Checkbox {...label} checked={data.selected || false} color="success" onChange={() => pHandleSetSelectedITems(data)} />
           <IconButton aria-label="delete" size="small" onClick={() => next(data)}>
             <ArrowForwardIcon fontSize="inherit" />
           </IconButton>

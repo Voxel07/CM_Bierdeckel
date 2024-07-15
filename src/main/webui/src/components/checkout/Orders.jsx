@@ -30,7 +30,7 @@ export default function Orders({OrderState}) {
   const [value, setValue] = React.useState('1');
   const [orders, setOders] = React.useState([]);
   const [trigger, setTrigger] = React.useState();
-  const [itemUpdated, setItemUpdate] = React.usestate();
+  const [itemUpdated, setItemUpdate] = React.useState();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

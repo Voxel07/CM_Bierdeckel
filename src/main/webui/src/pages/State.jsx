@@ -92,23 +92,34 @@ const handleSetSelectedITems = (item) => {
 
   if (existingIndex !== -1) {
     // Item found - remove it
-    item.selected = false;
-    setSelectedItems([
-      ...selectedItems.slice(0, existingIndex),
-      ...selectedItems.slice(existingIndex + 1)
-    ]);
+    const updatedItems = selectedItems.filter(i => i.id !== item.id);
+    setSelectedItems(updatedItems);
+    
+    // Update the item's selected status in its respective array
+    updateItemInArray(item.id, false);
   } else {
     // Item not found - add it
-    item.selected = true;
-
-    setSelectedItems([...selectedItems, item]);
+    setSelectedItems([...selectedItems, { ...item, selected: true }]);
+    
+    // Update the item's selected status in its respective array
+    updateItemInArray(item.id, true);
   }
 }
 
-  
-  const handleNext = (item) => {
-    console.log("next", item);
+const updateItemInArray = (itemId, selectedStatus) => {
+  const updateArray = (array, setArray) => {
+    const updatedArray = array.map(i => 
+      i.id === itemId ? { ...i, selected: selectedStatus } : i
+    );
+    setArray(updatedArray);
+  };
 
+  updateArray(ordered, setOrdered);
+  updateArray(processing, setProcessing);
+  updateArray(done, setDone);
+}
+
+const handleNext = (item) => {
     switch (item.orderStatus) {
       case titles[0]: //orderd
         setOrdered(ordered.filter((i) => i.id !== item.id));
@@ -125,7 +136,6 @@ const handleSetSelectedITems = (item) => {
   };
   
   const handlePrevious = (item) => {
-    console.log("previous", item);
     switch (item.orderStatus) {
       case titles[1]: //Processing
         setProcessing(processing.filter((i) => i.id !== item.id));
@@ -225,8 +235,8 @@ const handleSetSelectedITems = (item) => {
       <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number= {ordered?.length} />
       <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.state === titles[0]).length} titles={titles} />
         { ordered?.length
-        ? ordered.map((product) => (
-        <Grid item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+        ? ordered.map((product, key) => (
+        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
          )):null}
       </Paper>
     </Grid>
@@ -236,8 +246,8 @@ const handleSetSelectedITems = (item) => {
       <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.state === titles[1]).length}  titles={titles}/>
 
         { processing?.length
-        ? processing.map((product) => (
-        <Grid item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+        ? processing.map((product, key) => (
+        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
          )):null}
       </Paper>
     </Grid>
@@ -247,8 +257,8 @@ const handleSetSelectedITems = (item) => {
       <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.state === titles[2]).length}  titles={titles}/>
 
         { done?.length
-        ? done.map((product) => (
-        <Grid item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+        ? done.map((product, key) => (
+        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
          )):null}
       </Paper>
     </Grid>

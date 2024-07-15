@@ -68,20 +68,20 @@ export default function shoppingcard({ cardData, handleStockChange, displayItems
 
           <Divider sx={{ marginBottom: 4 }} />
           {displayItems?.length
-            ? displayItems.map((product) => <CartItem product={product} handleStockChange={handleStockChange} />)
+            ? displayItems.map((product, index) => <CartItem key={index} product={product} handleStockChange={handleStockChange} />)
             : <Typography variant="h5" component="h2" align="center"> Hier ist noch nichts drin!</Typography>}
           {/* <pre style={{color:"white"}}>{JSON.stringify(displayItems, null, 2)}</pre> */}
           <pre>{JSON.stringify(orderId, null, 2)}</pre>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
           {
             orderId ?
-            <Button variant="outlined" color="warning" onClick={updateOrder} >Aktualisieren</Button>:
-            <Button variant="outlined" color="success" onClick={placeOrder} >Aufgeben</Button>
+            <Button variant="outlined" color="warning" onClick={() =>{updateOrder(), handleClose()}}>Aktualisieren</Button>:
+            <Button variant="outlined" color="success" onClick={() =>{placeOrder(), handleClose()}} >Aufgeben</Button>
           }
 
             {
             orderId ?
-            <Button variant="outlined" color="error" onClick={deleteOrder} >Löschen</Button>:null
+            <Button variant="outlined" color="error" onClick={deleteOrder}>Löschen</Button>:null
             }
             <IconButton variant="outlined" color="error" onClick={handleClose}><CloseIcon /></IconButton>
 

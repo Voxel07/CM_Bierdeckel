@@ -27,7 +27,9 @@ export default function Order() {
   const [orderDeleted, setOrderDeleted] = React.useState(false);
   const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0});
   const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
+  const [users, setUsers] = useState([]);
   const alertsManagerRef =  useRef(AlertsContext);
+
 
   const fetchProductsAndDrinks = useCallback(async () => {
     try {
@@ -92,6 +94,16 @@ export default function Order() {
   useEffect(() => {
     setDisplayItems(summarizeOrderItems(userCardItems));
   }, [userCardItems]);
+
+  useEffect(()=>{
+    axios.get("users").then(response => {
+      setUsers(response.data);
+        alertsManagerRef.current.showAlert("success", "User fetched");
+      }).catch(error =>{
+        alertsManagerRef.current.showAlert("error", "Fehler bei der Benutzerabfrage");
+        alertsManagerRef.current.showAlert("error", error.response.data);
+      })
+  },[])
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -253,6 +265,7 @@ export default function Order() {
 
   function updateOrder() {
     console.log("updating order", userCardItems);
+    console.log("userId", selectedUser.id);
     axios.put("/order", JSON.stringify(userCardItems), {
       params: {
         userId: selectedUser.id
@@ -304,7 +317,7 @@ export default function Order() {
           deleteOrder={deleteOrder}
           orderId={orderId}
         />
-        <Userselection handleUserChange={handleUserSelectionChange} />
+        <Userselection handleUserChange={handleUserSelectionChange} aviableUsers={users}/>
       </Stack>
       <TabContext value={tabValue}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

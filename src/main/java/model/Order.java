@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Order {
 
     @Id
-    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 3) //TODO: Chachge back to1
+    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 10) //TODO: Chachge back to 1
     @GeneratedValue(generator = "orderSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;

@@ -22,7 +22,7 @@ import jakarta.persistence.OneToMany;
 public class OrderItem
 {
     @Id
-    @SequenceGenerator(name = "orderItemsSeq", sequenceName = "ZSEQ_ORDER_ITEMS_ID", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "orderItemsSeq", sequenceName = "ZSEQ_ORDER_ITEMS_ID", allocationSize = 1, initialValue = 10)
     @GeneratedValue(generator = "orderItemsSeq")
     @Column(name = "id", unique = true, nullable = false)
     private int id;

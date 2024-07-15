@@ -34,12 +34,12 @@ const theme2 = createTheme({
   });
 
 function cardItem({product, handleStockChange}) {
-  const { productId, productName, productPrice, quantity, stock } = product;
+  const { key, productId, productName, productPrice, quantity, stock } = product;
 console.log(stock);
 console.log(quantity);
   return (
 
-    <Box key={productId + Math.random()}>
+    <Box key={key}>
       <Stack
         direction="row"
         spacing={2}
@@ -57,18 +57,22 @@ console.log(quantity);
           alignItems="center"
         >
         <ThemeProvider theme={theme2}>
+          <Tooltip title="Menge erhöhen" placement="top">
           <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add")} disabled={stock <= 0}>
             <AddIcon fontSize="inherit" />
           </IconButton>
+          </Tooltip>
           <Tooltip title="Menge" placement="top">
             <Typography sx={{ minWidth: "20px", textAlign: "center" }}>
               {quantity}
             </Typography>
           </Tooltip>
+          <Tooltip title="Menge veringern"  placement="top">
           <IconButton
             aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm")}>
             <RemoveIcon fontSize="inherit" />
           </IconButton>
+          </Tooltip>
           </ThemeProvider>
         </Stack>
         <Tooltip title="Einzelpreis" placement="top">
@@ -81,8 +85,8 @@ console.log(quantity);
           {(productPrice * quantity).toFixed(2)}€
           </Typography>
         </Tooltip>
-        <IconButton color="error">
-          <Tooltip title="Produkt löschen" placement="top" onClick={() => handleStockChange(productId, "clear")}>
+        <IconButton color="error" onClick={() => handleStockChange(productId, "clear")}>
+          <Tooltip title="Produkt löschen" placement="top" >
             <DeleteIcon />
           </Tooltip>
         </IconButton>

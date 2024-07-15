@@ -97,98 +97,73 @@ public class OrderOrm {
         return  query.getResultList();
     }
 
-
     @Transactional
     public Response createOrder(Long userId, List<OrderItem> orderItems) {
-
         Order order = new Order();
-        User user = new User();
-
+        User user;
+    
         try {
             user = em.find(User.class, userId);
+            if (user == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
+            }
         } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error finding user: " + e.getMessage()).build();
         }
-
-        if (user == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Benutzer nicht gefunden").build();
-        }
-
-        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user =: user", Order.class);
+    
+        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user = :user", Order.class);
         query.setParameter("user", user);
-        System.out.println("dadasdasd");
-
-        if(!query.getResultList().isEmpty())
-        {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Der Benutzer hat schon eine Bestellung. Aktualisiere diese Bestellung").build();
+    
+        if (!query.getResultList().isEmpty()) {
+            return Response.status(Response.Status.CONFLICT).entity("User already has an order. Please update the existing order.").build();
         }
-        System.out.println("---------------------------");
+    
         order.setUser(user);
         order.setOrderCompleted(false);
         order.setOrderDelivered(false);
         order.setOrderPaid(false);
-
+    
         try {
             em.persist(order);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        user.setOrder(order);
-
-        try {
+            user.setOrder(order);
             em.merge(user);
         } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error persisting order: " + e.getMessage()).build();
         }
-
-        System.out.println("jup-----------");
-        //Create a map to store the product and its count
+    
         Map<Product, Long> productCountMap = new HashMap<>();
-
-        Long cntOderItems = 0L;
-
-        //Iterate over the order items
+        Long cntOrderItems = 0L;
+    
         for (OrderItem orderItem : orderItems) {
-            cntOderItems++;
+            cntOrderItems++;
             addProductToOrder(order.getId(), orderItem.getProduct().getId());
-            //Get the product from the order item
             Product product = orderItem.getProduct();
-
-            //Check if the product is already in the map
-            if(productCountMap.containsKey(product)){
-                //If so, increase the count by one
-                productCountMap.put(product, productCountMap.get(product) + 1);
-            } else {
-                //If not, add the product to the map with count 1
-                productCountMap.put(product, 1L);
-            }
+            productCountMap.merge(product, 1L, Long::sum);
         }
-        em.getTransaction().begin();
-        //Iterate over the map
-        for (Map.Entry<Product, Long> entry : productCountMap.entrySet()) {
-            //Get the product and the count
-            Product product = entry.getKey();
-            Long count = entry.getValue();
-            System.out.println(product.getId());
+    
+        try {
+            for (Map.Entry<Product, Long> entry : productCountMap.entrySet()) {
+                Product product = entry.getKey();
+                Long count = entry.getValue();
+    
+                Product dbProduct = em.find(Product.class, product.getId());
+                if (dbProduct == null) {
+                    throw new IllegalArgumentException("Product with ID " + product.getId() + " not found");
+                }
 
-
-            Product dbProduct = em.find(Product.class, product.getId());
-
-            if (dbProduct == null) {
-                em.getTransaction().rollback();
-                return Response.status(Response.Status.CONFLICT).entity("ID passt nicht").build();
+                if (dbProduct.getStock().equals(dbProduct.getConsumption())) {
+                    return Response.status(Response.Status.CONFLICT).entity("Kein Bestand mehr für dieses Produkt").build();
+                }
+    
+                dbProduct.incConsumption();
+                em.merge(dbProduct);
             }
-
-            //Decrease the stock of the product
-            dbProduct.decStock(count);
-
-            //Merge the dbProduct to the db
-            em.merge(dbProduct);
+        } catch (Exception e) {
+            // The transaction will be automatically rolled back due to the exception
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error updating product stock: " + e.getMessage()).build();
         }
-        em.getTransaction().commit();
-
-        return Response.status(Response.Status.CREATED).entity("Neue Bestellung mit " + cntOderItems + " Produkten").build();
+    
+        return Response.status(Response.Status.CREATED).entity("New order created with " + cntOrderItems + " products").build();
     }
 
     @Transactional
@@ -273,14 +248,24 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Product not found").build();
         }
 
+        if (productDB.getStock().equals(productDB.getConsumption())) {
+            return Response.status(Response.Status.CONFLICT).entity("Kein Bestand mehr für dieses Produkt").build();
+        }
+
         OrderItem orderItem = new OrderItem(productDB, orderDB, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
         orderDB.addOrderItem(orderItem);
         orderDB.setOrderCompleted(false);
         orderDB.setOrderPaid(false);
 
-        try {
-            System.out.println("merge");
+        productDB.incConsumption();
 
+        try{
+            em.merge(productDB);
+        }catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        try {
             em.merge(orderDB);
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
@@ -313,6 +298,7 @@ public class OrderOrm {
             if (orderItem.getId() == orderItemId) {
                 // em.remove(orderItem); // Remove the OrderItem from the database
                 orderDB.removeOrderItem(orderItem);
+                orderDB.getOrderItemById(orderItemId).getProduct().decConsumption();
                 itemFound = true;
                 break;
             }

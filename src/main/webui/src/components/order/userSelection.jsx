@@ -3,7 +3,12 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
 
-export default function Userselection({ handleUserChange }) {
+export default function Userselection({ aviableUsers, handleUserChange }) {
+
+  const mappedUsers = aviableUsers.map(user => ({
+    label: ""+user.id, // Assuming each user object has a username property
+    id: user.id, // Keep the id for reference
+  }));
 
   const theme = createTheme({
     components: {
@@ -62,10 +67,12 @@ export default function Userselection({ handleUserChange }) {
       sx={{ width: 120 }}
       onChange={handleUserChange}
       renderInput={(params) => <TextField {...params} label="Benutzer" />}
+      getOptionLabel={(option) => option.label}
     />
     </ThemeProvider>
   );
 }
+
 
 const users = [
   { label: '1', id: 1 },
