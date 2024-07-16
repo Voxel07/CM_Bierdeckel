@@ -183,14 +183,6 @@ public class OrderResource {
         {
             return orm.updateOrderStatus(orderId, orderItemId);
         }
-        // else if (action.equals("payOrder") && orderItemId == 0)
-        // {
-        //     return orm.payOrder(orderId);
-        // }
-        // else if (action.equals("completeOrder") && orderItemId == 0)
-        // {
-        //     return orm.completeOrder(orderId);
-        // }
         else
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();

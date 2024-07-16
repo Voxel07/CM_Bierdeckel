@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import model.OrderItem;
@@ -30,8 +31,8 @@ public class OrderItemResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getOrderItems(@QueryParam("orderStatus") String orderStatus ,
-                                         @QueryParam("paymentStatus") String paymentStatus) 
+    public Response getOrderItems(  @QueryParam("orderStatus") String orderStatus ,
+                                    @QueryParam("paymentStatus") String paymentStatus) 
     {
         System.out.println(paymentStatus);
         System.out.println(orderStatus);
@@ -67,5 +68,22 @@ public class OrderItemResource {
             return Response.status(Response.Status.OK).entity(orderItemOrm.getAllOrderitems()).build();
         }
     }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateOrderItem(@QueryParam("orderId") Long orderId,
+                                    @QueryParam("action") String action)
+    {
+        if(orderId == null || action == null)
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing param").build();
+        }
+
+
+        return Response.ok().build();
+    }
+
+
   
 }
