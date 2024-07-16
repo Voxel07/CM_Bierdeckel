@@ -8,7 +8,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env: 
-      VITE_PROD_API_URL: 'https://bierdeckel.matze.fun/api'
+      VITE_PROD_API_URL: https://bierdeckel.matze.fun/api
     steps:
       - uses: actions/checkout@v3
        # Cache npm dependencies
