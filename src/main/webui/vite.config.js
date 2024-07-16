@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   define: {
     'process.env.VITE_DEV_API_URL': process.env.VITE_DEV_API_URL,
-    'process.env.VITE_PROD_API_URL': process.env.VITE_PROD_API_URL,
+    'process.env.VITE_PROD_API_URL': JSON.stringify("https://bierdeckel.matze.fun/api")
   },
   //  base: '/', // Set the base URL
   // server: {
