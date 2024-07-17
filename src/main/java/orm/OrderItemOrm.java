@@ -36,12 +36,67 @@ public class OrderItemOrm {
         return query.getResultList();
     }
 
-    public Response updateOrderItemState(OrderItem orderItem)
+    public Response updateOrderItemState(Long orderItemId, OrderStatusActions action)
     {
-        
+        OrderItem dbOrderItem;
+
+        try {
+            dbOrderItem = em.find(OrderItem.class, orderItemId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (dbOrderItem == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Artikel nicht gefunden").build();
+        }
+
+        Order dbOrder = dbOrderItem.getOrder();
+
+        if(dbOrderItem.getOrderStatus().equals(orderItem.getOrderStatus()))
+        {
+            return Response.status(Response.Status.NOT_MODIFIED).entity("Status hat sich nicht geändert").build();
+        }
+
+        if(action == PROGRESS)
+        {
+            switch (orderItem.getOrderStatus()) {
+                case ORDERED:
+                    dbOrderItem.setOrderStatus(IN_PROGRESS)
+                    break;
+                case IN_PROGRESS:
+                    dbOrderItem.setOrderStatus(DELIVERED)
+                    break;
+                case DELIVERED:
+                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+                    break;
+                default:
+                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid status").build();
+            }
+        }
+        else if(action == RETROGRESS)
+        {
+            switch (orderItem.getOrderStatus()) {
+                case DELIVERED:
+                    dbOrderItem.setOrderStatus(IN_PROGRESS)
+                    break;
+                case IN_PROGRESS:
+                    dbOrderItem.setOrderStatus(ORDERED)
+                    break;
+                case ORDERED:
+                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+                    break;
+                default:
+                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid status").build();
+            }
+        }
+
+        try {
+            em.merge(dbOrderItem);
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Speichern Fehlgschlagen").build();
+        }
+
         return Response.ok().entity("Element erfolgreich aktualisiert").build();
     }
-    
-
     
 }

@@ -60,6 +60,11 @@ public class OrderItem
         DELIVERED
     }
 
+    public enum OrderStatusActions {
+        PROGRESS,
+        RETROGRESS
+    }
+
     public OrderItem() {
     }
 

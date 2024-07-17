@@ -120,35 +120,39 @@ const updateItemInArray = (itemId, selectedStatus) => {
 }
 
 const handleNext = (item) => {
-    switch (item.orderStatus) {
-      case titles[0]: //orderd
-        setOrdered(ordered.filter((i) => i.id !== item.id));
-        item.orderStatus = titles[1];
-        setProcessing([...processing, item]);
-        break;
-      case titles[1]: //Processing
-        setProcessing(processing.filter((i) => i.id !== item.id));
-        item.orderStatus = titles[2];
-        setDone([...done, item]);
-        break;
-      // No default needed if 'done' is the final state
-    }
-  };
+  if (updateOrderItemState(item "progress") == false) return false;
+ 
+  switch (item.orderStatus) {
+    case titles[0]: //orderd
+      setOrdered(ordered.filter((i) => i.id !== item.id));
+      item.orderStatus = titles[1];
+      setProcessing([...processing, item]);
+      break;
+    case titles[1]: //Processing
+      setProcessing(processing.filter((i) => i.id !== item.id));
+      item.orderStatus = titles[2];
+      setDone([...done, item]);
+      break;
+    // No default needed if 'done' is the final state
+  }
+};
   
-  const handlePrevious = (item) => {
-    switch (item.orderStatus) {
-      case titles[1]: //Processing
-        setProcessing(processing.filter((i) => i.id !== item.id));
-        item.orderStatus = titles[0];
-        setOrdered([...ordered, item]);
-        break;
-      case titles[2]: //Done
-        setDone(done.filter((i) => i.id !== item.id));
-        item.orderStatus = titles[1];
-        setProcessing([...processing, item]);
-        break;
-    }
-  };
+const handlePrevious = (item) => {
+  if (updateOrderItemState(item "retrogress") == false)  return false;
+
+  switch (item.orderStatus) {
+    case titles[1]: //Processing
+      setProcessing(processing.filter((i) => i.id !== item.id));
+      item.orderStatus = titles[0];
+      setOrdered([...ordered, item]);
+      break;
+    case titles[2]: //Done
+      setDone(done.filter((i) => i.id !== item.id));
+      item.orderStatus = titles[1];
+      setProcessing([...processing, item]);
+      break;
+  }
+};
 
   const handleSort = (arrayToSort, option) => {
     // console.log(arrayToSort, option)
@@ -224,6 +228,27 @@ const handleNext = (item) => {
     setDone(newDone);
     setSelectedItems(newSelectedItems);
   };
+
+  const updateOrderItemState = (item, direction) => {
+    
+    axios.put("orderItem", null, {params:{
+      orderItemId: item.id,
+      action: direction
+    },
+    headers:{
+      'Content-Type': 'application/json'
+    }})
+    .then(response =>{
+      alertsManagerRef.current.showAlert('success', response.data);
+      setTrigger(true);
+      return false;
+    })
+    .catch(error =>{
+      console.log(error)
+      alertsManagerRef.current.showAlert('error', error.response.data);
+      return true;
+    });
+    }
 
 
   return (

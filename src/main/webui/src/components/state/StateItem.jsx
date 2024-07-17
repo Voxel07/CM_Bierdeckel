@@ -12,7 +12,7 @@ import "./StateItem.css"
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
-const StateItem = ({pHandleSetSelectedITems, data, next, previous}) => {
+const StateItem = ({data, next, previous, pHandleSetSelectedITems}) => {
   const{id, user, description, extras, product} = data;
   return (
     <Card key={product.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#083036" }}>

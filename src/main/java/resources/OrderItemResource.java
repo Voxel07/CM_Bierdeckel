@@ -72,7 +72,7 @@ public class OrderItemResource {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateOrderItem(@QueryParam("orderId") Long orderId,
+    public Response updateOrderItem(@QueryParam("orderItemId") Long orderItemId,
                                     @QueryParam("action") String action)
     {
         if(orderId == null || action == null)
@@ -80,8 +80,15 @@ public class OrderItemResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing param").build();
         }
 
-
-        return Response.ok().build();
+        try
+        {
+            OrderActions orderAction = OrderActions.valueOf(action.toUpperCase());
+            return orderItemOrm.updateOrderItemState(orderItemId, orderAction);
+        } 
+        catch (IllegalArgumentException e) 
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action parameter").build();
+        }
     }
 
 

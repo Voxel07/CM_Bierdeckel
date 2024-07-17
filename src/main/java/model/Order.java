@@ -166,10 +166,6 @@ public class Order {
         orderCompleted = true;
     }
 
-    public void setOrderItemState(OrderItem orderItem, OrderStatus orderStatus){
-        orderItem.setOrderStatus(orderStatus);
-    }
-
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }

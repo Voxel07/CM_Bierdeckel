@@ -414,59 +414,59 @@ public class OrderOrm {
         return Response.status(Response.Status.CREATED).entity("Extra removed from order").build();
     }
 
-    @Transactional
-    public Response updateOrderStatus(Long orderId, Long orderItemId) {
+    // @Transactional
+    // public Response updateOrderStatus(Long orderId, Long orderItemId) {
         
-        Order orderDB = new Order();
-        try {
-            orderDB = em.find(Order.class, orderId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
+    //     Order orderDB = new Order();
+    //     try {
+    //         orderDB = em.find(Order.class, orderId);
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+    //     }
 
-        if (orderDB == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
-        }
+    //     if (orderDB == null) {
+    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
+    //     }
 
-        OrderItem orderItem = new OrderItem();
-        try {
-            orderItem = em.find(OrderItem.class, orderItemId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
+    //     OrderItem orderItem = new OrderItem();
+    //     try {
+    //         orderItem = em.find(OrderItem.class, orderItemId);
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+    //     }
 
-        if (orderItem == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
+    //     if (orderItem == null) {
+    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
 
-        }
+    //     }
 
-        switch (orderItem.getOrderStatus()) {
-            case ORDERED:
-                orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.IN_PROGRESS);
-                break;
-            case IN_PROGRESS:
-                orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.DELIVERED);
-                break;
-            case DELIVERED:
-                if(Boolean.TRUE.equals(orderDB.isOrderPaid()))
-                {
-                    orderDB.setOrderCompleted(true);
-                }
-                else{
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
-                }
-            default:
-                return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid action").build();
-        }
+    //     switch (orderItem.getOrderStatus()) {
+    //         case ORDERED:
+    //             orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.IN_PROGRESS);
+    //             break;
+    //         case IN_PROGRESS:
+    //             orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.DELIVERED);
+    //             break;
+    //         case DELIVERED:
+    //             if(Boolean.TRUE.equals(orderDB.isOrderPaid()))
+    //             {
+    //                 orderDB.setOrderCompleted(true);
+    //             }
+    //             else{
+    //                 return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
+    //             }
+    //         default:
+    //             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid action").build();
+    //     }
 
-        try {
-            em.merge(orderDB);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
+    //     try {
+    //         em.merge(orderDB);
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+    //     }
 
-        return Response.status(Response.Status.CREATED).entity("Order updated").build();
-    }
+    //     return Response.status(Response.Status.CREATED).entity("Order updated").build();
+    // }
 
     @Transactional
     public Response updateOrderPayment(Long orderId, Long orderItemId) {

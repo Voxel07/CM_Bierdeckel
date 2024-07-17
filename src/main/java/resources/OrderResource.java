@@ -179,10 +179,10 @@ public class OrderResource {
         {
             return orm.updateOrderPayment(orderId, orderItemId);
         }
-        else if (action.equals("progress"))
-        {
-            return orm.updateOrderStatus(orderId, orderItemId);
-        }
+        // else if (action.equals("progress"))
+        // {
+        //     return orm.updateOrderStatus(orderId, orderItemId);
+        // }
         else
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
