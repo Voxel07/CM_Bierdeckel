@@ -61,7 +61,6 @@ export default function Order() {
       clearShoppingcard(); // Reset shopping Card if no user is defined
       return;
     }
-    console.log("selectedUser", selectedUser);
     axios
       .get("/order", {
         params: {
@@ -95,15 +94,15 @@ export default function Order() {
     setDisplayItems(summarizeOrderItems(userCardItems));
   }, [userCardItems]);
 
-  useEffect(()=>{
-    axios.get("users").then(response => {
-      setUsers(response.data);
-        alertsManagerRef.current.showAlert("success", "User fetched");
-      }).catch(error =>{
-        alertsManagerRef.current.showAlert("error", "Fehler bei der Benutzerabfrage");
-        alertsManagerRef.current.showAlert("error", error.response.data);
-      })
-  },[])
+  // useEffect(()=>{
+  //   axios.get("users").then(response => {
+  //     setUsers(response.data);
+  //       alertsManagerRef.current.showAlert("success", "User fetched");
+  //     }).catch(error =>{
+  //       alertsManagerRef.current.showAlert("error", "Fehler bei der Benutzerabfrage");
+  //       alertsManagerRef.current.showAlert("error", error.response.data);
+  //     })
+  // },[])
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -172,7 +171,6 @@ export default function Order() {
   }
 
   const handleUserSelectionChange = (event, newValue) => {
-    console.log("userChanged", newValue);
     setSelectedUser({ ...newValue });
   };
 
@@ -284,7 +282,6 @@ export default function Order() {
   }
 
   function deleteOrder() {
-    console.log(orderId);
     axios.delete("/order", {
       data: { id: orderId }
     })

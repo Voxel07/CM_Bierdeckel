@@ -131,8 +131,6 @@ const OrderDetails = (({order: initialOrder, parrentCallback}) =>
             <TableBody>
                 {order.orderItems.map((orderItem) => (
                     <TableRow key={orderItem.id}>
-                     
-                        {console.log(orderItem)}
                         <TableCell >
                                {orderItem.id}
                         </TableCell>

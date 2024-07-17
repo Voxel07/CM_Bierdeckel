@@ -177,18 +177,7 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
         }
 
-        // //Iterate over order items
-        // System.out.println("Items in order");
-        // for (OrderItem orderItem : dbOrder.getOrderItems()) {
-        //     System.out.println(orderItem.toString());
-        // }
-
-        // System.out.println("Items in orderItems");
-        // for (OrderItem orderItem : OrderItems) {
-        //     System.out.println(orderItem.toString());
-        // }
-
-         //Check if provided oderItems are in the order
+        //Check if provided oderItems are in the order
         Set<Integer> existingIds = dbOrder.getOrderItems().stream()
                                         .map(OrderItem::getId)
                                         .collect(Collectors.toSet());
@@ -199,25 +188,6 @@ public class OrderOrm {
             }
         }
 
-        // System.out.println("Items in order 2");
-        // for (OrderItem orderItem : dbOrder.getOrderItems()) {
-        //     System.out.println(orderItem.toString());
-        // }
-
-        // System.out.println("Items in orderItems 2");
-        // for (OrderItem orderItem : OrderItems) {
-        //     System.out.println(orderItem.toString());
-        // }
-
-        // System.out.println("merge");
-        // try {
-        //     em.merge(dbOrder);
-        // } catch (Exception e) {
-        //     System.out.println(e);
-
-        //     return Response.status(Response.Status.EXPECTATION_FAILED).entity("nope").build();
-        // }
-        //Persit order to DB
         return Response.status(200).entity("Bestellung aktualisiert").build();
     }
 
@@ -413,60 +383,6 @@ public class OrderOrm {
 
         return Response.status(Response.Status.CREATED).entity("Extra removed from order").build();
     }
-
-    // @Transactional
-    // public Response updateOrderStatus(Long orderId, Long orderItemId) {
-        
-    //     Order orderDB = new Order();
-    //     try {
-    //         orderDB = em.find(Order.class, orderId);
-    //     } catch (Exception e) {
-    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-    //     }
-
-    //     if (orderDB == null) {
-    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
-    //     }
-
-    //     OrderItem orderItem = new OrderItem();
-    //     try {
-    //         orderItem = em.find(OrderItem.class, orderItemId);
-    //     } catch (Exception e) {
-    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-    //     }
-
-    //     if (orderItem == null) {
-    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item not found").build();
-
-    //     }
-
-    //     switch (orderItem.getOrderStatus()) {
-    //         case ORDERED:
-    //             orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.IN_PROGRESS);
-    //             break;
-    //         case IN_PROGRESS:
-    //             orderDB.setOrderItemState(orderItem, OrderItem.OrderStatus.DELIVERED);
-    //             break;
-    //         case DELIVERED:
-    //             if(Boolean.TRUE.equals(orderDB.isOrderPaid()))
-    //             {
-    //                 orderDB.setOrderCompleted(true);
-    //             }
-    //             else{
-    //                 return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order item state limit reached").build();
-    //             }
-    //         default:
-    //             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid action").build();
-    //     }
-
-    //     try {
-    //         em.merge(orderDB);
-    //     } catch (Exception e) {
-    //         return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-    //     }
-
-    //     return Response.status(Response.Status.CREATED).entity("Order updated").build();
-    // }
 
     @Transactional
     public Response updateOrderPayment(Long orderId, Long orderItemId) {

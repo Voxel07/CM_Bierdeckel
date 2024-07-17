@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Divider from "@mui/material/Divider";
+import { Stack, Typography  } from "@mui/material";
 import StateItem from '../components/state/StateItem';
 import StateRowHeader from "../components/state/StateRowHeader";
 import StateRowSubHeader from "../components/state/StateRowSubHeader";
 import { AlertsManager , AlertsContext } from '../utils/AlertsManager';
-
-import axios from "axios";
+import { summarizeOrder } from "../components/order/orderUtils";
+import { StateOverviewItem }from "../components/state/StateOverviewItem";
 
 import "../components/state/state.css"
 
@@ -18,11 +21,15 @@ function State() {
   const [processing, setProcessing] = useState([]);
   const [done, setDone] = useState([]);
   const alertsManagerRef =  useRef(AlertsContext);
+  const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
+
 
   useEffect(() => {
       axios.get("/order")
       .then(response =>{
+        setDisplayItems(summarizeOrder(response.data))
         const { o, p, d } = distributeOrders(response.data);
+
         setOrdered(o);
         setProcessing(p);
         setDone(d);
@@ -42,19 +49,19 @@ function State() {
     // Loop through each orderItem in the order
     for (const orderItem of order.orderItems) {
 
-      // console.log(orderItem)
-      const status = orderItem.orderStatus;
+      const orderItemWithId = {...orderItem, userId: order.user.id}
+      const status = orderItemWithId.orderStatus;
 
       // Distribute items based on their orderStatus
       switch (status) {
         case titles[0]:
-          o.push(orderItem);
+          o.push(orderItemWithId);
           break;
         case titles[1]:
-          p.push(orderItem);
+          p.push(orderItemWithId);
           break;
         case titles[2]:
-          d.push(orderItem);
+          d.push(orderItemWithId);
           break;
         default:
           alertsManagerRef.current.showAlert('warning', "Unbekannter Status in einer Bestellposition. "+ status);
@@ -120,7 +127,7 @@ const updateItemInArray = (itemId, selectedStatus) => {
 }
 
 const handleNext = (item) => {
-  if (updateOrderItemState(item "progress") == false) return false;
+  if (updateOrderItemState(item, "progress") == false) return false;
  
   switch (item.orderStatus) {
     case titles[0]: //orderd
@@ -138,7 +145,7 @@ const handleNext = (item) => {
 };
   
 const handlePrevious = (item) => {
-  if (updateOrderItemState(item "retrogress") == false)  return false;
+  if (updateOrderItemState(item, "retrogress") == false)  return false;
 
   switch (item.orderStatus) {
     case titles[1]: //Processing
@@ -155,8 +162,6 @@ const handlePrevious = (item) => {
 };
 
   const handleSort = (arrayToSort, option) => {
-    // console.log(arrayToSort, option)
-
     switch (arrayToSort) {
       case "Bestellt":
           setOrdered(sortByPrimaryKey(ordered.slice(), option)); 
@@ -172,7 +177,6 @@ const handlePrevious = (item) => {
         console.log("no valid state selected")
         break;
     }
-    // console.log(arrayToSort, option);
   }
 
   const handleMassSort = (arrayToSort, option) => {
@@ -240,7 +244,6 @@ const handlePrevious = (item) => {
     }})
     .then(response =>{
       alertsManagerRef.current.showAlert('success', response.data);
-      setTrigger(true);
       return false;
     })
     .catch(error =>{
@@ -250,48 +253,74 @@ const handlePrevious = (item) => {
     });
     }
 
-
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="flex-start" spacing={2}>
-    <AlertsManager ref={alertsManagerRef} />
+    <Grid sx={{ flexGrow: 1 }} container direction="column" >
+      <AlertsManager ref={alertsManagerRef} />
 
-    <Grid item  justifyContent="center" alignItems="center" >
-      <Paper className='itemContainer'  variant="elevation" elevation={2} sx={{ backgroundColor: '#010409'}} >
-      <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number= {ordered?.length} />
-      <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.state === titles[0]).length} titles={titles} />
-        { ordered?.length
-        ? ordered.map((product, key) => (
-        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
-         )):null}
-      </Paper>
-    </Grid>
-    <Grid item>
-      <Paper className='itemContainer' variant="elevation" elevation={2} sx={{ backgroundColor: '#010409'}}>
-      <StateRowHeader pHandleSort={handleSort} state={"In Bearbeitung"} color={"warning"} number= {processing?.length}/>
-      <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.state === titles[1]).length}  titles={titles}/>
+      {/* overview */}
+      <Grid item xs={8} >
+        <Grid container justifyContent="center" >
+          <Paper className='header' >
+          <Typography sx={{marginBottom:"10px"}}>Übersicht aller Bestellungen</Typography>
+          <Stack  variant="elevation" elevation={2} direction="row" spacing={2} >
+          {displayItems?.length ? (
+            displayItems.map((item, index) => (
+              <React.Fragment key={item.productId}>
+                <StateOverviewItem item={item} />
+                {index < displayItems.length - 1 && <Divider  orientation="vertical" variant="middle" flexItem/>} {/* Add divider except for last item */}
+              </React.Fragment>
+            ))
+          ) : null}
+          </Stack>
+          </Paper>
+          </Grid>
+      </Grid>
+    
+      {/* State */}
+      <Grid item>
 
-        { processing?.length
-        ? processing.map((product, key) => (
-        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
-         )):null}
-      </Paper>
-    </Grid>
-    <Grid item>
-      <Paper className='itemContainer' variant="elevation" elevation={2} sx={{ backgroundColor: '#010409'}}>
-      <StateRowHeader pHandleSort={handleSort} state={"Fertig"} color={"success"} number= {done?.length}/>
-      <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.state === titles[2]).length}  titles={titles}/>
+      <Grid container justifyContent="center" spacing={3}>
+        
+        <Grid item >
+          <Paper className='itemContainer'  variant="elevation" elevation={2}>
+          <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number = {ordered?.length} />
+          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.orderStatus  === titles[0]).length} titles={titles} />
+            { ordered?.length
+            ? ordered.map((product, key) => (
+            <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+            )):null}
+          </Paper>
+        </Grid>
+        
+        <Grid item >
+          <Paper className='itemContainer' variant="elevation" elevation={2}>
+          <StateRowHeader pHandleSort={handleSort} state={"In Bearbeitung"} color={"warning"} number = {processing?.length}/>
+          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.orderStatus  === titles[1]).length}  titles={titles}/>
+            { processing?.length
+            ? processing.map((product, key) => (
+            <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+            )):null}
+          </Paper>
+        </Grid>
 
-        { done?.length
-        ? done.map((product, key) => (
-        <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
-         )):null}
-      </Paper>
+        <Grid item >
+          <Paper className='itemContainer' variant="elevation" elevation={2}>
+          <StateRowHeader pHandleSort={handleSort} state={"Fertig"} color={"success"} number = {done?.length}/>
+          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.orderStatus  === titles[2]).length}  titles={titles}/>
+            { done?.length
+            ? done.map((product, key) => (
+            <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
+            )):null}
+          </Paper>
+        </Grid>
+
+      </Grid>
+      {/* <pre style={{ color: "white" }}>{JSON.stringify(selectedItems, null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(ordered, null, 2)}</pre>
+      <pre>{JSON.stringify(processing, null, 2)}</pre>
+      <pre>{JSON.stringify(done, null, 2)}</pre> */}
     </Grid>
-    {/* <pre>{JSON.stringify(selectedItems, null, 2)}</pre>
-    <pre>{JSON.stringify(ordered, null, 2)}</pre>
-    <pre>{JSON.stringify(processing, null, 2)}</pre>
-    <pre>{JSON.stringify(done, null, 2)}</pre> */}
-  </Grid>
+    </Grid>
   )
 };
 

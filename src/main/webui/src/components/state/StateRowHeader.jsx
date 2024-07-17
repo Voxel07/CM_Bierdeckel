@@ -22,7 +22,7 @@ export default function StateRowHeader ({pHandleSort, state, color, number})
   
   const handleClose = (val1, val2) => {
     pHandleSort(val1, val2);
-    setAnchorEl(null);
+    setAnchorEl(false);
   };
 
     return(

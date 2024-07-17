@@ -24,7 +24,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Orders({OrderState}) {
-  console.log(OrderState)
   const alertsManagerRef =  useRef(AlertsContext);
 
   const [value, setValue] = React.useState('1');

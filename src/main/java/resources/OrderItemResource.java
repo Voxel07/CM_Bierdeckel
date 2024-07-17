@@ -17,6 +17,7 @@ import jakarta.ws.rs.QueryParam;
 import orm.OrderItemOrm;
 import model.OrderItem.PaymentStatus;
 import model.OrderItem.OrderStatus;
+import model.OrderItem.OrderStatusActions;
 
 
 @RequestScoped
@@ -75,19 +76,19 @@ public class OrderItemResource {
     public Response updateOrderItem(@QueryParam("orderItemId") Long orderItemId,
                                     @QueryParam("action") String action)
     {
-        if(orderId == null || action == null)
+        if(orderItemId == null || action == null)
         {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing param").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Fehlender Parameter").build();
         }
 
         try
         {
-            OrderActions orderAction = OrderActions.valueOf(action.toUpperCase());
+            OrderStatusActions orderAction = OrderStatusActions.valueOf(action.toUpperCase());
             return orderItemOrm.updateOrderItemState(orderItemId, orderAction);
         } 
         catch (IllegalArgumentException e) 
         {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action parameter").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Ungültiger Parameter").build();
         }
     }
 

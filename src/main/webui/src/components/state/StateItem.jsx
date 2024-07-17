@@ -13,12 +13,12 @@ import "./StateItem.css"
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const StateItem = ({data, next, previous, pHandleSetSelectedITems}) => {
-  const{id, user, description, extras, product} = data;
+  const{id, userId, description, extras, product} = data;
   return (
     <Card key={product.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#083036" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Chip icon={<FaceIcon />}  size="small" label={id} variant="outlined" color="primary" sx={{minWidth: 50}}/>
+          <Chip icon={<FaceIcon />}  size="small" label={userId} variant="outlined" color="primary" sx={{minWidth: 50}}/>
           <Typography variant="h5" component="div" gutterBottom>
               {product.name}
           </Typography >
