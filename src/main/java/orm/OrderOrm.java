@@ -185,6 +185,9 @@ public class OrderOrm {
             if (!existingIds.contains(newItem.getId())) {
                 addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
             }
+            else{
+                removeProductFromOrder(dbOrder.getId(), newItem.getProduct().getId())
+            }
         }
 
         return Response.status(200).entity("Bestellung aktualisiert").build();

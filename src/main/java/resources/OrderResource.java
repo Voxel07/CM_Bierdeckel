@@ -137,7 +137,6 @@ public class OrderResource {
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
         }
-
     }
 
     public Response handleExtra(Long orderId, Long extraId, Long orderItemId, String action)
