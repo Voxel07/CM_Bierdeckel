@@ -8,7 +8,7 @@ import StateItem from '../components/state/StateItem';
 import StateRowHeader from "../components/state/StateRowHeader";
 import StateRowSubHeader from "../components/state/StateRowSubHeader";
 import { AlertsManager , AlertsContext } from '../utils/AlertsManager';
-import { summarizeOrder } from "../components/order/orderUtils";
+import { summarizeOrderItems, summarizeOrder } from "../components/order/orderUtils";
 import { StateOverviewItem }from "../components/state/StateOverviewItem";
 
 import "../components/state/state.css"
@@ -21,15 +21,19 @@ function State() {
   const [processing, setProcessing] = useState([]);
   const [done, setDone] = useState([]);
   const alertsManagerRef =  useRef(AlertsContext);
-  const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
+  // const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
+  const [overviewOrderd, setOvervieOrderd] = useState([]);
+  const [overviewprocessing, setOvervieprocessing] = useState([]);
+  const [overviewDone, setOvervieDone] = useState([]);
+  const [trigger, setTrigger] = useState(0);
 
 
   useEffect(() => {
-      axios.get("/order")
+      axios.get("/order", {params:{category: "Food"}})
       .then(response =>{
-        setDisplayItems(summarizeOrder(response.data))
+        // setDisplayItems(summarizeOrder(response.data))
         const { o, p, d } = distributeOrders(response.data);
-
+        setTrigger( trigger + 1)
         setOrdered(o);
         setProcessing(p);
         setDone(d);
@@ -40,6 +44,12 @@ function State() {
 
   }, []);
 
+  useEffect(()=>{
+    setOvervieOrderd(summarizeOrderItems(ordered))
+    setOvervieprocessing(summarizeOrderItems(processing))
+    setOvervieDone(summarizeOrderItems(done))
+  }, [trigger])
+
   function distributeOrders(orders) {
     const o = [];
     const p = [];
@@ -48,6 +58,8 @@ function State() {
   for (const order of orders) {
     // Loop through each orderItem in the order
     for (const orderItem of order.orderItems) {
+      console.log(orderItem.product.category)
+      if(orderItem.product.category != "Food") continue;
 
       const orderItemWithId = {...orderItem, userId: order.user.id}
       const status = orderItemWithId.orderStatus;
@@ -142,6 +154,7 @@ const handleNext = (item) => {
       break;
     // No default needed if 'done' is the final state
   }
+  setTrigger( trigger + 1)
 };
   
 const handlePrevious = (item) => {
@@ -159,6 +172,7 @@ const handlePrevious = (item) => {
       setProcessing([...processing, item]);
       break;
   }
+  setTrigger( trigger + 1)
 };
 
   const handleSort = (arrayToSort, option) => {
@@ -231,6 +245,9 @@ const handlePrevious = (item) => {
     setProcessing(newProcessing);
     setDone(newDone);
     setSelectedItems(newSelectedItems);
+    
+    setTrigger( trigger + 1)
+
   };
 
   const updateOrderItemState = (item, direction) => {
@@ -258,23 +275,11 @@ const handlePrevious = (item) => {
       <AlertsManager ref={alertsManagerRef} />
 
       {/* overview */}
-      <Grid item xs={8} >
+      {/* <Grid item xs={8} >
         <Grid container justifyContent="center" >
-          <Paper className='header' >
-          <Typography sx={{marginBottom:"10px"}}>Übersicht aller Bestellungen</Typography>
-          <Stack  variant="elevation" elevation={2} direction="row" spacing={2} >
-          {displayItems?.length ? (
-            displayItems.map((item, index) => (
-              <React.Fragment key={item.productId}>
-                <StateOverviewItem item={item} />
-                {index < displayItems.length - 1 && <Divider  orientation="vertical" variant="middle" flexItem/>} {/* Add divider except for last item */}
-              </React.Fragment>
-            ))
-          ) : null}
-          </Stack>
-          </Paper>
+          <StateOverviewItem displayItems={displayItems} />
           </Grid>
-      </Grid>
+      </Grid> */}
     
       {/* State */}
       <Grid item>
@@ -282,6 +287,7 @@ const handlePrevious = (item) => {
       <Grid container justifyContent="center" spacing={3}>
         
         <Grid item >
+          <StateOverviewItem displayItems={overviewOrderd} />
           <Paper className='itemContainer'  variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number = {ordered?.length} />
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.orderStatus  === titles[0]).length} titles={titles} />
@@ -293,6 +299,7 @@ const handlePrevious = (item) => {
         </Grid>
         
         <Grid item >
+          <StateOverviewItem displayItems={overviewprocessing} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} state={"In Bearbeitung"} color={"warning"} number = {processing?.length}/>
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.orderStatus  === titles[1]).length}  titles={titles}/>
@@ -304,6 +311,7 @@ const handlePrevious = (item) => {
         </Grid>
 
         <Grid item >
+          <StateOverviewItem displayItems={overviewDone} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} state={"Fertig"} color={"success"} number = {done?.length}/>
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.orderStatus  === titles[2]).length}  titles={titles}/>

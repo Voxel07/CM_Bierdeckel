@@ -3,7 +3,7 @@ export const summarizeOrderItems = (orderData) => {
   const productCountMap = {};
 
   for (const orderItem of orderData) {
-    const { id: productId, name: productName, price: productPrice, stock } = orderItem.product;
+    const { id: productId, name: productName, price: productPrice, stock: stock, category:category } = orderItem.product;
 
     productCountMap[productId] = productCountMap[productId] ? {
       ...productCountMap[productId],
@@ -14,7 +14,8 @@ export const summarizeOrderItems = (orderData) => {
       productName,
       productPrice,
       quantity: 1,
-      stock
+      stock,
+      category
     };
   }
 

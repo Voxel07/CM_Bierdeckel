@@ -9,8 +9,7 @@ import Stack from "@mui/material/Stack";
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import SportsBarIcon from "@mui/icons-material/SportsBar";
 
-import OrderFood from "../components/order/OrderFood";
-import OrderDrinks from "../components/order/OrderDrinks";
+import OrderItems from "../components/order/OrderItems";
 import ShoppingCart from "../components/order/shoppingcard";
 import Userselection from "../components/order/userSelection";
 import { summarizeOrderItems } from "../components/order/orderUtils";
@@ -34,8 +33,8 @@ export default function Order() {
   const fetchProductsAndDrinks = useCallback(async () => {
     try {
       const [productsResponse, drinksResponse] = await Promise.all([
-        axios.get("products", { params: { category: "food" } }),
-        axios.get("products", { params: { category: "drinks" } })
+        axios.get("products", { params: { category: "Food" } }),
+        axios.get("products", { params: { category: "Drink" } })
       ]);
 
       setProducts(productsResponse.data);
@@ -48,11 +47,12 @@ export default function Order() {
 
   useEffect(() => {
     fetchProductsAndDrinks();
-  }, [fetchProductsAndDrinks]);
+  }, [fetchProductsAndDrinks, orderDeleted]);
 
 
   //Fetch the oder of the selected user
   useEffect(() => {
+    console.log("runnng now")
     if (
       selectedUser == null ||
       typeof selectedUser.id === "undefined" ||
@@ -88,21 +88,11 @@ export default function Order() {
         alertsManagerRef.current.showAlert('error', "Fehler beim Abfragen der Userdaten");
 
       });
-  }, [selectedUser, orderDeleted]);
+  }, [selectedUser]);
 
   useEffect(() => {
     setDisplayItems(summarizeOrderItems(userCardItems));
   }, [userCardItems]);
-
-  // useEffect(()=>{
-  //   axios.get("users").then(response => {
-  //     setUsers(response.data);
-  //       alertsManagerRef.current.showAlert("success", "User fetched");
-  //     }).catch(error =>{
-  //       alertsManagerRef.current.showAlert("error", "Fehler bei der Benutzerabfrage");
-  //       alertsManagerRef.current.showAlert("error", error.response.data);
-  //     })
-  // },[])
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -147,29 +137,6 @@ export default function Order() {
   }));
   }
 
-  const clearShoppingcard2 = () => {
-    // Loop through each item in the shopping cart
-    userCardItems.forEach((item) => {
-      // Find the product in the products array
-      const indexToModify = products.findIndex((prod) => prod.id === item.product.id);
-      if (indexToModify !== -1) {
-        // Increment the stock of the product
-        const productToModify = {...products[indexToModify]};
-        productToModify.stock += 1;
-        const newProducts = [...products];
-        newProducts[indexToModify] = productToModify;
-        setProducts(newProducts);
-      }
-    });
-
-    // Clear the shopping cart
-    setUserCardItems([]);
-    setCardMetadata({
-      total: 0,
-      itemCount: 0
-    });
-  }
-
   const handleUserSelectionChange = (event, newValue) => {
     setSelectedUser({ ...newValue });
   };
@@ -181,69 +148,77 @@ export default function Order() {
  * @param {string} action - The action to perform ("add", "rm", or "clear").
  * @return {void} This function does not return anything.
  */
-  function stockChange(id, action) {
-    //Add dsiplay items
-    if (action == "add") {
-      const indexToModify = products.findIndex((prod) => prod.id === id);
-      if (indexToModify !== -1) {
-        const productToModify = {...products[indexToModify]};
-        productToModify.stock -= 1;
-        const newProducts = [...products];
-        newProducts[indexToModify] = productToModify;
-        setProducts(newProducts);
-        addItemToShoppingcard(productToModify);
-      }
-    }
-    else if (action == "rm") {
-      const indexToModify = products.findIndex((prod) => prod.id === id);
-      if (indexToModify !== -1) {
-        const productToModify = {...products[indexToModify]};
-        productToModify.stock += 1;
-        const newProducts = [...products];
-        newProducts[indexToModify] = productToModify;
-        setProducts(newProducts);
-        rmItemFromShoppingcard(productToModify);
-      }
-    }
-    else if(action == "clear") {
-        let totalPriceToRemove = 0;
-        let itemsToRemoveCount = 0;
+function stockChange(id, action, category) {
+  console.log(category);
 
-        const updatedNewItems = userCardItems.filter((prod) => {
-            if (prod.product.id === id) {
-                totalPriceToRemove += prod.product.price;
-                itemsToRemoveCount++;
-                return false; // Exclude
-            } else {
-                return true;  // Keep
-            }
-        });
+  const isProduct = category === 'Food';
+  const items = isProduct ? products : drinks;
+  const setItems = isProduct ? setProducts : setDrinks;
+  const addItemToCart =  addItemToShoppingcard;
+  const rmItemFromCart =  rmItemFromShoppingcard;
+  const cartItems =  userCardItems;
+  const setCartItems =  setUserCardItems;
 
-        setUserCardItems(updatedNewItems);
-
-        const indexToModify = products.findIndex((prod) => prod.id === id);
-        if (indexToModify !== -1) {
-          const productToModify = {...products[indexToModify]};
-          productToModify.stock += itemsToRemoveCount;
-          const newProducts = [...products];
-          newProducts[indexToModify] = productToModify;
-          setProducts(newProducts);
-        }
-
-        // Update cardMetadata
-        setCardMetadata((prevMetadata) => ({
-            ...prevMetadata, // Keep existing properties
-            total: prevMetadata.total - totalPriceToRemove,
-            itemCount: prevMetadata.itemCount - itemsToRemoveCount
-        }));
-    }
-    else {
-      console.log("nope");
+  if (action === "add") {
+    const indexToModify = items.findIndex((item) => item.id === id);
+    if (indexToModify !== -1) {
+      const itemToModify = {...items[indexToModify]};
+      itemToModify.stock -= 1;
+      const newItems = [...items];
+      newItems[indexToModify] = itemToModify;
+      setItems(newItems);
+      addItemToCart(itemToModify);
     }
   }
+  else if (action === "rm") {
+    const indexToModify = items.findIndex((item) => item.id === id);
+    if (indexToModify !== -1) {
+      const itemToModify = {...items[indexToModify]};
+      itemToModify.stock += 1;
+      const newItems = [...items];
+      newItems[indexToModify] = itemToModify;
+      setItems(newItems);
+      rmItemFromCart(itemToModify);
+    }
+  }
+  else if(action === "clear") {
+    let totalPriceToRemove = 0;
+    let itemsToRemoveCount = 0;
+
+    const updatedCartItems = cartItems.filter((item) => {
+      if (item.product.id === id) {
+        totalPriceToRemove += item.product.price;
+        itemsToRemoveCount++;
+        return false; // Exclude
+      } else {
+        return true;  // Keep
+      }
+    });
+
+    setCartItems(updatedCartItems);
+
+    const indexToModify = items.findIndex((item) => item.id === id);
+    if (indexToModify !== -1) {
+      const itemToModify = {...items[indexToModify]};
+      itemToModify.stock += itemsToRemoveCount;
+      const newItems = [...items];
+      newItems[indexToModify] = itemToModify;
+      setItems(newItems);
+    }
+
+    // Update cardMetadata
+    setCardMetadata((prevMetadata) => ({
+      ...prevMetadata,
+      total: prevMetadata.total - totalPriceToRemove,
+      itemCount: prevMetadata.itemCount - itemsToRemoveCount
+    }));
+  }
+  else {
+    console.log("nope");
+  }
+}
 
   function placeOrder() {
-    console.log("placing order", userCardItems);
     axios.post("/order", JSON.stringify(userCardItems), {
       params: {
         userId: selectedUser.id
@@ -330,7 +305,7 @@ export default function Order() {
           </TabList>
         </Box>
         <TabPanel value="1">
-          <OrderFood
+          <OrderItems
             // currentUserId={selectedUser ? selectedUser.id : null}
             products={products}
             handleStockChange={stockChange}
@@ -338,7 +313,12 @@ export default function Order() {
           />
         </TabPanel>
         <TabPanel value="2">
-          <OrderDrinks />
+        <OrderItems
+            // currentUserId={selectedUser ? selectedUser.id : null}
+            products={drinks}
+            handleStockChange={stockChange}
+            displayItems={displayItems}
+          />
         </TabPanel>
       </TabContext>
 

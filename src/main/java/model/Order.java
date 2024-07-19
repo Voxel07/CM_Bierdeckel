@@ -43,7 +43,7 @@ public class Order {
     @Column(name = "order_completed")
     private Boolean orderCompleted;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     // @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
@@ -136,7 +136,7 @@ public class Order {
     public void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         this.sum += orderItem.getProduct().getPrice();
-        orderItem.getProduct().decStock(1L);
+        orderItem.getProduct().incConsumption();
     }
 
     public void removeOrderItem(OrderItem orderItem) {
@@ -145,6 +145,7 @@ public class Order {
         if (this.sum < 0 || this.orderItems.size() == 0){
             this.sum = 0;
         }
+        orderItem.getProduct().decConsumption();
     }
 
     public void setOrderItemPay(OrderItem orderItem, PaymentStatus paymentStatus) {

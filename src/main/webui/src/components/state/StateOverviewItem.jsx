@@ -1,19 +1,38 @@
-import React from "react";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import React from 'react';
+import { Paper, Box, Stack, Typography } from '@mui/material';
 
-
-export const StateOverviewItem = ({item}) => {
-
-    const { productId, productName, quantity } = item
-
-    return(
-        <Box key={productId}>
-            <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-                <Typography>{productName}:</Typography>
-                <Typography>{quantity}</Typography>
-            </Stack>
-        </Box>
-    )
-}
+export const StateOverviewItem = ({ displayItems }) => {
+  return (
+    <Paper className='header'>
+      <Box sx={{ 
+        display: 'flex', 
+        flexWrap: 'wrap', 
+        gap: 2, 
+        maxWidth: '285px', 
+        margin: '0 auto'  // Centers the box if it's narrower than its container
+      }}>
+        {displayItems?.length ? (
+          displayItems.map((item) => (
+            <Box
+              key={item.productId}
+              sx={{
+                flexGrow: 0,
+                flexShrink: 0,
+              }}
+            >
+              <Stack
+                direction="row"
+                spacing={1}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography noWrap>{item.productName}:</Typography>
+                <Typography>{item.quantity}</Typography>
+              </Stack>
+            </Box>
+          ))
+        ) : null}
+      </Box>
+    </Paper>
+  );
+};

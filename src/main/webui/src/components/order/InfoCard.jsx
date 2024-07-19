@@ -44,11 +44,10 @@ const theme2 = createTheme({
     }}});
 
 const InfoCard = ({ data, userData, handelChange }) => {
-  const { id, name, price, stock } = data;
+  const { id, name, price, stock, category, consumption } = data;
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [orderQuantity, setOrderQuantity] = useState(0);
-  const [currentStock, setStock] = useState(stock);
 
   // Find matching item in userData (if it exists)
   // Set initial orderQuantity based on userData
@@ -75,12 +74,12 @@ const InfoCard = ({ data, userData, handelChange }) => {
 
   const handleAddToOrder = () => {
     // setStock(Math.max(0, currentStock - 1));
-    handelChange(id, "add");
+    handelChange(id, "add", category);
   };
 
   const handleRemoveFromOrder = () => {
     // setStock(currentStock + 1);
-    handelChange(id, "rm");
+    handelChange(id, "rm", category);
   };
 
   return (
@@ -112,7 +111,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
           <Grid container spacing={2} sx={{ marginTop: 1 }}>
             {" "}
             <Grid item xs={6}>
-              <Typography variant="body2">Verfügbar: {stock}</Typography>
+              <Typography variant="body2">Verfügbar: {stock - consumption}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body2">Bestellt: {orderQuantity}</Typography>
@@ -140,9 +139,14 @@ const InfoCard = ({ data, userData, handelChange }) => {
           </Grid>
         </CardContent>
         <CardActions>
-          <Button size="small" variant='outlined'  onClick={handleFlip} sx={{color:"#a64913"}}>
-            Informationen
-          </Button>
+          <Stack direction="row" spacing={9} justifyContent="space-around"> 
+            <Button size="small" variant='outlined'  onClick={handleFlip} sx={{color:"#a64913"}}>
+              Informationen
+            </Button>
+            <Button size="small" variant='outlined' sx={{color:"#000202"}}>
+              Extras
+            </Button>
+          </Stack>
         </CardActions>
       </Box>
 

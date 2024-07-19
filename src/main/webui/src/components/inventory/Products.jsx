@@ -21,7 +21,7 @@ const Products = ({productCategory}) => {
     const [products, setProducts] = useState([]);
     const [trigger, setTrigger] = useState(false); 
     const [fetchingData, setDataFetched] = useState(true);
-    const alertsManagerRef =  useRef();
+    const alertsManagerRef =  useRef(AlertsContext);
 
     useEffect(()=>{
         axios.get("products",  {params:{category: productCategory}})
@@ -91,7 +91,7 @@ const Products = ({productCategory}) => {
             alertsManagerRef.current.showAlert('error', error.response.data);
         });
     };
-
+    
     return (
             <TableContainer component={StyledPaper}>
             <AlertsManager ref={alertsManagerRef} />

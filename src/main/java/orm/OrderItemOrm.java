@@ -27,6 +27,14 @@ public class OrderItemOrm {
         return query.getResultList();
     }
 
+    public List <OrderItem> getOrderItemsByProductCategory(String category)
+    {
+        System.out.println("category");
+        TypedQuery<OrderItem> query = em.createQuery("SELECT oi FROM OrderItem oi WHERE oi.product.category = :cat ", OrderItem.class);
+        query.setParameter("cat", category);
+        return query.getResultList();
+    }
+
     public List<OrderItem> getOrderItemsByPaymentStatus(PaymentStatus status) {
         TypedQuery<OrderItem> query = em.createQuery("SELECT o FROM OrderItem o WHERE o.paymentStatus = :status", OrderItem.class);
         query.setParameter("status", status);

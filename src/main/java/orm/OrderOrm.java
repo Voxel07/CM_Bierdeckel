@@ -155,7 +155,6 @@ public class OrderOrm {
                     return Response.status(Response.Status.CONFLICT).entity("Kein Bestand mehr für dieses Produkt").build();
                 }
     
-                dbProduct.incConsumption();
                 em.merge(dbProduct);
             }
         } catch (Exception e) {
@@ -227,8 +226,6 @@ public class OrderOrm {
         orderDB.setOrderCompleted(false);
         orderDB.setOrderPaid(false);
 
-        productDB.incConsumption();
-
         try{
             em.merge(productDB);
         }catch (Exception e) {
@@ -245,7 +242,7 @@ public class OrderOrm {
     }
 
     @Transactional
-    public Response removeProductFromOrder(Long orderId, Long orderItemId)
+    public Response removeProductFromOrder(Long orderId, Long productId)
     {
         System.out.println("addProductToOrder");
 
@@ -265,10 +262,9 @@ public class OrderOrm {
 
         // only remove the first item found
         for (OrderItem orderItem : orderItems) {
-            if (orderItem.getId() == orderItemId) {
+            if (orderItem.getProduct().getId() == productId) {
                 // em.remove(orderItem); // Remove the OrderItem from the database
                 orderDB.removeOrderItem(orderItem);
-                orderDB.getOrderItemById(orderItemId).getProduct().decConsumption();
                 itemFound = true;
                 break;
             }
@@ -499,6 +495,14 @@ public class OrderOrm {
 
         if (orderDB == null) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Bestellung nicht gefunden").build();
+        }
+
+        List<OrderItem> orderItems = orderDB.getOrderItems();
+        boolean itemFound = false;
+
+        // only remove the first item found
+        for (OrderItem orderItem : orderItems) {
+            orderItem.getProduct().decConsumption();
         }
 
         try {

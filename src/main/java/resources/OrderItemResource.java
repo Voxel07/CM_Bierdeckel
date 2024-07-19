@@ -33,10 +33,12 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getOrderItems(  @QueryParam("orderStatus") String orderStatus ,
-                                    @QueryParam("paymentStatus") String paymentStatus) 
+                                    @QueryParam("paymentStatus") String paymentStatus,
+                                    @QueryParam("category") String category ) 
     {
         System.out.println(paymentStatus);
         System.out.println(orderStatus);
+        System.out.println(category);
 
         PaymentStatus paymentStatusEnum = null;
         OrderStatus orderStatusEnum = null;
@@ -52,6 +54,7 @@ public class OrderItemResource {
                         .build();
             }
         }
+
         if (orderStatus != null) {
             try {
                 orderStatusEnum = OrderStatus.valueOf(orderStatus);
@@ -62,6 +65,10 @@ public class OrderItemResource {
                         .entity("Invalid orderStatus value")
                         .build();
             }
+        }
+
+        if(category != null){
+            return Response.status(200).entity(orderItemOrm.getOrderItemsByProductCategory(category)).build();
         }
 
         else

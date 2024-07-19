@@ -71,7 +71,7 @@ export default function shoppingcard({ cardData, handleStockChange, displayItems
             ? displayItems.map((product, index) => <CartItem key={index} product={product} handleStockChange={handleStockChange} />)
             : <Typography variant="h5" component="h2" align="center"> Hier ist noch nichts drin!</Typography>}
           {/* <pre style={{color:"white"}}>{JSON.stringify(displayItems, null, 2)}</pre> */}
-          <pre>{JSON.stringify(orderId, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(orderId, null, 2)}</pre> */}
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginTop: 4 }}>
           {
             orderId ?
