@@ -186,7 +186,7 @@ public class OrderOrm {
                 addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
             }
             else{
-                removeProductFromOrder(dbOrder.getId(), newItem.getProduct().getId())
+                removeProductFromOrder(dbOrder.getId(), newItem.getProduct().getId());
             }
         }
 
