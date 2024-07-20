@@ -1,6 +1,7 @@
 package orm;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,9 +21,9 @@ import model.OrderItem;
 import model.Product;
 import model.User;
 import model.OrderItem.PaymentStatus;
+import model.OrderItem.OrderStatus;
 import model.ExtraItem;
 import model.Extras;
-import model.OrderItem;
 
 @ApplicationScoped
 public class OrderOrm {
@@ -166,7 +167,7 @@ public class OrderOrm {
     }
 
     @Transactional
-    public Response updateOrder(Long userId, List<OrderItem> OrderItems) {
+    public Response updateOrder(Long userId, List<OrderItem> orderItems) {
         System.out.println("updateOrder");
 
         //Fetch open order for user from DB
@@ -181,14 +182,21 @@ public class OrderOrm {
                                         .map(OrderItem::getId)
                                         .collect(Collectors.toSet());
 
-        for (OrderItem newItem : OrderItems) {
+        // Set<Integer> newItemIds = orderItems.stream()
+        //                                 .map(OrderItem::getId)
+        //                                 .collect(Collectors.toSet());
+    
+        for (OrderItem newItem : orderItems) {
             if (!existingIds.contains(newItem.getId())) {
                 addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
             }
-            else{
-                removeProductFromOrder(dbOrder.getId(), newItem.getProduct().getId());
-            }
         }
+
+        // for (Integer existingId : existingIds) {
+        //     if (!newItemIds.contains(existingId)) {
+        //         removeProductFromOrder(dbOrder.getId(), (long) existingId);
+        //     }
+        // }
 
         return Response.status(200).entity("Bestellung aktualisiert").build();
     }
@@ -228,6 +236,7 @@ public class OrderOrm {
         orderDB.addOrderItem(orderItem);
         orderDB.setOrderCompleted(false);
         orderDB.setOrderPaid(false);
+        orderDB.setOrderDelivered(false);
 
         try{
             em.merge(productDB);
@@ -247,7 +256,7 @@ public class OrderOrm {
     @Transactional
     public Response removeProductFromOrder(Long orderId, Long productId)
     {
-        System.out.println("addProductToOrder");
+        System.out.println("removeProductFromOrder");
 
         Order orderDB = new Order();
         try {
@@ -261,23 +270,27 @@ public class OrderOrm {
         }
 
         List<OrderItem> orderItems = orderDB.getOrderItems();
+
+        // Sort the order items
+        orderItems.sort(Comparator
+        .comparing((OrderItem item) -> item.getPaymentStatus() == PaymentStatus.PAID)
+        .thenComparing(item -> item.getOrderStatus() == OrderStatus.DELIVERED));
         boolean itemFound = false;
 
         // only remove the first item found
         for (OrderItem orderItem : orderItems) {
             if (orderItem.getProduct().getId() == productId) {
-                // em.remove(orderItem); // Remove the OrderItem from the database
                 orderDB.removeOrderItem(orderItem);
                 itemFound = true;
                 break;
             }
         }
 
-        System.out.println("orderDB.getOrderItems " + orderDB.getOrderItems().size());
-
         if (!itemFound) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Item not found").build();
         }
+
+        orderDB = checkIfOderIsCompled(orderDB);
 
         try {
             em.merge(orderDB);
@@ -285,7 +298,7 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
-        return Response.status(Response.Status.CREATED).entity("Product removed from order").build();
+        return Response.status(Response.Status.OK).entity("Product removed from order").build();
     }
 
     @Transactional
@@ -515,6 +528,33 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
         return Response.status(Response.Status.OK).entity("Bestellung gelöscht").build();
+    }
+
+    public Order checkIfOderIsCompled(Order order)
+    {
+        boolean isDelivered = true;
+        boolean isPaid = true;
+    
+        if(order.isOrderDelivered() || order.isOrderPaid())
+        {
+            for (OrderItem orderItem : order.getOrderItems()) {
+                if (orderItem.getOrderStatus() != OrderStatus.DELIVERED) {
+                    isDelivered = false;
+                }
+                if (orderItem.getPaymentStatus() != PaymentStatus.PAID) {
+                    isPaid = false;
+                }
+                if (!isDelivered && !isPaid) {
+                    break;
+                }
+            }
+        }
+    
+        order.setOrderDelivered(isDelivered);
+        order.setOrderPaid(isPaid);
+        order.setOrderCompleted(isDelivered && isPaid);
+    
+        return order;
     }
 
 }

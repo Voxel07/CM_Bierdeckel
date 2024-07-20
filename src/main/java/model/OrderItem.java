@@ -41,10 +41,10 @@ public class OrderItem
     // @JoinColumn(name ="extraItem_id", referencedColumnName="id")
     // private ExtraItem extraItem;
 
-    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderItem", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ExtraItem> extraItems = new ArrayList<>();
 
-    @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(targetEntity = Order.class, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 

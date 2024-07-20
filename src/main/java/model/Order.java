@@ -49,7 +49,7 @@ public class Order {
     // @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     // private List<ExtraItem> extraItems = new ArrayList<>();
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch=FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
 
