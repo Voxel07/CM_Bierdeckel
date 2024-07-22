@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.arjuna.ats.internal.jdbc.drivers.modifiers.list;
+
 import java.util.HashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -112,7 +115,7 @@ public class OrderOrm {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error finding user: " + e.getMessage()).build();
         }
     
-        TypedQuery<Order> query = em.createQuery("SELECT r FROM Order r WHERE r.user = :user", Order.class);
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user = :user AND o.orderCompleted = false", Order.class);
         query.setParameter("user", user);
     
         if (!query.getResultList().isEmpty()) {
@@ -167,7 +170,7 @@ public class OrderOrm {
     }
 
     @Transactional
-    public Response updateOrder(Long userId, List<OrderItem> orderItems) {
+    public Response updateOrder(Long userId, List<OrderItem> newOrderItems) {
         System.out.println("updateOrder");
 
         //Fetch open order for user from DB
@@ -177,26 +180,29 @@ public class OrderOrm {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
         }
 
-        //Check if provided oderItems are in the order
-        Set<Integer> existingIds = dbOrder.getOrderItems().stream()
-                                        .map(OrderItem::getId)
-                                        .collect(Collectors.toSet());
+        List<OrderItem> existingOrderItems = dbOrder.getOrderItems();
 
-        // Set<Integer> newItemIds = orderItems.stream()
-        //                                 .map(OrderItem::getId)
-        //                                 .collect(Collectors.toSet());
-    
-        for (OrderItem newItem : orderItems) {
-            if (!existingIds.contains(newItem.getId())) {
-                addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
-            }
+        List<OrderItem> newItems = newOrderItems.stream()
+        .filter(newItem -> existingOrderItems.stream()
+            .noneMatch(existingItem -> existingItem.getId() == newItem.getId()))
+        .collect(Collectors.toList());
+
+        // Find deleted items (in existingOrderItems but not in newOrderItems)
+        List<OrderItem> deletedItems = existingOrderItems.stream()
+            .filter(existingItem -> newOrderItems.stream()
+                .noneMatch(newItem -> newItem.getId() == existingItem.getId()))
+            .collect(Collectors.toList());
+
+        for (OrderItem newItem : newItems) {
+            // dbOrder.addOrderItem(newItem);
+            addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
         }
 
-        // for (Integer existingId : existingIds) {
-        //     if (!newItemIds.contains(existingId)) {
-        //         removeProductFromOrder(dbOrder.getId(), (long) existingId);
-        //     }
-        // }
+        for(OrderItem deletedItem: deletedItems)
+        {   
+            dbOrder.removeOrderItem(deletedItem);
+            // removeProductFromOrder(dbOrder.getId(), deletedItem.getProduct().getId());
+        }
 
         return Response.status(200).entity("Bestellung aktualisiert").build();
     }

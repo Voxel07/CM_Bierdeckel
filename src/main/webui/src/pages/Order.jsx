@@ -52,7 +52,6 @@ export default function Order() {
 
   //Fetch the oder of the selected user
   useEffect(() => {
-    console.log("runnng now")
     if (
       selectedUser == null ||
       typeof selectedUser.id === "undefined" ||
@@ -289,7 +288,7 @@ function stockChange(id, action, category) {
           deleteOrder={deleteOrder}
           orderId={orderId}
         />
-        <Userselection handleUserChange={handleUserSelectionChange} aviableUsers={users}/>
+        <Userselection handleUserChange={handleUserSelectionChange} />
       </Stack>
       <TabContext value={tabValue}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

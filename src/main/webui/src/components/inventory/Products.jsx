@@ -29,7 +29,7 @@ const Products = ({productCategory}) => {
                 setTimeout(() => {
                     setProducts(response.data);
                     setDataFetched(false);
-                    alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
+                    // alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
                 }, 0);
             }).catch(error => {
                 console.log(error);
