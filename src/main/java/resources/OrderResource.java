@@ -95,7 +95,6 @@ public class OrderResource {
     @CacheInvalidate(cacheName = "product-stock-cache")
     public Response updateOrder(@QueryParam("orderId") Long orderId,
                                 @QueryParam("productId") Long productId,
-                                @QueryParam("extraId") Long extraId,
                                 @QueryParam("orderItemId") Long orderItemId,
                                 @QueryParam("action") String action,
                                 @QueryParam("userId") Long userId, 
@@ -113,12 +112,6 @@ public class OrderResource {
         {
             System.out.println("Product");
             return handleProduct(orderId, productId, action);
-        }
-        else if(extraId != null && orderItemId != null)
-        {
-            System.out.println("Extra");
-
-            return handleExtra(orderId, extraId, orderItemId, action);
         }
         else if(orderItemId != null)
         {
@@ -139,21 +132,7 @@ public class OrderResource {
         }
     }
 
-    public Response handleExtra(Long orderId, Long extraId, Long orderItemId, String action)
-    {
-        if(action.equals("add"))
-        {
-            return orm.addExtraToOrder(orderId, orderItemId, extraId);
-        }
-        else if(action.equals("remove") )
-        {
-            return orm.removeExtraFromOrder(orderId,orderItemId, extraId);
-        }
-        else
-        {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
-        }
-    }
+   
 
     public Response handleProduct(Long orderId, Long productId, String action)
     {

@@ -11,10 +11,10 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import model.OrderItem;
 import jakarta.ws.rs.QueryParam;
 
 import orm.OrderItemOrm;
+import model.OrderItem;
 import model.OrderItem.PaymentStatus;
 import model.OrderItem.OrderStatus;
 import model.OrderItem.OrderStatusActions;
@@ -81,11 +81,16 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateOrderItem(@QueryParam("orderItemId") Long orderItemId,
-                                    @QueryParam("action") String action)
+                                    @QueryParam("action") String action,
+                                    @QueryParam("extraId") Long extraId)
     {
         if(orderItemId == null || action == null)
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Fehlender Parameter").build();
+        }
+        if(extraId != null)
+        {
+            return handleExtra(extraId, orderItemId, action);
         }
 
         try
@@ -96,6 +101,22 @@ public class OrderItemResource {
         catch (IllegalArgumentException e) 
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Ungültiger Parameter").build();
+        }
+    }
+
+    public Response handleExtra(Long extraId, Long orderItemId, String action)
+    {
+        if(action.equals("add"))
+        {
+            return orderItemOrm.addExtraToOrderItem(orderItemId, extraId);
+        }
+        else if(action.equals("remove") )
+        {
+            return orderItemOrm.removeExtraFromOrderItem(orderItemId, extraId);
+        }
+        else
+        {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
         }
     }
 

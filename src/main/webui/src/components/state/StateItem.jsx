@@ -13,7 +13,8 @@ import "./StateItem.css"
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const StateItem = ({data, next, previous, pHandleSetSelectedITems}) => {
-  const{id, userId, description, extras, product} = data;
+  const{id, userId, description, extraItems, product} = data;
+  console.log(extraItems);
   return (
     <Card key={product.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#083036" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
@@ -24,14 +25,14 @@ const StateItem = ({data, next, previous, pHandleSetSelectedITems}) => {
           </Typography >
           </Stack>
 
+        </Stack>
           <Stack direction="row"  alignItems="center" spacing={1}  useFlexGap  sx={{ maxHeight: '200px', overflowY: 'auto', padding:0.25 }}> 
           {
-              extras?.length? extras.map((extra)=>(
-                  <Chip key={Math.random()} color="primary" label={extra} size="small" />
+              extraItems?.length? extraItems.map((extra)=>(
+                  <Chip key={Math.random()} color="primary" label={extra.extras.name} size="small" />
               )):null
           }
           </Stack>
-        </Stack>
         <Stack direction="row"  justifyContent="space-between" spacing={1} >
           <IconButton aria-label="delete" size="small" onClick={() => previous(data)}>
             <ArrowBackIcon fontSize="inherit" />

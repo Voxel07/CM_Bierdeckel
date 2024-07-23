@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Box, Stack, Typography } from '@mui/material';
+import { Paper, Box, Stack, Typography, Divider } from '@mui/material';
 
 export const StateOverviewItem = ({ displayItems }) => {
   return (
@@ -7,7 +7,8 @@ export const StateOverviewItem = ({ displayItems }) => {
       <Box sx={{ 
         display: 'flex', 
         flexWrap: 'wrap', 
-        gap: 2, 
+        rowGap: 0, 
+        columnGap: 2, 
         maxWidth: '285px', 
         margin: '0 auto'  // Centers the box if it's narrower than its container
       }}>
@@ -18,6 +19,7 @@ export const StateOverviewItem = ({ displayItems }) => {
               sx={{
                 flexGrow: 0,
                 flexShrink: 0,
+                minWidth:'110px'
               }}
             >
               <Stack
@@ -28,6 +30,7 @@ export const StateOverviewItem = ({ displayItems }) => {
               >
                 <Typography noWrap>{item.productName}:</Typography>
                 <Typography>{item.quantity}</Typography>
+                {/* <Divider orientation="vertical" variant="middle" flexItem /> */}
               </Stack>
             </Box>
           ))

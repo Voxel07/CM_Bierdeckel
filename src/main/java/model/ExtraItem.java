@@ -24,21 +24,10 @@ public class ExtraItem {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    //OrderId ManyExtraItems one Oder
-    // @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    // @JoinColumn(name = "order_id", referencedColumnName = "id")
-    // private Order order;
-
-
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="orderItem_id", referencedColumnName="id")
     private OrderItem orderItem;
 
-    //OrderItemId //ManyExtraItems one OrderItem
-    // @OneToMany(mappedBy = "extraItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private List<OrderItem> orderItem = new ArrayList<>();
-
-    //ExtrasId //
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name ="extra_id", referencedColumnName="id")
     private Extras extras;

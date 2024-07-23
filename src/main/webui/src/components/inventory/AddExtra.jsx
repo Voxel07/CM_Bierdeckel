@@ -54,7 +54,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
     const handleSubmit = async(formData, { resetForm }) =>{
         console.log(formData);
         console.log(prductToModify);
-        const url = 'products';
+        const url = 'extras';
         const data = {
             id: prductToModify ? prductToModify.id : null,
             name: formData.description,
@@ -125,7 +125,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
         <AlertsManager ref={alertsManagerRef} />
         {
             action == "add" ?
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Extra hinzufügen</Button >
             :
             <IconButton variant="contained" color="warning" onClick={handleOpen}><EditIcon/></IconButton>
         }
@@ -182,9 +182,9 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                 <Container className="Form-Container" sx={{...style, width:'500px'}} >
                     {
                          action == "add" ?
-                         <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
+                         <Typography  sx={{ marginBottom: '35px' }}>Neues Extra hinzufügen</Typography>
                          :
-                         <Typography  sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
+                         <Typography  sx={{ marginBottom: '35px' }}>Extra aktualisieren</Typography>
                     }
 
                 <Form className="Form-Container" >

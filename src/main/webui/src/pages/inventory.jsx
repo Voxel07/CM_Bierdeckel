@@ -7,6 +7,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 import Products from '../components/inventory/Products';
+import Extras from '../components/inventory/Extras';
 
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import KitchenIcon from '@mui/icons-material/Kitchen';
@@ -37,7 +38,7 @@ export default function LabTabs() {
             <Products productCategory={"Drink"}/>
         </TabPanel>
         <TabPanel value="3">
-            <Products productCategory={"Extra"}/>
+            <Extras/>
         </TabPanel>
       </TabContext>
       {/* </ThemeProvider> */}

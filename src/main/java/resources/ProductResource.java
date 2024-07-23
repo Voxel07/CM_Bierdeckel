@@ -33,7 +33,7 @@ public class ProductResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<Product> getProducts(@QueryParam("productId") Long productId, 
-                                        @QueryParam("category") String category)
+                                     @QueryParam("category") String category)
     {
         if (productId != null) {
             return orm.getProductById(productId);

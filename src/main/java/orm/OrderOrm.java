@@ -194,14 +194,12 @@ public class OrderOrm {
             .collect(Collectors.toList());
 
         for (OrderItem newItem : newItems) {
-            // dbOrder.addOrderItem(newItem);
             addProductToOrder(dbOrder.getId(), newItem.getProduct().getId());
         }
 
         for(OrderItem deletedItem: deletedItems)
         {   
             dbOrder.removeOrderItem(deletedItem);
-            // removeProductFromOrder(dbOrder.getId(), deletedItem.getProduct().getId());
         }
 
         return Response.status(200).entity("Bestellung aktualisiert").build();
@@ -305,101 +303,6 @@ public class OrderOrm {
         }
 
         return Response.status(Response.Status.OK).entity("Product removed from order").build();
-    }
-
-    @Transactional
-    public Response addExtraToOrder(Long orderId, Long orderItemId, Long extraId) {
-
-        System.out.println("addExtraToOrder2");
-
-        Order orderDB = new Order();
-        OrderItem orderItemDb = new OrderItem();
-        Extras extraDB = new Extras();
-
-        try {
-            orderDB = em.find(Order.class, orderId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        if (orderDB == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
-        }
-
-        try {
-            orderItemDb = em.find(OrderItem.class, orderItemId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        if (orderItemDb == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("OrderItem not found").build();
-        }
-
-        try {
-            extraDB = em.find(Extras.class, extraId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        if (extraDB == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Extra not found").build();
-        }
-
-        ExtraItem extra = new ExtraItem(orderItemDb, extraDB);
-        orderItemDb.addExtraItem(extra);
-
-        try {
-            System.out.println("merge");
-
-            em.merge(orderItemDb);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        return Response.status(Response.Status.CREATED).entity("Extra added to order").build();
-    }
-
-    @Transactional
-    public Response removeExtraFromOrder(Long orderId, Long orderItemId, Long extraId)
-    {
-        System.out.println("addProductToOrder");
-
-        Order orderDB = new Order();
-        try {
-            orderDB = em.find(Order.class, orderId);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        if (orderDB == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order not found").build();
-        }
-
-        OrderItem orderItem = orderDB.getOrderItemById(orderItemId);
-
-        Boolean itemFound = false;
-        // only remove the first item found
-        for (ExtraItem ei : orderItem.getExtraItems()) {
-            if (ei.getExtras().getId() == extraId) {
-                // em.remove(orderItem); // Remove the OrderItem from the database
-                orderItem.removeExtraItem(ei);
-                itemFound = true;
-                break;
-            }
-        }
-
-        if (!itemFound) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Extra not found").build();
-        }
-
-        try {
-            em.merge(orderItem);
-        } catch (Exception e) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-
-        return Response.status(Response.Status.CREATED).entity("Extra removed from order").build();
     }
 
     @Transactional

@@ -13,6 +13,8 @@ import model.OrderItem.OrderStatusActions;
 import model.OrderItem.PaymentStatus;
 
 import model.OrderItem;
+import model.ExtraItem;
+import model.Extras;
 import model.Order;
 
 @ApplicationScoped
@@ -103,5 +105,88 @@ public class OrderItemOrm {
         }
 
         return Response.ok().entity("Status erfolgreich aktualisiert").build();
+    }
+
+     @Transactional
+    public Response addExtraToOrderItem(Long orderItemId, Long extraId) {
+
+        System.out.println("addExtraToOrder2");
+
+        OrderItem orderItemDb = new OrderItem();
+        Extras extraDB = new Extras();
+
+        try {
+            orderItemDb = em.find(OrderItem.class, orderItemId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderItemDb == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("OrderItem not found").build();
+        }
+
+        try {
+            extraDB = em.find(Extras.class, extraId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (extraDB == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Extra not found").build();
+        }
+
+        ExtraItem extra = new ExtraItem(orderItemDb, extraDB);
+        orderItemDb.addExtraItem(extra);
+
+        try {
+            System.out.println("merge");
+
+            em.merge(orderItemDb);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Extra added to order").build();
+    }
+
+    @Transactional
+    public Response removeExtraFromOrderItem(Long orderItemId, Long extraId)
+    {
+        System.out.println("addProductToOrder");
+
+        OrderItem orderItemDb = new OrderItem();
+
+        try {
+            orderItemDb = em.find(OrderItem.class, orderItemId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (orderItemDb == null) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("OrderItem not found").build();
+        }
+
+        Boolean itemFound = false;
+        // only remove the first item found
+        for (ExtraItem ei : orderItemDb.getExtraItems()) {
+            if (ei.getExtras().getId() == extraId) {
+                // em.remove(orderItem); // Remove the OrderItem from the database
+                orderItemDb.removeExtraItem(ei);
+                itemFound = true;
+                break;
+            }
+        }
+
+        if (!itemFound) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Extra not found").build();
+        }
+
+        try {
+            em.merge(orderItemDb);
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Extra removed from order").build();
     }
 }

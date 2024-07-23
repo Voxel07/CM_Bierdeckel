@@ -45,7 +45,7 @@ function cardItem({product, handleStockChange}) {
         alignItems="center"
       >
         <Tooltip title="Bezeichung" placement="top">
-          <Typography sx={{ minWidth: "80px", textAlign: "left" }}>
+          <Typography sx={{ minWidth: "120px", textAlign: "left" }}>
             {productName}
           </Typography>
         </Tooltip>
