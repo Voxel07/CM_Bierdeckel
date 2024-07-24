@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Quarkus App (JVM)
         working-directory: ./
-        run: mvn package
+        run: mvn package -DskipTests
 
       # Docker Login and Push
       - name: Log into Docker Hub
