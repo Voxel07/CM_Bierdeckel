@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 public class User {
 
     @Id
-    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 3) //TODO: Change back to 1
+    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 1) //TODO: Change back to 1
     @GeneratedValue(generator = "userSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
@@ -30,6 +30,16 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "user")
     private Order order;
+
+
+    public User(){
+    }
+
+    public User(String _username, String _role)
+    {
+        username = _username;
+        role = _role;
+    }
 
     // Getter and Setter methods for id
     public Long getId() {
