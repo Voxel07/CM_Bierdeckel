@@ -41,10 +41,10 @@ export default function StateRowSubHeader({pHandleSort, state, number, titles})
                 <Typography>Ausgewählt</Typography>
                 <Chip color="primary" label={number} size="small" />
                 <Tooltip title="Alle auswählen" placement='top'>
-                    <Checkbox  onChange={() => handleMassSelection()}/>
+                    <Checkbox onChange={() => handleMassSelection()}/>
                 </Tooltip>
                 <IconButton aria-label="user"  onClick={handleClick}>
-                    <SettingsIcon />
+                    <SettingsIcon sx={{color:"#f5f0f3"}} />
                 </IconButton>
                 <StyledMenu
                     id="filter-menu"

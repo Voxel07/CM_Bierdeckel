@@ -14,7 +14,6 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const StateItem = ({data, next, previous, pHandleSetSelectedITems}) => {
   const{id, userId, description, extraItems, product} = data;
-  console.log(extraItems);
   return (
     <Card key={product.id} sx={{ minWidth: 250, marginTop:1, padding:1, borderRadius:1, background:"#083036" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>

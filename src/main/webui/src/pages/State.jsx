@@ -58,7 +58,6 @@ function State() {
   for (const order of orders) {
     // Loop through each orderItem in the order
     for (const orderItem of order.orderItems) {
-      console.log(orderItem.product.category)
       if(orderItem.product.category != "Food") continue;
 
       const orderItemWithId = {...orderItem, userId: order.user.id}
@@ -85,25 +84,37 @@ function State() {
   }
 
   const [sortOrders, setSortOrders] = useState({
-    user: 'asc', 
+    user: 'asc',
     description: 'asc',
     extras: 'asc'
-});
-
-function sortByPrimaryKey(data, primaryKey) {
-  const reverse = sortOrders[primaryKey] === 'desc';  
-  const newOrder = sortOrders[primaryKey] === 'asc' ? 'desc' : 'asc';
-
-  setSortOrders({ 
-    ...sortOrders,
-    [primaryKey]: newOrder 
   });
 
-  return data.sort((a, b) => {
-        if (a[primaryKey] < b[primaryKey]) return reverse ? 1 : -1;
-        if (a[primaryKey] > b[primaryKey]) return reverse ? -1 : 1;
-        return 0; 
-    });
+function sortByKey(data, key) {
+  const reverse = sortOrders[key] === 'desc';
+  const newOrder = sortOrders[key] === 'asc' ? 'desc' : 'asc';
+  setSortOrders({
+    ...sortOrders,
+    [key]: newOrder
+  });
+
+  return [...data].sort((a, b) => {
+    let aValue, bValue;
+
+    if (key === 'userId') {
+      aValue = a.userId;
+      bValue = b.userId;
+    } else if (key === 'description') {
+      aValue = a.product.name;
+      bValue = b.product.name;
+    } else if (key === 'extras') {
+      aValue = a.extraItems.map(item => item.name).join(',');
+      bValue = b.extraItems.map(item => item.name).join(',');
+    }
+
+    if (aValue < bValue) return reverse ? 1 : -1;
+    if (aValue > bValue) return reverse ? -1 : 1;
+    return 0;
+  });
 }
 
 const handleSetSelectedITems = (item) => {
@@ -175,27 +186,26 @@ const handlePrevious = (item) => {
   setTrigger( trigger + 1)
 };
 
-  const handleSort = (arrayToSort, option) => {
-    switch (arrayToSort) {
-      case "Bestellt":
-          setOrdered(sortByPrimaryKey(ordered.slice(), option)); 
-        break;
-        case "In Bearbeitung":
-          setProcessing(sortByPrimaryKey(processing.slice(), option)); 
-        break;
-      case "Fertig":
-          setDone(sortByPrimaryKey(done.slice(), option)); 
-        break;
-    
-      default:
-        console.log("no valid state selected")
-        break;
-    }
+const handleSort = (arrayToSort, option) => {
+  switch (arrayToSort) {
+    case "Bestellt":
+      setOrdered(sortByKey(ordered, option));
+      break;
+    case "In Bearbeitung":
+      setProcessing(sortByKey(processing, option));
+      break;
+    case "Fertig":
+      setDone(sortByKey(done, option));
+      break;
+    default:
+      console.log("no valid state selected");
+      break;
   }
+}
 
   const handleMassSort = (arrayToSort, option) => {
     // Filter for items which don't belong in the current arrayToSort
-    const filteredItems = selectedItems.filter(item => item.state === arrayToSort);
+    const filteredItems = selectedItems.filter(item => item.orderStatus === arrayToSort);
   
     // Build updates for each state array
     const newOrdered = ordered.slice();  // Make a copy to modify
@@ -207,7 +217,7 @@ const handlePrevious = (item) => {
       const item = filteredItems[index];
   
       // 1. Remove item from corresponding array (modify the copies)
-      switch (item.state) {
+      switch (item.orderStatus) {
         case titles[0]: //Orderd
           newOrdered.splice(newOrdered.findIndex(i => i.id === item.id), 1);
           break;
@@ -289,7 +299,7 @@ const handlePrevious = (item) => {
         <Grid item >
           <StateOverviewItem displayItems={overviewOrderd} />
           <Paper className='itemContainer'  variant="elevation" elevation={2}>
-          <StateRowHeader pHandleSort={handleSort} state={"Bestellt"} color={"error"} number = {ordered?.length} />
+          <StateRowHeader pHandleSort={handleSort} displayState={"Bestellt"} state={titles[0]} color={"error"} number = {ordered?.length} />
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.orderStatus  === titles[0]).length} titles={titles} />
             { ordered?.length
             ? ordered.map((product, key) => (
@@ -301,7 +311,7 @@ const handlePrevious = (item) => {
         <Grid item >
           <StateOverviewItem displayItems={overviewprocessing} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
-          <StateRowHeader pHandleSort={handleSort} state={"In Bearbeitung"} color={"warning"} number = {processing?.length}/>
+          <StateRowHeader pHandleSort={handleSort} displayState={"In Bearbeitung"} state={titles[1]} color={"warning"} number = {processing?.length}/>
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.orderStatus  === titles[1]).length}  titles={titles}/>
             { processing?.length
             ? processing.map((product, key) => (
@@ -313,7 +323,7 @@ const handlePrevious = (item) => {
         <Grid item >
           <StateOverviewItem displayItems={overviewDone} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
-          <StateRowHeader pHandleSort={handleSort} state={"Fertig"} color={"success"} number = {done?.length}/>
+          <StateRowHeader pHandleSort={handleSort} displayState={"Fertig"} state={titles[2]} color={"success"} number = {done?.length}/>
           <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.orderStatus  === titles[2]).length}  titles={titles}/>
             { done?.length
             ? done.map((product, key) => (

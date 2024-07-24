@@ -10,8 +10,43 @@ import MenuItem from '@mui/material/MenuItem';
 import { styled, alpha } from '@mui/material/styles';
 import StyledMenu from './StyledMenu';
 
-export default function StateRowHeader ({pHandleSort, state, color, number})
+export default function StateRowHeader ({pHandleSort, displayState, state, color, number})
 {
+  const StyledMenu = styled((props) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      {...props}
+    />
+  ))(({ theme }) => ({
+    '& .MuiPaper-root': {
+      borderRadius: 5,
+      marginTop: theme.spacing(1),
+      minWidth: 140,
+      color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+      backgroundColor: "#161d29",
+      '& .MuiMenuItem-root': {
+        '& .MuiSvgIcon-root': {
+          fontSize: 18,
+          color: "#f5f0f3",
+          marginRight: theme.spacing(1.5),
+        },
+        '&:active': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+  }));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -22,32 +57,47 @@ export default function StateRowHeader ({pHandleSort, state, color, number})
   
   const handleClose = (val1, val2) => {
     pHandleSort(val1, val2);
-    setAnchorEl(false);
+    setAnchorEl(null);
   };
 
     return(
-        <Paper sx={{background:"#161d29", marginBottom:1, border:"2px solid #061837", borderRadius:2}}>
+        <Paper sx={{background:"#161d29", border:"2px solid #061837", borderRadius:2}}>
             <Stack spacing={2} direction="row" alignItems="center" justifyContent="space-around" sx={{color:"#F"}}>
                 <LunchDiningIcon color={color}/>
-                <Typography>{state}</Typography>
+                <Typography>{displayState}</Typography>
                 <Chip color="primary" label={number} size="small" />
-                <IconButton aria-label="user" onClick={handleClick}>
-                    <SettingsIcon />
+                <IconButton sx={{color:"#f5f0f3"}} aria-label="user" onClick={handleClick}>
+                    <SettingsIcon/>
                 </IconButton>
                 <StyledMenu
-                    id="filter-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    >
-                      <Typography textAlign="center">Wähle die Reihenfolge</Typography>
-                      <Divider component="li" />
-                    <MenuItem onClick={() => handleClose(state, "user")} > 
-                      <SettingsIcon /> Filter by User
-                    </MenuItem>
-                    <MenuItem onClick={() => handleClose(state, "description")}>Filter by Food</MenuItem>
-                    <MenuItem onClick={() => handleClose(state, "extras")}>Filter by Extras</MenuItem>
-                    </StyledMenu>
+        id="sort_selector"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <Typography color="#f5f0f3" textAlign="center" sx={{ py: 1 }}>
+          Reihenfolge
+        </Typography>
+        <Divider />
+        <MenuItem onClick={() => handleClose(displayState, "userId")} disableRipple>
+          <SettingsIcon />
+          <Typography textAlign="center">
+            Benutzer
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleClose(displayState, "description")} disableRipple>
+          <SettingsIcon />
+          <Typography textAlign="center">
+            Produkt
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleClose(displayState, "extras")} disableRipple>
+        <SettingsIcon />
+          <Typography textAlign="center">
+           Extra
+          </Typography>
+        </MenuItem>
+      </StyledMenu>
             </Stack>
         </Paper>
 
