@@ -68,6 +68,13 @@ public class OrderOrm {
         return query.getResultList();
     }
 
+    public List<Order> getOrdersByCompletionState(Boolean state)
+    {
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.orderCompleted =: completionState", Order.class);
+        query.setParameter("completionState", state);
+        return query.getResultList();
+    }
+
     public Response getOderByUser(Long userId, Boolean completedOrder)
     {
         TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user.id = :val AND o.orderCompleted = :orderState", Order.class);

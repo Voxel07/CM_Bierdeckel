@@ -314,21 +314,21 @@ const handleSort = (arrayToSort, option) => {
     return errorState;
   }
 
-  // const handleMultiSelect = (array) => {
-
-
-  // switch (array) {
-  //   case titles[0]: //orderd
-
-  //     break;
-  //   case titles[1]: //Processing
-      
-  //   break;
-  //   case titles[2]: //done
-
-  //   break;
-
-  // }
+  const handleMultiSelect = (array) => {
+    switch (array) {
+      case titles[0]: //orderd
+        console.log("test1")
+        
+        break;
+      case titles[1]: //Processing
+        console.log("test2")
+        break;
+        
+      case titles[2]: //done
+        console.log("test3")
+        break;
+    }
+  }
 
   return (
     <Grid sx={{ flexGrow: 1 }} container direction="column" >
@@ -365,7 +365,10 @@ const handleSort = (arrayToSort, option) => {
           <StateOverviewItem displayItems={overviewprocessing} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} displayState={"In Bearbeitung"} state={titles[1]} color={"warning"} number = {processing?.length}/>
-          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[1]} number = {selectedItems.filter(item => item.orderStatus  === titles[1]).length}  titles={titles}/>
+          <StateRowSubHeader  pHandleSort={handleMassSort} 
+                              state={titles[1]} number = {selectedItems.filter(item => item.orderStatus  === titles[1]).length}  
+                              titles={titles}
+                              pHandleMultiSelect={handleMultiSelect}/>
             { processing?.length
             ? processing.map((product, key) => (
             <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>
@@ -377,7 +380,11 @@ const handleSort = (arrayToSort, option) => {
           <StateOverviewItem displayItems={overviewDone} />
           <Paper className='itemContainer' variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} displayState={"Fertig"} state={titles[2]} color={"success"} number = {done?.length}/>
-          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[2]} number = {selectedItems.filter(item => item.orderStatus  === titles[2]).length}  titles={titles}/>
+          <StateRowSubHeader  pHandleSort={handleMassSort} 
+                              state={titles[2]} 
+                              number = {selectedItems.filter(item => item.orderStatus  === titles[2]).length}  
+                              titles={titles}
+                              pHandleMultiSelect={handleMultiSelect}/>
             { done?.length
             ? done.map((product, key) => (
             <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>

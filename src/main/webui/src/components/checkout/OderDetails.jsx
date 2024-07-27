@@ -115,7 +115,7 @@ const OrderDetails = (({order: initialOrder, parrentCallback}) =>
             aria-describedby="modal-modal-description"
         >
              <Box sx={style}>
-                <Typography>{order.id}</Typography>
+                <Typography>Bestellung Nummer: {order.id}</Typography>
          <TableContainer component={StyledPaper}>
     <AlertsManager ref={alertsManagerRef} />
         <Table >

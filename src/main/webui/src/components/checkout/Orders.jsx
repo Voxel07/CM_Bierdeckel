@@ -24,29 +24,34 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Orders({OrderState}) {
+  console.log(OrderState)
   const alertsManagerRef =  useRef(AlertsContext);
 
-  const [value, setValue] = React.useState('1');
   const [orders, setOders] = React.useState([]);
   const [trigger, setTrigger] = React.useState();
   const [itemUpdated, setItemUpdate] = React.useState();
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
   useEffect(()=>{
-    axios.get("order", {params:{paymentState: OrderState}})
-    .then(response=>
-    {
-      setOders(response.data);
-    })
-    .catch(error=>
-    {
-      console.log(error);
+    const params = {};
+
+    if (OrderState === "completed") {
+      params.completed = true;
+      // Add any other params specific to completed state
+    } else if (OrderState === "paid") {
+      params.paymentState = true;
+      // Add any other params specific to pending state
+    } else {
+      params.paymentState = false;
+      // Handle other states or set default params
     }
-    );
-  },[trigger])
+      axios.get("order", { params })
+        .then(response => {
+          setOders(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, [trigger, OrderState]); // Add OrderState to the dependency array
 
   useEffect(()=>{
     console.log("update something");
@@ -77,7 +82,6 @@ export default function Orders({OrderState}) {
     let remainder = 0;
     for(const item of orderitems)
     {
-      console.log("itme:", item)
       if(item.paymentStatus == "UNPAID")
       {
         remainder += item.product.price;
@@ -95,8 +99,6 @@ export default function Orders({OrderState}) {
     }
     return sum
   }
-
-
 
   return(
     <TableContainer component={StyledPaper}>

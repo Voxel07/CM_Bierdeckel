@@ -1,72 +1,64 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { Link as RouterLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import Badge from '@mui/material/Badge';
-import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { ButtonGroup } from '@mui/material';
+import Badge from '@mui/material/Badge';
+import Divider from '@mui/material/Divider';
 
+const navItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Inventar', path: '/inventar' },
+  { name: 'Bestellungen', path: '/bestellungen' },
+  { name: 'Status', path: '/status' },
+  { name: 'Kasse', path: '/kasse' }
+];
 
-const navItems = ['Home', 'Inventar', 'Bestellungen', 'Status', 'Kasse'];
-const drawerWidth = 240;
-
-export default function Header() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+function Header() {
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
+  const menuStyle = {
+    "& .MuiPaper-root": {
+      backgroundColor: "#0e1117",  // Light grey background
+    }
+  };
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -82,8 +74,9 @@ export default function Header() {
         vertical: 'top',
         horizontal: 'right',
       }}
-      open={isMobileMenuOpen}
+      open={Boolean(mobileMoreAnchorEl)}
       onClose={handleMobileMenuClose}
+      sx={menuStyle}
     >
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
@@ -93,6 +86,7 @@ export default function Header() {
         </IconButton>
         <p>Messages</p>
       </MenuItem>
+      <Divider />
       <MenuItem>
         <IconButton
           size="large"
@@ -105,7 +99,8 @@ export default function Header() {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <Divider />
+      <MenuItem onClick={handleOpenUserMenu}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -121,39 +116,87 @@ export default function Header() {
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+    <AppBar position="static">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
           <Typography
             variant="h6"
             noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            component={RouterLink}
+            to="/"
+            sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, color: 'inherit', textDecoration: 'none' }}
           >
             Cracy Monkeys
           </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 10}}>
-            <ButtonGroup  color="primary" disabled={false} orientation="horizontal" size="large" variant="text">
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                ...menuStyle
+              }}
+            >
+              {navItems.map((item, index) => (
+                <React.Fragment key={item.name}>
+                  <MenuItem 
+                    component={RouterLink} 
+                    to={item.path}
+                    onClick={handleCloseNavMenu}
+                  >
+                    <Typography textAlign="center">{item.name}</Typography>
+                  </MenuItem>
+                  {index < navItems.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+            </Menu>
+          </Box>
+          <Typography
+            variant="h6"
+            noWrap
+            component={RouterLink}
+            to="/"
+            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'inherit', textDecoration: 'none' }}
+          >
+            Cracy Monkeys
+          </Typography>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {navItems.map((item) => (
-                <Button key={item} sx={{ color: '#ffff' }} href={item}>
-                {item}
+              <Button
+                key={item.name}
+                component={RouterLink}
+                to={item.path}
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                {item.name}
               </Button>
             ))}
-
-            </ButtonGroup>
           </Box>
-          <Box sx={{ flexGrow: 1 }} />
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
+          <Box sx={{ flexGrow: 0 }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
@@ -172,13 +215,36 @@ export default function Header() {
               size="large"
               edge="end"
               aria-label="account of current user"
-              aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              onClick={handleOpenUserMenu}
               color="inherit"
             >
               <AccountCircle />
             </IconButton>
+            <Menu
+              sx={{ mt: '45px', ...menuStyle }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">Profile</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">My account</Typography>
+              </MenuItem>
+            </Menu>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -193,9 +259,10 @@ export default function Header() {
             </IconButton>
           </Box>
         </Toolbar>
-      </AppBar>
+      </Container>
       {renderMobileMenu}
-      {renderMenu}
-    </Box>
+    </AppBar>
   );
 }
+
+export default Header;

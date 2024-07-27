@@ -31,8 +31,8 @@ function Checkout() {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList textColor="primary" indicatorColor="primary" onChange={handleChange} aria-label="lab API tabs example" centered >
               <Tab icon={<LunchDiningIcon />} value="1" label="Offen" />
-              <Tab icon={<SportsBarIcon />} value="2" label="Fertig" />
-              <Tab icon={<KitchenIcon />} value="3" label="Übersicht" />
+              <Tab icon={<SportsBarIcon />} value="2" label="Bezhalt" />
+              <Tab icon={<KitchenIcon />} value="3" label="Abgeschlossen" />
           </TabList>
             </Box>
         <TabPanel value="1">
@@ -42,7 +42,7 @@ function Checkout() {
           <Orders OrderState={"paid"}/>
         </TabPanel>
         <TabPanel value="3">
-          <Orders OrderState={"Übersicht"}/>
+          <Orders OrderState={"completed"}/>
         </TabPanel>
       </TabContext>
       {/* </ThemeProvider> */}

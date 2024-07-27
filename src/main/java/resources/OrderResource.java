@@ -34,7 +34,7 @@ public class OrderResource {
     public Response getOrder(@QueryParam("orderId") Long orderId,
                              @QueryParam("userId") Long userId,
                              @QueryParam("completed") Boolean compledetOrder,
-                             @QueryParam("paymentState") String paymentState)
+                             @QueryParam("paymentState") Boolean paymentState)
     {
         if(orderId != null)
         {
@@ -44,21 +44,41 @@ public class OrderResource {
         {
             return orm.getOderByUser(userId, compledetOrder);
         }
+        else if(compledetOrder != null)
+        {
+            System.out.println(paymentState);
+
+            if(compledetOrder.equals(true))
+            {
+                System.out.println("paid");
+                return  Response.status(200).entity(orm.getOrdersByCompletionState(true)).build();
+            }
+            else if(compledetOrder.equals(false)){
+                System.out.println("false");
+                return  Response.status(200).entity(orm.getOrdersByCompletionState(false)).build();
+            }
+           else{
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalide completionState").build();
+           }
+        }
         else if (paymentState != null)
         {
             System.out.println(paymentState);
 
-            if(paymentState.equals("paid"))
+            if(paymentState.equals(true))
             {
                 System.out.println("paid");
                 return  Response.status(200).entity(orm.getOrdersByPaymentState(true)).build();
             }
-            else{
+            else if(paymentState.equals(false))
+            {
                 System.out.println("nope");
 
                 return  Response.status(200).entity(orm.getOrdersByPaymentState(false)).build();
             }
-
+            else{
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalide paymentState").build();
+               }
         }
         else
         {
