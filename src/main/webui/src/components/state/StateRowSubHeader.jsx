@@ -8,31 +8,20 @@ import StyledMenu from "./StyledMenu"
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 
-export default function StateRowSubHeader({pHandleSort, state, number, titles})
+export default function StateRowSubHeader({pHandleSort, state, number, titles, pHandleMultiSelect})
 {
     // console.log(state)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [selectionstate, setSelectionstate] = useState(false)
-
-    useEffect(() =>{
-        console.log(selectionstate)
-    },[selectionstate])
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
       };
       
-    const handleClose = (val1, val2) => {
-    pHandleSort(val1, val2);
+    const handleClose = (state, title) => {
+    pHandleSort(state, title);
     setAnchorEl(null);
     };
-
-    const handleMassSelection = () =>
-    {
-        setSelectionstate(!selectionstate);
-    }
-
 
     if (number > 0) {
     return(
@@ -41,7 +30,7 @@ export default function StateRowSubHeader({pHandleSort, state, number, titles})
                 <Typography>Ausgewählt</Typography>
                 <Chip color="primary" label={number} size="small" />
                 <Tooltip title="Alle auswählen" placement='top'>
-                    <Checkbox onChange={() => handleMassSelection()}/>
+                    <Checkbox onChange={() => pHandleMultiSelect(state)}/>
                 </Tooltip>
                 <IconButton aria-label="user"  onClick={handleClick}>
                     <SettingsIcon sx={{color:"#f5f0f3"}} />

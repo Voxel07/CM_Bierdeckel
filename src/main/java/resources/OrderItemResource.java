@@ -80,28 +80,51 @@ public class OrderItemResource {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateOrderItem(@QueryParam("orderItemId") Long orderItemId,
+    public Response updateOrderItem(@QueryParam("state") String targetState,
                                     @QueryParam("action") String action,
-                                    @QueryParam("extraId") Long extraId)
+                                    @QueryParam("extraId") Long extraId,
+                                    List<OrderItem> orderItems)
     {
-        if(orderItemId == null || action == null)
+        OrderStatus target = null;
+        OrderStatusActions itemAtion = null;
+
+        if(orderItems == null)
         {
             return Response.status(Response.Status.BAD_REQUEST).entity("Fehlender Parameter").build();
         }
         if(extraId != null)
         {
-            return handleExtra(extraId, orderItemId, action);
+            return handleExtra(extraId, orderItems.get(0).getId(), action);
+        }
+    
+        if(targetState != null)
+        {
+            try
+            {
+                target = OrderStatus.valueOf(targetState.toUpperCase());
+            } 
+            catch (IllegalArgumentException e) 
+            {
+                System.out.println("could not parse otderTarget");
+                target = null;
+            }
         }
 
-        try
+        if(action != null)
         {
-            OrderStatusActions orderAction = OrderStatusActions.valueOf(action.toUpperCase());
-            return orderItemOrm.updateOrderItemState(orderItemId, orderAction);
-        } 
-        catch (IllegalArgumentException e) 
-        {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Ungültiger Parameter").build();
+            try
+            {
+                itemAtion = OrderStatusActions.valueOf(action.toUpperCase());
+            } 
+            catch (IllegalArgumentException e) 
+            {
+                System.out.println("could not parse otderTarget");
+                itemAtion = null;
+            }
         }
+       
+        return orderItemOrm.updateOrderItems(orderItems, itemAtion, target);
+       
     }
 
     public Response handleExtra(Long extraId, Long orderItemId, String action)

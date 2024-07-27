@@ -27,7 +27,6 @@ function State() {
   const [overviewDone, setOvervieDone] = useState([]);
   const [trigger, setTrigger] = useState(0);
 
-
   useEffect(() => {
       axios.get("/order", {params:{category: "Food"}})
       .then(response =>{
@@ -150,7 +149,12 @@ const updateItemInArray = (itemId, selectedStatus) => {
 }
 
 const handleNext = (item) => {
-  if (updateOrderItemState(item, "progress") == false) return false;
+  console.log(updateOrderItemState(item, "progress"))
+  // if (updateOrderItemState(item, "progress") == false) 
+  // {
+  //   console.log("weg damit")
+  //   return false;
+  // }
  
   switch (item.orderStatus) {
     case titles[0]: //orderd
@@ -204,8 +208,13 @@ const handleSort = (arrayToSort, option) => {
 }
 
   const handleMassSort = (arrayToSort, option) => {
+    console.log(arrayToSort)
+    console.log(option)
     // Filter for items which don't belong in the current arrayToSort
     const filteredItems = selectedItems.filter(item => item.orderStatus === arrayToSort);
+    updateOrderItemsState(filteredItems, option)
+    
+    console.log(filteredItems)
   
     // Build updates for each state array
     const newOrdered = ordered.slice();  // Make a copy to modify
@@ -260,10 +269,13 @@ const handleSort = (arrayToSort, option) => {
 
   };
 
-  const updateOrderItemState = (item, direction) => {
+  // Update one Item
+  function updateOrderItemState (item, direction){
+    const items = [item];
+    console.log(items)
+    var errorState;
     
-    axios.put("orderItem", null, {params:{
-      orderItemId: item.id,
+    axios.put("orderItem", items, {params:{
       action: direction
     },
     headers:{
@@ -271,14 +283,52 @@ const handleSort = (arrayToSort, option) => {
     }})
     .then(response =>{
       alertsManagerRef.current.showAlert('success', response.data);
-      return false;
+      errorState =  true;
     })
     .catch(error =>{
-      console.log(error)
       alertsManagerRef.current.showAlert('error', error.response.data);
-      return true;
+      errorState = false;
     });
-    }
+    return errorState;
+  }
+
+  // Update a list of items
+  function updateOrderItemsState (items, target){
+    console.log(items)
+    var errorState;
+    
+    axios.put("orderItem", items, {params:{
+      state: target
+    },
+    headers:{
+      'Content-Type': 'application/json'
+    }})
+    .then(response =>{
+      alertsManagerRef.current.showAlert('success', response.data);
+      errorState =  true;
+    })
+    .catch(error =>{
+      alertsManagerRef.current.showAlert('error', error.response.data);
+      errorState = false;
+    });
+    return errorState;
+  }
+
+  // const handleMultiSelect = (array) => {
+
+
+  // switch (array) {
+  //   case titles[0]: //orderd
+
+  //     break;
+  //   case titles[1]: //Processing
+      
+  //   break;
+  //   case titles[2]: //done
+
+  //   break;
+
+  // }
 
   return (
     <Grid sx={{ flexGrow: 1 }} container direction="column" >
@@ -300,7 +350,10 @@ const handleSort = (arrayToSort, option) => {
           <StateOverviewItem displayItems={overviewOrderd} />
           <Paper className='itemContainer'  variant="elevation" elevation={2}>
           <StateRowHeader pHandleSort={handleSort} displayState={"Bestellt"} state={titles[0]} color={"error"} number = {ordered?.length} />
-          <StateRowSubHeader pHandleSort={handleMassSort} state={titles[0]} number = {selectedItems.filter(item => item.orderStatus  === titles[0]).length} titles={titles} />
+          <StateRowSubHeader  pHandleSort={handleMassSort} state={titles[0]} 
+                              number = {selectedItems.filter(item => item.orderStatus  === titles[0]).length} 
+                              titles={titles} 
+                              pHandleMultiSelect={handleMultiSelect}/>
             { ordered?.length
             ? ordered.map((product, key) => (
             <Grid key={key} item><StateItem data={product} next={handleNext} previous={handlePrevious} pHandleSetSelectedITems={handleSetSelectedITems}/></Grid>

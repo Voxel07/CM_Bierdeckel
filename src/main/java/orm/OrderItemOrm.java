@@ -1,5 +1,6 @@
 package orm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -15,7 +16,8 @@ import model.OrderItem.PaymentStatus;
 import model.OrderItem;
 import model.ExtraItem;
 import model.Extras;
-import model.Order;
+
+import utils.IdExtractor;
 
 @ApplicationScoped
 public class OrderItemOrm {
@@ -50,64 +52,91 @@ public class OrderItemOrm {
     }
 
     @Transactional
-    public Response updateOrderItemState(Long orderItemId, OrderStatusActions action)
+    public Response updateOrderItems(List<OrderItem> orderItems, OrderStatusActions action, OrderStatus directStatus) 
     {
-        OrderItem dbOrderItem;
+        List<Long>orderItemIds = IdExtractor.extractIds(orderItems);
 
+        List<OrderItem> dbOrderItems;
         try {
-            dbOrderItem = em.find(OrderItem.class, orderItemId);
+            dbOrderItems = em.createQuery("SELECT oi FROM OrderItem oi WHERE oi.id IN :ids", OrderItem.class)
+                            .setParameter("ids", orderItemIds)
+                            .getResultList();
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
-        if (dbOrderItem == null) {
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Artikel nicht gefunden").build();
+        if (dbOrderItems.isEmpty()) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Keine Artikel gefunden").build();
         }
 
-        Order dbOrder = dbOrderItem.getOrder();
-
-        if(action == OrderStatusActions.PROGRESS)
-        {
-            switch (dbOrderItem.getOrderStatus()) {
-                case ORDERED:
-                    dbOrderItem.setOrderStatus(OrderStatus.IN_PROGRESS);
-                    break;
-                case IN_PROGRESS:
-                    dbOrderItem.setOrderStatus(OrderStatus.DELIVERED);
-                    break;
-                case DELIVERED:
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Das ist wohl das Ende").build();
-                default:
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid status").build();
-            }
-        }
-        else if(action == OrderStatusActions.RETROGRESS)
-        {
-            switch (dbOrderItem.getOrderStatus()) {
-                case DELIVERED:
-                    dbOrderItem.setOrderStatus(OrderStatus.IN_PROGRESS);
-                    break;
-                case IN_PROGRESS:
-                    dbOrderItem.setOrderStatus(OrderStatus.ORDERED);
-                    break;
-                case ORDERED:
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Das ist wohl das Ende").build();
-                default:
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("Invalid status").build();
+        List<String> errors = new ArrayList<>();
+        for (OrderItem item : dbOrderItems) {
+            try {
+                if (directStatus != null) {
+                        item.setOrderStatus(directStatus);
+                } else {
+                    updateOrderItemStatus(item, action);
+                }
+            } catch (IllegalStateException e) {
+                errors.add("Fehler bei Artikel ID " + item.getId() + ": " + e.getMessage());
             }
         }
 
         try {
-            em.merge(dbOrderItem);
+            em.flush();
         } catch (Exception e) {
-            System.err.println(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Speichern Fehlgschlagen").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Speichern fehlgeschlagen").build();
+        }
+
+        if (!errors.isEmpty()) {
+            return Response.status(Response.Status.PARTIAL_CONTENT).entity(String.join("\n", errors)).build();
         }
 
         return Response.ok().entity("Status erfolgreich aktualisiert").build();
     }
 
-     @Transactional
+    private void updateOrderItemStatus(OrderItem item, OrderStatusActions action) throws IllegalStateException {
+        OrderStatus newStatus;
+        switch (action) {
+            case PROGRESS:
+                newStatus = progressStatus(item.getOrderStatus());
+                break;
+            case RETROGRESS:
+                newStatus = regressStatus(item.getOrderStatus());
+                break;
+            default:
+                throw new IllegalStateException("Ungültige Aktion");
+        }
+        item.setOrderStatus(newStatus);
+    }
+
+    private OrderStatus progressStatus(OrderStatus currentStatus) throws IllegalStateException {
+        switch (currentStatus) {
+            case ORDERED:
+                return OrderStatus.IN_PROGRESS;
+            case IN_PROGRESS:
+                return OrderStatus.DELIVERED;
+            case DELIVERED:
+                throw new IllegalStateException("Das ist wohl das Ende");
+            default:
+                throw new IllegalStateException("Ungültiger Status");
+        }
+    }
+
+    private OrderStatus regressStatus(OrderStatus currentStatus) throws IllegalStateException {
+        switch (currentStatus) {
+            case DELIVERED:
+                return OrderStatus.IN_PROGRESS;
+            case IN_PROGRESS:
+                return OrderStatus.ORDERED;
+            case ORDERED:
+                throw new IllegalStateException("Das ist wohl das Ende");
+            default:
+                throw new IllegalStateException("Ungültiger Status");
+        }
+    }
+
+    @Transactional
     public Response addExtraToOrderItem(Long orderItemId, Long extraId) {
 
         System.out.println("addExtraToOrder2");
