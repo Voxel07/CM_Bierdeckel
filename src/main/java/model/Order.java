@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import model.OrderItem.OrderStatus;
 import model.OrderItem.PaymentStatus;
 import jakarta.persistence.OneToMany;
 import jakarta.json.bind.annotation.JsonbTransient;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -26,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Order {
 
     @Id
-    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 10) //TODO: Chachge back to 1
+    @SequenceGenerator(name = "orderSeq", sequenceName = "ZSEQ_ORDERS_ID", allocationSize = 1, initialValue = 1)
     @GeneratedValue(generator = "orderSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;

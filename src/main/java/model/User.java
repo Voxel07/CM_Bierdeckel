@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 public class User {
 
     @Id
-    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 1) //TODO: Change back to 1
+    @SequenceGenerator(name = "userSeq", sequenceName = "ZSEQ_USER_ID", allocationSize = 1, initialValue = 1)
     @GeneratedValue(generator = "userSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;

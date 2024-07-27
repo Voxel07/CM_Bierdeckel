@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.Response;
 
 import model.Order;
 import model.OrderItem;
-import model.Product;
 import orm.OrderOrm;
 
 @RequestScoped

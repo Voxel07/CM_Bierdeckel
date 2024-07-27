@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import model.Extras;
-import model.Order;
-import model.OrderItem;
-import model.Product;
-import test.SocketTest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
+import model.Order;
+import model.OrderItem;
+import model.Product;
+import test.SocketTest;
 
 @ApplicationScoped
 public class ProductOrm {

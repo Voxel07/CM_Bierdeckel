@@ -1,32 +1,19 @@
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
+
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
-import model.Order;
-import model.OrderItem;
-import model.Product;
-import model.User;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import resources.OrderResource;
-import orm.OrderOrm;
-import orm.UserOrm;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.Assertions;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
-import io.quarkus.test.junit.TestProfile;
+import model.User;
+import orm.UserOrm;
 
 @QuarkusTest
 @TestProfile(TestProfiles.class)

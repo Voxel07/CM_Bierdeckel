@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.arjuna.ats.internal.jdbc.drivers.modifiers.list;
 
 import java.util.HashMap;
 
@@ -25,8 +22,6 @@ import model.Product;
 import model.User;
 import model.OrderItem.PaymentStatus;
 import model.OrderItem.OrderStatus;
-import model.ExtraItem;
-import model.Extras;
 
 @ApplicationScoped
 public class OrderOrm {
@@ -148,7 +143,6 @@ public class OrderOrm {
         try {
             for (Map.Entry<Product, Long> entry : productCountMap.entrySet()) {
                 Product product = entry.getKey();
-                Long count = entry.getValue();
     
                 Product dbProduct = em.find(Product.class, product.getId());
                 if (dbProduct == null) {
@@ -423,7 +417,6 @@ public class OrderOrm {
         }
 
         List<OrderItem> orderItems = orderDB.getOrderItems();
-        boolean itemFound = false;
 
         // only remove the first item found
         for (OrderItem orderItem : orderItems) {
