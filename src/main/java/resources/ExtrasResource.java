@@ -1,5 +1,7 @@
 package resources;
 import java.util.List;
+
+import io.quarkus.cache.CacheResult;
 import orm.ExtrasOrm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,13 +26,20 @@ public class ExtrasResource {
     ExtrasOrm orm;
 
     @GET
+    @CacheResult(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Extras> getAllExtras(@QueryParam("extrasId") Long extrasId) {
+    public List<Extras> getAllExtras(   @QueryParam("extrasId") Long extrasId,
+                                        @QueryParam("category") String category) {
         if (extrasId != null) {
             return orm.getExtrasById(extrasId);
-        } else {
-            return orm.getAllExtrass();
+        }
+        else if(category != null)
+        {
+            return orm.getExtraByCategory(category);
+        }
+        else {
+            return orm.getAllExtras();
         }
     }
 

@@ -37,10 +37,6 @@ public class OrderItem
     @JoinColumn(name ="prduct_id", referencedColumnName="id")
     private Product product;
 
-    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // @JoinColumn(name ="extraItem_id", referencedColumnName="id")
-    // private ExtraItem extraItem;
-
     @OneToMany(mappedBy = "orderItem", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ExtraItem> extraItems = new ArrayList<>();
 

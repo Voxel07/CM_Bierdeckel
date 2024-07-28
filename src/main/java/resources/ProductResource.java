@@ -19,7 +19,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import orm.ProductOrm;
+import model.Extras;
 
 @ApplicationScoped
 @Path("/products")
@@ -63,7 +65,7 @@ public class ProductResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uodateStock(@QueryParam("productId") Long productId,
+    public Response updateStock(@QueryParam("productId") Long productId,
                                 @QueryParam("action") String action){
         return orm.updateProductStock(productId, action);
     }

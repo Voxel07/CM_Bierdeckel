@@ -124,7 +124,7 @@ const Products = ({productCategory}) => {
                                     <Stack  direction="row"
                                             spacing={0}
                                             alignItems="start">
-                                        <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
+                                        <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} productToModify={product}/>
                                         <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
                                     </Stack>
                                 </TableCell>

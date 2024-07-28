@@ -1,7 +1,9 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.json.bind.annotation.JsonbTransient;
 
@@ -10,6 +12,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.OneToMany;
@@ -42,6 +47,14 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "PRODUCT_EXTRAS",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "extras_id")
+    )
+    private List<Extras> extras = new ArrayList<>();
 
     public Product() {
     }
@@ -121,7 +134,6 @@ public class Product {
         this.consumption --;
     }
 
-
     @JsonbTransient
     public List<OrderItem> getOrderItems() {
         return orderItems;
@@ -129,6 +141,25 @@ public class Product {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public void addExtra(Extras extra) {
+        this.extras.add(extra);
+        extra.getCompatibleProducts().add(this);
+    }
+
+    public void removeExtra(Extras extra) {
+        this.extras.remove(extra);
+        extra.getCompatibleProducts().remove(this);
+    }
+
+    public List<Extras> getCompatibleExtras() {
+        return this.extras;
+    }
+
+    // Setter for extras
+    public void setCompatibleExtras(List<Extras> extras) {
+        this.extras = extras;
     }
 
     @Override

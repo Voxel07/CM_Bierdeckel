@@ -39,6 +39,7 @@ const theme = createTheme({
         h4: { color: '#f5f0f3' },
         h5: { color: '#f5f0f3' },
        p: { color: '#f5f0f3' },
+       subtitle1: {color :'#f5f0f3'},
        body1: { color: '#f5f0f3' },
        body2: { color: '#f5f0f3' },
       },

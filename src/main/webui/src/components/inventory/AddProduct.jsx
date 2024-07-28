@@ -20,7 +20,9 @@ import Stack from "@mui/material/Stack";
 import Autocomplete from '@mui/material/Autocomplete';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@mui/material/';
-
+import {Chip} from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
@@ -43,47 +45,131 @@ const style = {
     borderRadius: '20px',
   };
 
-const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
+  const theme = createTheme({
+    components: {
+      MuiAutocomplete: {
+        styleOverrides: {
+          root: {
+            '& .MuiInputLabel-root': { color: '#DDDDDD' },
+            '& .MuiOutlinedInput-root': { 
+              color: '#DDDDDD',
+              '& > fieldset': { borderColor: '#f5f0f3' },
+            },
+          },
+          inputRoot: {
+            color: '#f5f0f3'
+          },
+          clearIndicator: {
+            color: 'red'
+          },
+          popupIndicator: {
+            color: '#f5f0f3'
+          },
+          paper: {
+            color: '#f5f0f3',
+            backgroundColor: '#090c11',
+          },
+          option: {
+            borderBottom: '1px solid #0d5459',
+            '&[aria-selected="true"]': {
+            backgroundColor: '#090c11', // Change this to your desired color
+            color: '#1e7d29', // Change this to your desired text color
+          },
+          },
+        },
+      },
+    },
+  });
+
+const AddProduct = (({onSubmitSuccess, category, action, productToModify}) =>
 {
+    console.log(productToModify)
     const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
     const [newCategory, setNewCategory] = useState(category)
-    const [displayCategory , setDisplayCategory] = useState()
+    const [selectedExtras, setSelectedExtras] = useState([]);
+    const [availableExtras, setAvailableExtras] = useState([]);
+
+    const autocompleteStyle = {
+       
+    };
+
+    const chipStyle = {
+        margin: '2px',
+        backgroundColor: '#040608',
+        borderColor:'#19669d',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#040608',
+        },
+        '& .MuiChip-deleteIcon': {
+            color: 'red',
+            '&:hover': {
+                color: '#fff',
+            },
+        }
+    };
+
+    useEffect(() => {
+        // Fetch available extras when component mounts
+        const fetchExtras = async () => {
+            try {
+                const response = await axios.get('/extras', { params: { category: "Food" } });
+                setAvailableExtras(response.data);
+            } catch (err) {
+                console.error('Failed to fetch extras:', err);
+                alertsManagerRef.current.showAlert('error', 'Failed to load extras. Please try again.');
+            }
+        };
+
+        fetchExtras();
+    }, []);
+
+    useEffect(() => {
+        if (productToModify && productToModify.extras) {
+            setSelectedExtras(productToModify.extras.map(extra => extra.id));
+        }
+    }, [productToModify]);
 
     const handleSubmit = async(formData, { resetForm }) =>{
-        console.log(formData);
-        console.log(prductToModify);
         const url = 'products';
         const data = {
-            id: prductToModify ? prductToModify.id : null,
+            id: productToModify ? productToModify.id : null,
             name: formData.description,
             price: String(formData.price).replace(",", "."),
             stock: formData.stock,
             consumption: formData.consumption,
-            category: newCategory
+            category: newCategory,
+            extraIds: selectedExtras
         };
 
         const request = action === 'add' ? axios.post(url, data) : axios.put(url, data);
 
-        await request
-        .then(response => {
+        try {
+            const response = await request;
             console.log(JSON.stringify(response.data))
             alertsManagerRef.current.showAlert('success', response.data);
-           onSubmitSuccess();
+            onSubmitSuccess();
             resetForm();
-    
-        })
-        .catch(error => {
+            setSelectedExtras([]);
+        } catch (error) {
             if (error.response.data.length !== 0) {
-                alertsManagerRef.current.showAlert('error',  error.response.data);
-            }
-            else
-            {
+                alertsManagerRef.current.showAlert('error', error.response.data);
+            } else {
                 alertsManagerRef.current.showAlert('error', `Error: ${error.response.status}`);
             }
-        });
+        }
     }
+
+    const handleExtraToggle = (extraId) => {
+        setSelectedExtras(prevSelected =>
+            prevSelected.includes(extraId)
+                ? prevSelected.filter(id => id !== extraId)
+                : [...prevSelected, extraId]
+        );
+    };
+
 
     const handleOpen = () => {
         setOpen(true);
@@ -145,24 +231,25 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
         <FormikWithRef
         validateOnChange={true}
         initialValues={
-            prductToModify ? {
-                description: prductToModify.name,
-                price: prductToModify.price,
-                stock: prductToModify.stock,
-                consumption: prductToModify.consumption,
-                category: setNewCategory
+            productToModify ? {
+                description: productToModify.name,
+                price: productToModify.price,
+                stock: productToModify.stock,
+                consumption: productToModify.consumption,
+                category: setNewCategory,
+                extras: productToModify.extras || []
             } : {
                 description: '',
                 price: '',
                 stock: '',
                 consumption: '', 
-                category: ''
+                category: '',
+                extras: []
             }
         }
         validationSchema={validationSchema}
         onSubmit={async(data, { setSubmitting, resetForm }) => {
                 setSubmitting(true);
-                //Post From
                 await handleSubmit(data, { resetForm }); //async call
                 setSubmitting(false);
             }
@@ -170,7 +257,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
         //end Formik
         >  
         {
-            ({ values, errors, isSubmitting, touched }) => {
+            ({ values, errors, isSubmitting, touched, setFieldValue }) => {
                 
                 useEffect(() => {
                     if (!isSubmitting) {
@@ -181,10 +268,10 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                 return(
                 <Container className="Form-Container" sx={{...style, width:'500px'}} >
                     {
-                         action == "add" ?
-                         <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
-                         :
-                         <Typography  sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
+                        action == "add" ?
+                        <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
+                        :
+                        <Typography  sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
                     }
 
                 <Form className="Form-Container" >
@@ -203,12 +290,50 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                         <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
+                       
+                         <Grid item xs={12}>
+                        <ThemeProvider theme={theme}>
+
+                         <Autocomplete
+                                multiple
+                                id="extras-tags"
+                                options={availableExtras}
+                                getOptionLabel={(option) => option.name}
+                                value={values.extras}
+                                onChange={(event, newValue) => {
+                                    setFieldValue('extras', newValue);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        label="Extras"
+                                        placeholder="Wähle Extras"
+                                        sx={autocompleteStyle}
+                                    />
+                                )}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip
+                                            deleteIcon={<ClearIcon />}
+                                            variant="outlined"
+                                            label={option.name}
+                                            {...getTagProps({ index })}
+                                            sx={chipStyle}
+                                        />
+                                    ))
+                                }
+                            />
+                        </ThemeProvider>
+                        </Grid>
                         {action == "add" ? null:
-                        <Grid  item xs={6}>
+                        <Grid  item xs={6} sx={{marginTop:'20px'}}>
+                        <ThemeProvider theme={theme}>
+
                         <Autocomplete
                             disablePortal
                             id="ac_category_update_product"
-                            defaultValue={pCategory.find(item => item.id === prductToModify.category)}
+                            defaultValue={pCategory.find(item => item.id === productToModify.category)}
                             options={pCategory}
                             name="category"
                             onChange={(event, value) => {
@@ -216,6 +341,7 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                             }}
                             renderInput={(params) => <TextField {...params} label="Kategorie" />}
                             />
+                            </ThemeProvider>
                         </Grid>
                         }
                         <Grid item xs={12}>

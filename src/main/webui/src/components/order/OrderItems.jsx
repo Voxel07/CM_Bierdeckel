@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-
-import axios from "axios";
-
 import InfoCard from "./InfoCard";
 import { Grid, Divider, Chip } from "@mui/material";
 
 function OrderItems({products, handleStockChange, displayItems}) {
+
   return (
     <Grid container className="grid-container" rowSpacing={5} direction="row" justifyContent="center" >
       {products?.length
@@ -20,11 +18,11 @@ function OrderItems({products, handleStockChange, displayItems}) {
           ))
         : null}
 
-      {/* <Grid item xs={12}>
+      <Grid item xs={12}>
         <Divider ariant="inset" >
           <Chip label="Curry" size="big" color="primary" sx={{ margin: 10 }} />
         </Divider>
-      </Grid> */}
+      </Grid>
     </Grid>
   );
 }

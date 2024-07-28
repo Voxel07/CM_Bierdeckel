@@ -1,16 +1,18 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import jakarta.json.bind.annotation.JsonbTransient;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -42,6 +44,9 @@ public class Extras {
 
     @OneToMany(mappedBy = "extras", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<ExtraItem> extraItem = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "extras", fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
     public Extras() {
     }
@@ -118,6 +123,32 @@ public class Extras {
 
     public void setExtraItem(List<ExtraItem> extraItem) {
         this.extraItem = extraItem;
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
+        product.getCompatibleExtras().add(this);
+    }
+
+    public void removeProduct(Product product) {
+        this.products.remove(product);
+        product.getCompatibleExtras().remove(this);
+    }
+
+    @JsonbTransient
+    public List<Product> getCompatibleProducts() {
+        return this.products;
+    }
+
+    // Setter for products
+    public void setCompatibleProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    @Override
+    public String toString() {
+        return "Extras [id=" + id + ", name=" + name + ", price=" + price + ", stock=" + stock + ", consumption="
+                + consumption + ", category=" + category + ", extraItem=" + extraItem + ", products=" + products + "]";
     }
 
 }

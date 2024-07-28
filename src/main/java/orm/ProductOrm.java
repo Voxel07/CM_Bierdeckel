@@ -3,6 +3,7 @@ package orm;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -16,6 +17,8 @@ import jakarta.ws.rs.core.Response;
 import model.Order;
 import model.OrderItem;
 import model.Product;
+import model.Extras;
+import utils.IdExtractor;
 import test.SocketTest;
 
 @ApplicationScoped
@@ -114,12 +117,32 @@ public class ProductOrm {
             return Response.status(406).entity("Das Produkt: "+ product.getName()+" existiert bereits").build();
         }
 
+        List<Long>extraIds = IdExtractor.extractIds(product.getCompatibleExtras());
+        List<Extras> dbExtras;
+
+        try {
+            dbExtras = em.createQuery("SELECT e FROM Extras e WHERE e.id IN :ids", Extras.class)
+                            .setParameter("ids", extraIds)
+                            .getResultList();
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+
+        if (dbExtras.isEmpty()) {
+            System.out.println("Keine Extras gefunden");
+        }
+
+        product.setCompatibleExtras(dbExtras);
+
         try {
             em.persist(product);
         }   catch (Exception e)
         {
+            System.out.println(e);
             return Response.status(500).entity("Fehler beim einfügen des Produkts").build();
         }
+
+      
         
         return Response.status(200).entity(String.format("Produkt: %s hinzugefügt", product.getName())).build();
     }
@@ -142,22 +165,41 @@ public class ProductOrm {
             return Response.status(404).entity("Produkt nicht gefunden").build();
         }
 
+        List<Long>extraIds = IdExtractor.extractIds(product.getCompatibleExtras());
+        List<Extras> dbExtras;
 
-        List<Order> orders = orderOrm.getOderByProducts(product.getId());
-
-        Double newSum = 0.0;
-        for (Order order : orders) {
-            for (OrderItem oi : order.getOrderItems()) {
-                newSum += oi.getProduct().getPrice();
-            }
-            order.setSum(newSum);
-            try {
-                em.merge(order);
-            } catch (Exception e) {
-                return Response.status(500).entity("Error while updating order").build();
-            }
+        try {
+            dbExtras = em.createQuery("SELECT e FROM Extras e WHERE e.id IN :ids", Extras.class)
+                            .setParameter("ids", extraIds)
+                            .getResultList();
+        } catch (Exception e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
 
+        if (dbExtras.isEmpty()) {
+            System.out.println("Keine Extras gefunden");
+        }
+
+        dbProduct.setCompatibleExtras(dbExtras);
+
+        // Update order sum if product price changed
+        if(product.getPrice() != dbProduct.getPrice())
+        {
+            List<Order> orders = orderOrm.getOderByProducts(product.getId());
+
+            Double newSum = 0.0;
+            for (Order order : orders) {
+                for (OrderItem oi : order.getOrderItems()) {
+                    newSum += oi.getProduct().getPrice();
+                }
+                order.setSum(newSum);
+                try {
+                    em.merge(order);
+                } catch (Exception e) {
+                    return Response.status(500).entity("Error while updating order").build();
+                }
+            }
+        }
         
         // Set only the updated fields
         Field[] declaredFields = Product.class.getDeclaredFields();

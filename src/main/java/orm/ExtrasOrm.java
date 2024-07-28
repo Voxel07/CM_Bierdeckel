@@ -33,8 +33,14 @@ public class ExtrasOrm {
         return extras;
     }
 
-    public List<Extras> getAllExtrass() {
-        TypedQuery<Extras> query = em.createQuery("SELECT p FROM Extras p", Extras.class);
+    public List<Extras> getAllExtras() {
+        TypedQuery<Extras> query = em.createQuery("SELECT e FROM Extras e", Extras.class);
+        return query.getResultList();
+    }
+
+    public List<Extras> getExtraByCategory(String category) {
+        TypedQuery<Extras> query = em.createQuery("SELECT e FROM Extras e WHERE e.category =: cat", Extras.class);
+        query.setParameter("cat", category);
         return query.getResultList();
     }
 
