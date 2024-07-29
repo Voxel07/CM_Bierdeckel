@@ -1,6 +1,7 @@
 package resources;
 import java.util.List;
 
+import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheResult;
 import orm.ExtrasOrm;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -44,6 +45,7 @@ public class ExtrasResource {
     }
 
     @POST
+    @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createExtras(Extras extra) {
@@ -51,6 +53,7 @@ public class ExtrasResource {
     }
 
     @PUT
+    @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateExtras(Extras extra) {
@@ -58,6 +61,7 @@ public class ExtrasResource {
     }
 
     @DELETE
+    @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteExtras(Long id) {

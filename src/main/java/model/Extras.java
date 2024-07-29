@@ -22,7 +22,7 @@ import jakarta.persistence.Table;
 public class Extras {
     
     @Id
-    @SequenceGenerator(name = "extrasSeq", sequenceName = "ZSEQ_EXTRAS_ID", allocationSize = 1, initialValue = 6)
+    @SequenceGenerator(name = "extrasSeq", sequenceName = "ZSEQ_EXTRAS_ID", allocationSize = 1, initialValue = 1)
     @GeneratedValue(generator = "extrasSeq")
     @Column(name = "id", unique = true, nullable = false)
     private Long id;

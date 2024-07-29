@@ -289,7 +289,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
                                         variant="outlined"
                                         label="Extras"
                                         placeholder="Wähle Extras"
-                                        sx={autocompleteStyle}
                                     />
                                 )}
                                 renderTags={(value, getTagProps) =>
