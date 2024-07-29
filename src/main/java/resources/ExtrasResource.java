@@ -27,7 +27,7 @@ public class ExtrasResource {
     ExtrasOrm orm;
 
     @GET
-    @CacheResult(cacheName = "fetch-extras") 
+    // @CacheResult(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<Extras> getAllExtras(   @QueryParam("extrasId") Long extrasId,
@@ -45,7 +45,7 @@ public class ExtrasResource {
     }
 
     @POST
-    @CacheInvalidate(cacheName = "fetch-extras") 
+    // @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createExtras(Extras extra) {
@@ -53,7 +53,7 @@ public class ExtrasResource {
     }
 
     @PUT
-    @CacheInvalidate(cacheName = "fetch-extras") 
+    // @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateExtras(Extras extra) {
@@ -61,7 +61,7 @@ public class ExtrasResource {
     }
 
     @DELETE
-    @CacheInvalidate(cacheName = "fetch-extras") 
+    // @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteExtras(Long id) {

@@ -83,7 +83,6 @@ public class ExtrasOrm {
         
         if(dBExtras.getPrice() != extra.getPrice())
         {
-            System.out.println("pls");
             List<Order> orders = orderOrm.getOderByExtras(extra.getId());
             System.out.println(orders.size());
 

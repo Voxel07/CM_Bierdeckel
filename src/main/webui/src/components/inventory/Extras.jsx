@@ -16,9 +16,9 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     color:'#F5F0F3'
 }));
 
-const Products = ({productCategory}) => {
+const Extras = ({extraCategory}) => {
 
-    const [products, setProducts] = useState([]);
+    const [extras, setExtras] = useState([]);
     const [trigger, setTrigger] = useState(false); 
     const [fetchingData, setDataFetched] = useState(true);
     const alertsManagerRef =  useRef(AlertsContext);
@@ -27,7 +27,8 @@ const Products = ({productCategory}) => {
         axios.get("extras")
             .then(response => {
                 setTimeout(() => {
-                    setProducts(response.data);
+                    setExtras(response.data);
+                    console.log(response.data);
                     setDataFetched(false);
                     // alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
                 }, 0);
@@ -37,46 +38,10 @@ const Products = ({productCategory}) => {
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });       
     },[trigger])
-    
-    const handleEdit = (id) => {
-        const updatedProducts = products.map(product => {
-            if (product.id === id) {
-                return {
-                    ...product,
-                    newName: product.name,
-                    newPrice: product.price
-                };
-            }
-            return product;
-        });
-        setProducts(updatedProducts);
-    };
-
-    const handleSave = (id) => {
-        console.log('Saving product with id: ', id);
-        const updatedProducts = products.map(product => {
-            if (product.id === id) {
-                return {
-                    ...product,
-                    isEditing: false,
-                    name: product.newName,
-                    price: product.newPrice
-                };
-            }
-            return product;
-        });
-        setProducts(updatedProducts);
-    };
-
-    const handleKeyPress = (e, id) => {
-        if (e.key === 'Enter') {
-            handleSave(id);
-        }
-    };
 
     const handleDelete = (_id) => {
-        const updatedProducts = products.filter(product => product.id !== _id);
-        setProducts(updatedProducts);
+        const updatedProducts = extras.filter(product => product.id !== _id);
+        setExtras(updatedProducts);
 
         axios.delete('products',
         {
@@ -100,32 +65,28 @@ const Products = ({productCategory}) => {
                         <TableRow >
                             <TableCell>Name</TableCell>
                             <TableCell>Preis</TableCell>
-                            <TableCell>Stückzahl</TableCell>
-                            <TableCell>Verbraucht</TableCell>
+                            <TableCell>Kategorie</TableCell>
                             <TableCell>Aktion</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                       {products.map((product) => (
-                            <TableRow key={product.id}>
+                       {extras.map((extra) => (
+                            <TableRow key={extra.id}>
                                 <TableCell >
-                                       {product.name}
+                                       {extra.name}
                                 </TableCell>
                                 <TableCell>
-                                       {`${product.price} €`}
+                                       {`${extra.price} €`}
                                 </TableCell>
                                 <TableCell>
-                                        {product.category == "Food" || product.category == "Extra" ? `${product.stock} stk.`:`${product.stock} l`}
-                                </TableCell>
-                                <TableCell>
-                                        {product.category == "Food" || product.category == "Extra" ? `${product.consumption} stk.`:`${product.consumption} l`}
+                                        {extra.category}
                                 </TableCell>
                                 <TableCell>
                                     <Stack  direction="row"
                                             spacing={0}
                                             alignItems="start">
-                                        <AddExtra onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} prductToModify={product}/>
-                                        <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
+                                        <AddExtra onSubmitSuccess={() => setTrigger(!trigger)} category={extraCategory} action={"update"} prductToModify={extra}/>
+                                        <IconButton variant="contained" color="error" onClick={() => handleDelete(extra.id)}><DeleteIcon/></IconButton>
                                     </Stack>
                                 </TableCell>
                             </TableRow>
@@ -134,10 +95,10 @@ const Products = ({productCategory}) => {
 
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                    <AddExtra onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"add"}/>
+                    <AddExtra onSubmitSuccess={() => setTrigger(!trigger)} category={extraCategory} action={"add"}/>
                 </div>
                 </TableContainer>
     );
 };
 
-export default Products;
+export default Extras;

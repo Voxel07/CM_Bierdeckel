@@ -81,38 +81,32 @@ const style = {
     },
   });
 
-const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras}) =>
+  const chipStyle = {
+    margin: '2px',
+    backgroundColor: '#040608',
+    borderColor:'#19669d',
+    color: '#fff',
+    '&:hover': {
+        backgroundColor: '#040608',
+    },
+    '& .MuiChip-deleteIcon': {
+        color: 'red',
+        '&:hover': {
+            color: '#fff',
+        },
+    }
+};
+
+const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras }) =>
 {
-    console.log(productToModify)
     const alertsManagerRef =  useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
     const [newCategory, setNewCategory] = useState(category)
-    const [selectedExtras, setSelectedExtras] = useState([]);
-
-    const chipStyle = {
-        margin: '2px',
-        backgroundColor: '#040608',
-        borderColor:'#19669d',
-        color: '#fff',
-        '&:hover': {
-            backgroundColor: '#040608',
-        },
-        '& .MuiChip-deleteIcon': {
-            color: 'red',
-            '&:hover': {
-                color: '#fff',
-            },
-        }
-    };
-
-    useEffect(() => {
-        if (productToModify && productToModify.extras) {
-            setSelectedExtras(productToModify.extras.map(extra => extra.id));
-        }
-    }, [productToModify]);
-
+ 
     const handleSubmit = async(formData, { resetForm }) =>{
+        console.log(formData);
+        console.log(productToModify);
         const url = 'products';
         const data = {
             id: productToModify ? productToModify.id : null,
@@ -121,7 +115,7 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
             stock: formData.stock,
             consumption: formData.consumption,
             category: newCategory,
-            extraIds: selectedExtras
+            compatibleExtras: formData.extras.map(extra => extra)
         };
 
         const request = action === 'add' ? axios.post(url, data) : axios.put(url, data);
@@ -132,7 +126,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
             alertsManagerRef.current.showAlert('success', response.data);
             onSubmitSuccess();
             resetForm();
-            setSelectedExtras([]);
         } catch (error) {
             if (error.response.data.length !== 0) {
                 alertsManagerRef.current.showAlert('error', error.response.data);
@@ -141,15 +134,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
             }
         }
     }
-
-    const handleExtraToggle = (extraId) => {
-        setSelectedExtras(prevSelected =>
-            prevSelected.includes(extraId)
-                ? prevSelected.filter(id => id !== extraId)
-                : [...prevSelected, extraId]
-        );
-    };
-
 
     const handleOpen = () => {
         setOpen(true);
@@ -178,8 +162,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
       consumption: yup.number("Numerischer Wert").integer("Ganze Zahlen").typeError("Numerischer Wert")
         .min(0, "<= 0")
         .required("Pflichtfeld")
-        // shortInfo: yup.string().min(10, "min. 10 Zeichen"),
-        // detailedInfo: yup.string().min(30, "min. 30 Zeichen")
     })
 
     const FormikWithRef = React.forwardRef((props, ref) => (
@@ -217,7 +199,7 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
                 stock: productToModify.stock,
                 consumption: productToModify.consumption,
                 category: setNewCategory,
-                extras: productToModify.extras || []
+                extras: productToModify.compatibleExtras || []
             } : {
                 description: '',
                 price: '',
@@ -274,6 +256,7 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
                          <Grid item xs={12}>
                         <ThemeProvider theme={theme}>
 
+                        {extras && extras.length > 0 && (
                          <Autocomplete
                                 multiple
                                 id="extras-tags"
@@ -303,6 +286,7 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
                                     ))
                                 }
                             />
+                        )}
                         </ThemeProvider>
                         </Grid>
                         {action == "add" ? null:

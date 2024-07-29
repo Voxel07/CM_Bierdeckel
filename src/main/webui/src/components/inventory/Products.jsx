@@ -6,7 +6,9 @@ import axios from 'axios';
 import AddProduct from './AddProduct'
 import { styled } from '@mui/system';
 import Stack from "@mui/material/Stack";
+import { createTheme, ThemeProvider } from '@mui/material';
 
+import {Chip} from '@mui/material';
 //Feedback
 import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 
@@ -15,6 +17,22 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     borderRadius: '5px',
     color:'#F5F0F3'
 }));
+
+const chipStyle = {
+    margin: '2px',
+    backgroundColor: '#040608',
+    border:'solid 2px #19669d',
+    color: '#fff',
+    '&:hover': {
+        backgroundColor: '#040608',
+    },
+    '& .MuiChip-deleteIcon': {
+        color: 'red',
+        '&:hover': {
+            color: '#fff',
+        },
+    }
+};
 
 const Products = ({productCategory}) => {
 
@@ -113,6 +131,7 @@ const Products = ({productCategory}) => {
                             <TableCell>Preis</TableCell>
                             <TableCell>Stückzahl</TableCell>
                             <TableCell>Verbraucht</TableCell>
+                            <TableCell>Extras</TableCell>
                             <TableCell>Aktion</TableCell>
                         </TableRow>
                     </TableHead>
@@ -132,6 +151,20 @@ const Products = ({productCategory}) => {
                                         {product.category == "Food" || product.category == "Extra" ? `${product.consumption} stk.`:`${product.consumption} l`}
                                 </TableCell>
                                 <TableCell>
+
+                                <Stack  direction="row"
+                                              spacing={1}
+                                              alignItems="start">
+                                        {product.compatibleExtras && product.compatibleExtras.length > 0 && (
+                                          
+                                            product.compatibleExtras.map((extra) => (
+                                                <Chip color="primary" label={extra.name} size="small" sx={chipStyle} />
+                                            ))
+                                        )}
+                                    </Stack>
+
+                                </TableCell>
+                                <TableCell>
                                     <Stack  direction="row"
                                             spacing={0}
                                             alignItems="start">
@@ -145,7 +178,7 @@ const Products = ({productCategory}) => {
 
                 </Table>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"add"}/>
+                    <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"add"} extras={extras}/>
                 </div>
                 </TableContainer>
     );

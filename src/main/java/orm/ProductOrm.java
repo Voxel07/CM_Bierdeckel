@@ -168,6 +168,8 @@ public class ProductOrm {
         List<Long>extraIds = IdExtractor.extractIds(product.getCompatibleExtras());
         List<Extras> dbExtras;
 
+        System.out.println(extraIds.toString());
+
         try {
             dbExtras = em.createQuery("SELECT e FROM Extras e WHERE e.id IN :ids", Extras.class)
                             .setParameter("ids", extraIds)

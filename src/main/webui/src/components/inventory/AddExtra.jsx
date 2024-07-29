@@ -27,8 +27,7 @@ import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
 
 const pCategory = [
     { label: 'Essen', id: 'Food' },
-    { label: 'Trinken', id: 'Drink' },
-    { label: 'Extras', id: 'Extra' }
+    { label: 'Trinken', id: 'Drink' }
 ]
 
 const style = {
@@ -203,12 +202,10 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                         <Grid item xs={6}>
                             <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
                         </Grid>
-                        {action == "add" ? null:
                         <Grid  item xs={6}>
                         <Autocomplete
                             disablePortal
                             id="ac_category_update_product"
-                            defaultValue={pCategory.find(item => item.id === prductToModify.category)}
                             options={pCategory}
                             name="category"
                             onChange={(event, value) => {
@@ -217,7 +214,6 @@ const AddProduct = (({onSubmitSuccess, category, action, prductToModify}) =>
                             renderInput={(params) => <TextField {...params} label="Kategorie" />}
                             />
                         </Grid>
-                        }
                         <Grid item xs={12}>
                         <Stack
                             direction="row"
