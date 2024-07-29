@@ -81,7 +81,7 @@ const style = {
     },
   });
 
-const AddProduct = (({onSubmitSuccess, category, action, productToModify}) =>
+const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras}) =>
 {
     console.log(productToModify)
     const alertsManagerRef =  useRef();
@@ -89,11 +89,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify}) =>
     const descriptionRef = useRef();
     const [newCategory, setNewCategory] = useState(category)
     const [selectedExtras, setSelectedExtras] = useState([]);
-    const [availableExtras, setAvailableExtras] = useState([]);
-
-    const autocompleteStyle = {
-       
-    };
 
     const chipStyle = {
         margin: '2px',
@@ -110,21 +105,6 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify}) =>
             },
         }
     };
-
-    useEffect(() => {
-        // Fetch available extras when component mounts
-        const fetchExtras = async () => {
-            try {
-                const response = await axios.get('/extras', { params: { category: "Food" } });
-                setAvailableExtras(response.data);
-            } catch (err) {
-                console.error('Failed to fetch extras:', err);
-                alertsManagerRef.current.showAlert('error', 'Failed to load extras. Please try again.');
-            }
-        };
-
-        fetchExtras();
-    }, []);
 
     useEffect(() => {
         if (productToModify && productToModify.extras) {
@@ -297,7 +277,7 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify}) =>
                          <Autocomplete
                                 multiple
                                 id="extras-tags"
-                                options={availableExtras}
+                                options={extras}
                                 getOptionLabel={(option) => option.name}
                                 value={values.extras}
                                 onChange={(event, newValue) => {

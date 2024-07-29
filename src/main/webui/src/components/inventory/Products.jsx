@@ -19,8 +19,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const Products = ({productCategory}) => {
 
     const [products, setProducts] = useState([]);
+    const [extras, setExtras] = useState([]);
     const [trigger, setTrigger] = useState(false); 
-    const [fetchingData, setDataFetched] = useState(true);
     const alertsManagerRef =  useRef(AlertsContext);
 
     useEffect(()=>{
@@ -28,8 +28,6 @@ const Products = ({productCategory}) => {
             .then(response => {
                 setTimeout(() => {
                     setProducts(response.data);
-                    setDataFetched(false);
-                    // alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
                 }, 0);
             }).catch(error => {
                 console.log(error);
@@ -37,6 +35,19 @@ const Products = ({productCategory}) => {
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });       
     },[trigger])
+
+    useEffect(()=>{
+        axios.get("extras",  {params:{category: productCategory}})
+            .then(response => {
+                setTimeout(() => {
+                    setExtras(response.data);
+                }, 0);
+            }).catch(error => {
+                console.log(error);
+                setDataFetched(false);
+                alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
+            });       
+    },[])
     
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {
@@ -124,7 +135,7 @@ const Products = ({productCategory}) => {
                                     <Stack  direction="row"
                                             spacing={0}
                                             alignItems="start">
-                                        <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} productToModify={product}/>
+                                        <AddProduct onSubmitSuccess={() => setTrigger(!trigger)} category={productCategory} action={"update"} productToModify={product} extras={extras}/>
                                         <IconButton variant="contained" color="error" onClick={() => handleDelete(product.id)}><DeleteIcon/></IconButton>
                                     </Stack>
                                 </TableCell>
