@@ -26,7 +26,6 @@ export default function Order() {
   const [orderDeleted, setOrderDeleted] = React.useState(false);
   const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0});
   const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
-  const [users, setUsers] = useState([]);
   const alertsManagerRef =  useRef(AlertsContext);
 
 
@@ -119,14 +118,15 @@ export default function Order() {
     }
   }
 
-  const addItemToShoppingcard = (item) =>
+  const addItemToShoppingcard = (item, extraItem) =>
   {
     let nextId = userCardItems.length > 0 ? userCardItems[userCardItems.length - 1].id + 1 : 1;
     const orderItem = {
       id: nextId,
       orderStatus: "ORDERED",
       paymentStatus: "UNPAID",
-      product: item
+      product: item,
+      ...(extraItem !== null && { extraItem })
     };
     setUserCardItems([...userCardItems, orderItem]);
     setCardMetadata((prevMetadata) => ({
@@ -147,16 +147,16 @@ export default function Order() {
  * @param {string} action - The action to perform ("add", "rm", or "clear").
  * @return {void} This function does not return anything.
  */
-function stockChange(id, action, category) {
-  console.log(category);
+function stockChange(id, action, category, extraItem) {
+  console.log(extraItem);
 
   const isProduct = category === 'Food';
   const items = isProduct ? products : drinks;
   const setItems = isProduct ? setProducts : setDrinks;
-  const addItemToCart =  addItemToShoppingcard;
-  const rmItemFromCart =  rmItemFromShoppingcard;
-  const cartItems =  userCardItems;
-  const setCartItems =  setUserCardItems;
+  // const addItemToCart =  addItemToShoppingcard;
+  // const rmItemFromCart =  rmItemFromShoppingcard;
+  // const cartItems =  userCardItems;
+  // const setCartItems =  setUserCardItems;
 
   if (action === "add") {
     const indexToModify = items.findIndex((item) => item.id === id);
@@ -166,7 +166,7 @@ function stockChange(id, action, category) {
       const newItems = [...items];
       newItems[indexToModify] = itemToModify;
       setItems(newItems);
-      addItemToCart(itemToModify);
+      addItemToShoppingcard(itemToModify, extraItem);
     }
   }
   else if (action === "rm") {
@@ -177,14 +177,14 @@ function stockChange(id, action, category) {
       const newItems = [...items];
       newItems[indexToModify] = itemToModify;
       setItems(newItems);
-      rmItemFromCart(itemToModify);
+      rmItemFromShoppingcard(itemToModify);
     }
   }
   else if(action === "clear") {
     let totalPriceToRemove = 0;
     let itemsToRemoveCount = 0;
 
-    const updatedCartItems = cartItems.filter((item) => {
+    const updatedCartItems = userCardItems.filter((item) => {
       if (item.product.id === id) {
         totalPriceToRemove += item.product.price;
         itemsToRemoveCount++;
@@ -194,7 +194,7 @@ function stockChange(id, action, category) {
       }
     });
 
-    setCartItems(updatedCartItems);
+    setUserCardItems(updatedCartItems);
 
     const indexToModify = items.findIndex((item) => item.id === id);
     if (indexToModify !== -1) {
@@ -322,7 +322,7 @@ function stockChange(id, action, category) {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
+      <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
     </Box>
   );
 }

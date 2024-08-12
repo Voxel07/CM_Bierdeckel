@@ -1,27 +1,30 @@
 export const summarizeOrderItems = (orderData) => {
-
   const productCountMap = {};
 
   for (const orderItem of orderData) {
-    const { id: productId, name: productName, price: productPrice, stock: stock, category:category } = orderItem.product;
+    const { id: productId, name: productName, price: productPrice, stock, category } = orderItem.product;
+    const extraItem = orderItem.extraItem || null;
 
-    productCountMap[productId] = productCountMap[productId] ? {
-      ...productCountMap[productId],
-      quantity: productCountMap[productId].quantity + 1,
-      stock: productCountMap[productId].stock - 1
-    } : {
-      productId,
-      productName,
-      productPrice,
-      quantity: 1,
-      stock,
-      category
-    };
+    // Create a unique key combining productId and extraItem id (if it exists)
+    const key = extraItem ? `${productId}_${extraItem.id}` : `${productId}`;
+
+    if (productCountMap[key]) {
+      productCountMap[key].quantity += 1;
+      productCountMap[key].stock -= 1;
+    } else {
+      productCountMap[key] = {
+        productId,
+        productName,
+        productPrice,
+        quantity: 1,
+        stock,
+        category,
+        extraItem
+      };
+    }
   }
 
-  // const summary = Object.values(productCountMap);
-
-  return  Object.values(productCountMap);;
+  return Object.values(productCountMap);
 };
 
 

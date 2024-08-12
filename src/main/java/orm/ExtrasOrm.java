@@ -8,6 +8,7 @@ import model.Order;
 import model.OrderItem;
 import model.ExtraItem;
 import model.Extras;
+import model.Product;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -135,27 +136,68 @@ public class ExtrasOrm {
         
 
         return Response.status(200).entity("Extra updated").build();
+    }
 
+    @Transactional
+    public Response deleteExtra(Extras extra)
+    {
+        Extras dbExtra;
+        try {
+            dbExtra = em.find(Extras.class, extra.getId());
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Extra nicht gefunden").build();
+        }
+
+        if(!dbExtra.getExtraItem().isEmpty())
+        {
+            return Response.status(406).entity("Extra has items").build();
+        }
+        if(!dbExtra.getCompatibleProducts().isEmpty())
+        {
+            return Response.status(406).entity("Extra has products").build();
+        }
+
+        try {
+            em.remove(dbExtra);
+        } catch (Exception e) {
+           return Response.status(500).entity("Error while deleting extra").build();
+        }
+
+        return Response.status(Response.Status.ACCEPTED).entity("Extra erfolgreich gelöscht").build();
     }
 
     @Transactional
     public Response deleteExtrasById(Long id) {
-         Extras extras;
-       
+
+        Extras dbExtra;
+
         try {
-            extras = em.find(Extras.class, id);
-            if (extras.getExtraItem() != null) {
-                return Response.status(406).entity("Extra has orders").build();
-            }
+            dbExtra = em.find(Extras.class, id);
         } catch (Exception e) {
-            return Response.status(500).entity("Error while deleting extras").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Extra nicht gefunden").build();
+        }
+
+        if(dbExtra == null)
+        {
+            return Response.status(Response.Status.NOT_FOUND).entity("Extra nicht gefunden").build();
+        }
+
+        List<Product> products = dbExtra.getCompatibleProducts();
+
+        if (!products.isEmpty())
+        {
+            for (Product product : products) {
+                System.out.println(product.toString());
+                product.getCompatibleExtras().remove(dbExtra);
+            }
         }
 
         try {
-            em.remove(extras);
+            em.remove(dbExtra);
         } catch (Exception e) {
            return Response.status(500).entity("Error while deleting extra").build();
         }
+      
         return Response.status(200).entity("Extra deleted").build();
     }
 

@@ -197,12 +197,12 @@ function Header() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
-            </IconButton>
-            <IconButton
+            </IconButton> */}
+            {/* <IconButton
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
@@ -210,8 +210,8 @@ function Header() {
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
-            <IconButton
+            </IconButton> */}
+            {/* <IconButton
               size="large"
               edge="end"
               aria-label="account of current user"
@@ -220,7 +220,7 @@ function Header() {
               color="inherit"
             >
               <AccountCircle />
-            </IconButton>
+            </IconButton> */}
             <Menu
               sx={{ mt: '45px', ...menuStyle }}
               id="menu-appbar"

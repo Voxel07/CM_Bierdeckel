@@ -20,7 +20,6 @@ const Extras = ({extraCategory}) => {
 
     const [extras, setExtras] = useState([]);
     const [trigger, setTrigger] = useState(false); 
-    const [fetchingData, setDataFetched] = useState(true);
     const alertsManagerRef =  useRef(AlertsContext);
 
     useEffect(()=>{
@@ -29,31 +28,31 @@ const Extras = ({extraCategory}) => {
                 setTimeout(() => {
                     setExtras(response.data);
                     console.log(response.data);
-                    setDataFetched(false);
                     // alertsManagerRef.current.showAlert('success', response.data.length + " Produkte wurden geladen");
                 }, 0);
             }).catch(error => {
                 console.log(error);
-                setDataFetched(false);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });       
     },[trigger])
 
     const handleDelete = (_id) => {
-        const updatedProducts = extras.filter(product => product.id !== _id);
-        setExtras(updatedProducts);
-
-        axios.delete('products',
-        {
-            data:{ id: _id }
-
-        }).then(response=>{
+        console.log("jetzt aber")
+        
+        axios.delete('extras', {
+            params: { force: true },
+            data: { id: _id }
+          })
+    .then(response=>{
             console.log(response.data)
             alertsManagerRef.current.showAlert('success', response.data);
+            const updatedProducts = extras.filter(product => product.id !== _id);
+            setExtras(updatedProducts);
+
             setTrigger()
         }).catch(error=>{
             console.log(error.response)
-            alertsManagerRef.current.showAlert('error', error.response.data);
+            alertsManagerRef.current.showAlert('error', error.response.status + error.response.data);
         });
     };
     

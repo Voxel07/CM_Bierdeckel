@@ -179,7 +179,7 @@ public class ProductOrm {
         }
 
         if (dbExtras.isEmpty()) {
-            System.out.println("Keine Extras gefunden");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Angegebene Extras nicht gefunden").build();
         }
 
         dbProduct.setCompatibleExtras(dbExtras);

@@ -8,6 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Chip from '@mui/material/Chip';
 
 const theme2 = createTheme({
   components: {
@@ -34,7 +35,8 @@ const theme2 = createTheme({
   });
 
 function cardItem({product, handleStockChange}) {
-  const { key, productId, productName, productPrice, quantity, stock, category } = product;
+  const { key, productId, productName, productPrice, quantity, stock, category, extraItem } = product;
+  console.log(extraItem)
   return (
 
     <Box key={key}>
@@ -48,6 +50,11 @@ function cardItem({product, handleStockChange}) {
           <Typography sx={{ minWidth: "120px", textAlign: "left" }}>
             {productName}
           </Typography>
+        </Tooltip>
+        <Tooltip title="Bezeichung" placement="top">
+          {
+            extraItem == null ? null : <Chip key={Math.random()} color="primary" label={extraItem.name} size="small" />
+          }
         </Tooltip>
         <Stack
           direction="row"

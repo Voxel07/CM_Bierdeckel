@@ -64,8 +64,16 @@ public class ExtrasResource {
     // @CacheInvalidate(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteExtras(Long id) {
-        return orm.deleteExtrasById(id);
+    public Response deleteExtras(   @QueryParam("force") Boolean force,
+                                    Extras extra) {
+
+        if(force == true)
+        {
+            System.out.println("pls");
+            return orm.deleteExtrasById(extra.getId());
+        }
+        
+        return orm.deleteExtra(extra);
     }
 
 

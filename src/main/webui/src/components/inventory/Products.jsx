@@ -49,7 +49,6 @@ const Products = ({productCategory}) => {
                 }, 0);
             }).catch(error => {
                 console.log(error);
-                setDataFetched(false);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });       
     },[trigger])
@@ -62,7 +61,6 @@ const Products = ({productCategory}) => {
                 }, 0);
             }).catch(error => {
                 console.log(error);
-                setDataFetched(false);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });       
     },[])

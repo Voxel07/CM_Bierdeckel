@@ -63,7 +63,7 @@ const theme2 = createTheme({
   }
 });
 
-const InfoCard = ({ data, userData, handelChange }) => {
+const InfoCard = ({ data, userData, handelChange, extra}) => {
   const { id, name, price, stock, category, consumption } = data;
 
   const [cardState, setCardState] = useState('front'); // 'front', 'info', or 'extras'
@@ -95,8 +95,8 @@ const InfoCard = ({ data, userData, handelChange }) => {
     setCardState(side);
   };
 
-  const handleAddToOrder = () => {
-    handelChange(id, "add", category);
+  const handleAddToOrder = (extra) => {
+    handelChange(id, "add", category, extra);
   };
 
   const handleRemoveFromOrder = () => {
@@ -122,7 +122,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
           <CardContent>
             <Stack direction="row" spacing={2} justifyContent="space-between">
               <Typography variant="h5">
-                {name}
+              {name}
               </Typography>
               <Typography variant="h5" textAlign="right">
                 €{price.toFixed(2)}
@@ -142,7 +142,7 @@ const InfoCard = ({ data, userData, handelChange }) => {
                 <Button
                   size="small"
                   variant="outlined"
-                  onClick={handleAddToOrder}
+                  onClick={() => handleAddToOrder(extra)}
                   disabled={stock === 0}
                 >
                   Hinzufügen
