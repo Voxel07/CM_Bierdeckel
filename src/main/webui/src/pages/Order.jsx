@@ -103,20 +103,24 @@ export default function Order() {
     setUserCardItems([]);
   }
 
-  const rmItemFromShoppingcard = (item) =>
-  {
-    const indexToRemove = userCardItems.findIndex((prod) => prod.product.id === item.id);
+  const rmItemFromShoppingcard = (item, extraItem) => {
+    const indexToRemove = userCardItems.findIndex((cartItem) => 
+      cartItem.product.id === item.id && 
+      ((cartItem.extraItem && extraItem && cartItem.extraItem.id === extraItem.id) || 
+       (!cartItem.extraItem && !extraItem))
+    );
+    
     if (indexToRemove !== -1) {
-      const updatedNewItems = [...userCardItems]; // Create a copy
-      updatedNewItems.splice(indexToRemove, 1); // Remove one item
+      const updatedNewItems = [...userCardItems];
+      updatedNewItems.splice(indexToRemove, 1);
       setUserCardItems(updatedNewItems);
       setCardMetadata((prevMetadata) => ({
         ...prevMetadata,
-        total: Math.max(prevMetadata.total - item.price, 0),
+        total: Math.max(prevMetadata.total - item.price - (extraItem ? extraItem.price : 0), 0),
         itemCount: prevMetadata.itemCount - 1
       }));
     }
-  }
+  };
 
   const addItemToShoppingcard = (item, extraItem) =>
   {
@@ -131,7 +135,7 @@ export default function Order() {
     setUserCardItems([...userCardItems, orderItem]);
     setCardMetadata((prevMetadata) => ({
       ...prevMetadata, // Keep existing properties
-      total: prevMetadata.total + item.price,
+      total: prevMetadata.total + item.price + (extraItem ? extraItem.price : 0),
       itemCount: prevMetadata.itemCount + 1
   }));
   }
@@ -177,7 +181,7 @@ function stockChange(id, action, category, extraItem) {
       const newItems = [...items];
       newItems[indexToModify] = itemToModify;
       setItems(newItems);
-      rmItemFromShoppingcard(itemToModify);
+      rmItemFromShoppingcard(itemToModify, extraItem);
     }
   }
   else if(action === "clear") {
@@ -185,14 +189,13 @@ function stockChange(id, action, category, extraItem) {
     let itemsToRemoveCount = 0;
 
     const updatedCartItems = userCardItems.filter((item) => {
-      if (item.product.id === id) {
-        totalPriceToRemove += item.product.price;
-        itemsToRemoveCount++;
-        return false; // Exclude
-      } else {
-        return true;  // Keep
-      }
-    });
+      if (cartItem.product.id === id && ((cartItem.extraItem && extraItem && cartItem.extraItem.id === extraItem.id) || (!cartItem.extraItem && !extraItem))){
+          totalPriceToRemove += cartItem.product.price + (cartItem.extraItem ? cartItem.extraItem.price : 0);
+          itemsToRemoveCount++;
+          return false;
+        } else {
+        return true;
+      }});
 
     setUserCardItems(updatedCartItems);
 
@@ -322,7 +325,7 @@ function stockChange(id, action, category, extraItem) {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
+      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
     </Box>
   );
 }

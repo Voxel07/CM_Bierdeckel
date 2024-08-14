@@ -20,12 +20,12 @@ function OrderItems({ products, handleStockChange, displayItems }) {
 }, {});
 
   return (
-    <Grid container direction="column" spacing={4}>
+      <Grid container direction="column" spacing={4}>
       {/* Render products without extras */}
       <Grid item>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} justifyContent="center">
           {products.map((product, index) => (
-            <Grid key={`no-extra-${index}`} item xs={12} sm={6} md={4} lg={3} sx={{ display: "flex", justifyContent: "center" }}>
+            <Grid key={`no-extra-${index}`} item xs={12} sm={6} md={4} lg={3}>
               <InfoCard
                 data={product}
                 userData={displayItems}
@@ -36,16 +36,15 @@ function OrderItems({ products, handleStockChange, displayItems }) {
           ))}
         </Grid>
       </Grid>
-
       {/* Render products with extras, sorted by category */}
-      {Object.entries(sortedProducts).map(([extraId, { products: categoryProducts, extra }], categoryIndex) => (
+      {Object.entries(sortedProducts).map(([extraId, { products: categoryProducts, extra }]) => (
         <Grid item key={extraId}>
           <Divider variant="middle">
             <Chip label={extra.name} size="medium" color="primary" />
           </Divider>
-          <Grid container spacing={2} style={{ marginTop: '10px', display: "flex", justifyContent: "center" }}>
+          <Grid container spacing={2} justifyContent="center" style={{ marginTop: '10px' }}>
             {categoryProducts.map((product, productIndex) => (
-              <Grid key={`${extraId}-${productIndex}`} item xs={12} sm={6} md={4} lg={3} sx={{ display: "flex", justifyContent: "center" }}>
+              <Grid key={`${extraId}-${productIndex}`} item xs={12} sm={6} md={4} lg={3}>
                 <InfoCard
                   data={product}
                   userData={displayItems}
@@ -59,6 +58,7 @@ function OrderItems({ products, handleStockChange, displayItems }) {
       ))}
     </Grid>
   );
-}
+  };
+
 
 export default OrderItems;

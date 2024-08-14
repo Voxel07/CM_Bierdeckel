@@ -81,13 +81,13 @@ function cardItem({product, handleStockChange}) {
           </ThemeProvider>
         </Stack>
         <Tooltip title="Einzelpreis" placement="top">
-          <Typography sx={{ minWidth: "60px", textAlign: "right" }}>
-            {productPrice}€
+          <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
+            {(productPrice  + (extraItem ? extraItem.price : 0)).toFixed(2)}€
           </Typography>
         </Tooltip>
         <Tooltip title="Gesammtpreis" placement="top">
-          <Typography sx={{ minWidth: "60px", textAlign: "right" }}>
-          {(productPrice * quantity).toFixed(2)}€
+          <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
+          {((productPrice  + (extraItem ? extraItem.price : 0)) * quantity).toFixed(2)}€
           </Typography>
         </Tooltip>
         <IconButton color="error" onClick={() => handleStockChange(productId, "clear", category)}>
