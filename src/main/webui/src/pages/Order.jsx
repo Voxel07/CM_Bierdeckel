@@ -104,6 +104,7 @@ export default function Order() {
   }
 
   const rmItemFromShoppingcard = (item, extraItem) => {
+    console.log(item, extraItem)
     const indexToRemove = userCardItems.findIndex((cartItem) => 
       cartItem.product.id === item.id && 
       ((cartItem.extraItem && extraItem && cartItem.extraItem.id === extraItem.id) || 
@@ -152,7 +153,7 @@ export default function Order() {
  * @return {void} This function does not return anything.
  */
 function stockChange(id, action, category, extraItem) {
-  console.log(extraItem);
+  console.log(id, action, category, extraItem);
 
   const isProduct = category === 'Food';
   const items = isProduct ? products : drinks;

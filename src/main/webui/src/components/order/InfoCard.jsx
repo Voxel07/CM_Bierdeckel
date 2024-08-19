@@ -68,7 +68,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
   
   const { id:extra_id , name:extra_name, price:extra_price} = extra;
 
-  console.log(extra_price)
+  // console.log(extra_price)
 
 
   const [cardState, setCardState] = useState('front'); // 'front', 'info', or 'extras'
@@ -93,7 +93,16 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
     }
   }, [id, userData]);
 
-  const shortInfo = "hier könnte eine kurze Info stehen";
+  var shortInfo;
+
+  if (extra != null)
+  {
+   shortInfo = "incl. " + extra_name + " für " + extra_price + "€"
+  }
+  else
+  {
+    shortInfo = "hier könnte eine kurze Info stehen";
+  }
   const detailedInfo = "Hier kann ein langer Zusatz stehen, falls jeder Kunde für sich selber bestellen sollte. Da brauche ich aber noch ein bisschen bis das gescheit umgesetzt werdn kann. Bis dahin sthet das einfach mal so hier.";
 
   const handleFlip = (side) => {
@@ -104,8 +113,8 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
     handelChange(id, "add", category, extra);
   };
 
-  const handleRemoveFromOrder = () => {
-    handelChange(id, "rm", category);
+  const handleRemoveFromOrder = (extra) => {
+    handelChange(id, "rm", category, extra);
   };
 
   const handleExtraChange = (event) => {
@@ -133,7 +142,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
                 €{(price+extra_price).toFixed(2)}
               </Typography>
             </Stack>
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{marginTop: 1 }}>
               {stock ? shortInfo : <OutOfStockMessage />}
             </Typography>
             <Grid container spacing={2} sx={{ marginTop: 1 }}>
@@ -157,7 +166,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
                 <Button
                   size="small"
                   variant="outlined"
-                  onClick={handleRemoveFromOrder}
+                  onClick={() => handleRemoveFromOrder(extra)}
                   disabled={orderQuantity === 0}
                 >
                   Entfernen
