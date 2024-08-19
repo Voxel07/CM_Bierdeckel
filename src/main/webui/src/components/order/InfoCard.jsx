@@ -65,6 +65,11 @@ const theme2 = createTheme({
 
 const InfoCard = ({ data, userData, handelChange, extra}) => {
   const { id, name, price, stock, category, consumption } = data;
+  
+  const { id:extra_id , name:extra_name, price:extra_price} = extra;
+
+  console.log(extra_price)
+
 
   const [cardState, setCardState] = useState('front'); // 'front', 'info', or 'extras'
   const [orderQuantity, setOrderQuantity] = useState(0);
@@ -125,7 +130,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
               {name}
               </Typography>
               <Typography variant="h5" textAlign="right">
-                €{price.toFixed(2)}
+                €{(price+extra_price).toFixed(2)}
               </Typography>
             </Stack>
             <Typography variant="body2">
@@ -165,9 +170,9 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
               <Button size="small" variant='outlined' onClick={() => handleFlip('info')} sx={{color:"#a64913"}}>
                 Informationen
               </Button>
-              <Button size="small" variant='outlined' onClick={() => handleFlip('extras')} sx={{color:"#a64913"}}>
+              {/* <Button size="small" variant='outlined' onClick={() => handleFlip('extras')} sx={{color:"#a64913"}}>
                 Extras
-              </Button>
+              </Button> */}
             </Stack>
           </CardActions>
         </Box>

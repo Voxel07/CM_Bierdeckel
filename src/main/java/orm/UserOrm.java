@@ -98,7 +98,7 @@ public class UserOrm {
        
 
         // Wenn user zurückgekomen sind
-        if (userAusDB == null) return Response.notModified( "Keinen Nutzer mit diesen Daten gefunden").build();
+        if (userAusDB == null) return Response.status(Response.Status.NOT_MODIFIED).entity("Keinen Nutzer mit diesen Daten gefunden").build();
         // Check all user to return a the specific reason.
         // NOTE: short to  userAusDB.size() != 1 ?
         for (User aktUser : userAusDB)
