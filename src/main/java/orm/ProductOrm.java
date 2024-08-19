@@ -52,8 +52,6 @@ public class ProductOrm {
 
     public List<Product> getProductByCategory(String category)
     {
-        System.out.println("getProductByCategory");
-
         TypedQuery<Product> query = em.createQuery("SELECT p FROM Product p WHERE category =: category", Product.class);
         query.setParameter("category", category);
         return query.getResultList();
@@ -177,9 +175,18 @@ public class ProductOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-
+        
         if (dbExtras.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Angegebene Extras nicht gefunden").build();
+            
+            if(product.getCompatibleExtras().isEmpty())
+            {
+                dbProduct.setCompatibleExtras(new ArrayList<Extras>());
+                System.out.println("Keine Extras angegeben, lösche alle");
+            }
+            else
+            {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Angegebene Extras nicht gefunden").build();
+            }
         }
 
         dbProduct.setCompatibleExtras(dbExtras);
