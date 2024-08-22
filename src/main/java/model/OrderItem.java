@@ -119,9 +119,9 @@ public class OrderItem
 
     public void setExtraItems(List<ExtraItem> extraItems) {
         this.extraItems = extraItems;
-        for (ExtraItem extraItem : extraItems) {
-            this.order.incSum(extraItem.getExtras().getPrice());
-        }
+        // for (ExtraItem extraItem : extraItems) {
+        //     this.order.incSum(extraItem.getExtras().getPrice());
+        // }
     }
 
     public void addExtraItem(ExtraItem extraItem) {
@@ -149,6 +149,7 @@ public class OrderItem
                 ", order=" + order +
                 ", paymentStatus=" + paymentStatus +
                 ", orderStatus=" + orderStatus +
+                ", extraItmes= " + extraItems +
                 '}';
     }
 

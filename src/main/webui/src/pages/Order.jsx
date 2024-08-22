@@ -103,12 +103,12 @@ export default function Order() {
     setUserCardItems([]);
   }
 
-  const rmItemFromShoppingcard = (item, extraItem) => {
-    console.log(item, extraItem)
+  const rmItemFromShoppingcard = (item, extraItems) => {
+    console.log(item, extraItems)
     const indexToRemove = userCardItems.findIndex((cartItem) => 
       cartItem.product.id === item.id && 
-      ((cartItem.extraItem && extraItem && cartItem.extraItem.id === extraItem.id) || 
-       (!cartItem.extraItem && !extraItem))
+      ((cartItem.extraItems && extraItems && cartItem.extraItems.id === extraItems.id) || 
+       (!cartItem.extraItems && !extraItems))
     );
     
     if (indexToRemove !== -1) {
@@ -117,28 +117,39 @@ export default function Order() {
       setUserCardItems(updatedNewItems);
       setCardMetadata((prevMetadata) => ({
         ...prevMetadata,
-        total: Math.max(prevMetadata.total - item.price - (extraItem ? extraItem.price : 0), 0),
+        total: Math.max(prevMetadata.total - item.price - (extraItems ? extraItems.price : 0), 0),
         itemCount: prevMetadata.itemCount - 1
       }));
     }
   };
 
-  const addItemToShoppingcard = (item, extraItem) =>
-  {
+  const addItemToShoppingcard = (item, extra) => {
     let nextId = userCardItems.length > 0 ? userCardItems[userCardItems.length - 1].id + 1 : 1;
     const orderItem = {
       id: nextId,
       orderStatus: "ORDERED",
       paymentStatus: "UNPAID",
       product: item,
-      ...(extraItem !== null && { extraItem })
+      extraItems: extra ? [
+        {
+          extras: {
+            id: extra.id,
+            name: extra.name,
+            price: extra.price,
+            stock: extra.stock || 0, 
+            consumption: extra.consumption || 0, 
+            category: extra.category
+          }
+        }
+      ] : []
     };
+  
     setUserCardItems([...userCardItems, orderItem]);
     setCardMetadata((prevMetadata) => ({
-      ...prevMetadata, // Keep existing properties
-      total: prevMetadata.total + item.price + (extraItem ? extraItem.price : 0),
+      ...prevMetadata,
+      total: prevMetadata.total + item.price + (extra ? extra.price : 0),
       itemCount: prevMetadata.itemCount + 1
-  }));
+    }));
   }
 
   const handleUserSelectionChange = (event, newValue) => {
@@ -152,8 +163,8 @@ export default function Order() {
  * @param {string} action - The action to perform ("add", "rm", or "clear").
  * @return {void} This function does not return anything.
  */
-function stockChange(id, action, category, extraItem) {
-  console.log(id, action, category, extraItem);
+function stockChange(id, action, category, extraItems) {
+  console.log(id, action, category, extraItems);
 
   const isProduct = category === 'Food';
   const items = isProduct ? products : drinks;
@@ -171,7 +182,7 @@ function stockChange(id, action, category, extraItem) {
       const newItems = [...items];
       newItems[indexToModify] = itemToModify;
       setItems(newItems);
-      addItemToShoppingcard(itemToModify, extraItem);
+      addItemToShoppingcard(itemToModify, extraItems);
     }
   }
   else if (action === "rm") {
@@ -182,7 +193,7 @@ function stockChange(id, action, category, extraItem) {
       const newItems = [...items];
       newItems[indexToModify] = itemToModify;
       setItems(newItems);
-      rmItemFromShoppingcard(itemToModify, extraItem);
+      rmItemFromShoppingcard(itemToModify, extraItems);
     }
   }
   else if(action === "clear") {
@@ -190,8 +201,8 @@ function stockChange(id, action, category, extraItem) {
     let itemsToRemoveCount = 0;
 
     const updatedCartItems = userCardItems.filter((item) => {
-      if (cartItem.product.id === id && ((cartItem.extraItem && extraItem && cartItem.extraItem.id === extraItem.id) || (!cartItem.extraItem && !extraItem))){
-          totalPriceToRemove += cartItem.product.price + (cartItem.extraItem ? cartItem.extraItem.price : 0);
+      if (cartItem.product.id === id && ((cartItem.extraItems && extraItems && cartItem.extraItems.id === extraItems.id) || (!cartItem.extraItems && !extraItems))){
+          totalPriceToRemove += cartItem.product.price + (cartItem.extraItems ? cartItem.extraItems.price : 0);
           itemsToRemoveCount++;
           return false;
         } else {
@@ -326,7 +337,11 @@ function stockChange(id, action, category, extraItem) {
       </TabContext>
 
       {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
+      {/* <Stack direction="row">
+        <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
+        <pre style={{ color: 'white' }}>{JSON.stringify(displayItems, null, 4)}</pre>
+
+      </Stack> */}
     </Box>
   );
 }

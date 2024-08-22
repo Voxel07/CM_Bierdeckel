@@ -153,6 +153,7 @@ public class Product {
         extra.getCompatibleProducts().remove(this);
     }
 
+    // @JsonbTransient
     public List<Extras> getCompatibleExtras() {
         return this.extras;
     }

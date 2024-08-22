@@ -96,7 +96,9 @@ public class OrderResource {
         System.out.println(OrderItems.toString());
 
         // return Response.status(200).entity(OrderItems).build();
-        return orm.createOrder(userId, OrderItems);
+        // return orm.createOrder(userId, OrderItems);
+        return Response.ok().build();
+
     }
 
 
@@ -120,6 +122,7 @@ public class OrderResource {
                                 List<OrderItem> OrderItems
                                 )
     {
+        System.out.println("OrderResource updateOrder");
         if(userId != null && OrderItems != null)
         {
             return orm.updateOrder(userId, OrderItems);
@@ -150,8 +153,6 @@ public class OrderResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
         }
     }
-
-   
 
     public Response handleProduct(Long orderId, Long productId, String action)
     {

@@ -12,11 +12,11 @@ import jakarta.ws.rs.core.Response;
 import model.OrderItem.OrderStatus;
 import model.OrderItem.OrderStatusActions;
 import model.OrderItem.PaymentStatus;
-
+import model.Product;
 import model.OrderItem;
 import model.ExtraItem;
 import model.Extras;
-
+import model.Order;
 import utils.IdExtractor;
 
 @ApplicationScoped
@@ -24,6 +24,9 @@ public class OrderItemOrm {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    OrderOrm orderOrm;
 
     public List<OrderItem> getAllOrderitems()
     {
@@ -49,6 +52,42 @@ public class OrderItemOrm {
         TypedQuery<OrderItem> query = em.createQuery("SELECT o FROM OrderItem o WHERE o.orderStatus = :status", OrderItem.class);
         query.setParameter("status", status);
         return query.getResultList();
+    }
+
+    public boolean internal_addOrderItem(Long orderId, List<OrderItem> orderItems)
+    {
+        System.out.println("internal_addOrderItem");
+        System.out.println("New order ID: " + orderId);
+
+        Order dbOrder = orderOrm.internal_getOrderById(orderId);
+
+        if (dbOrder == null){
+            return false;
+        }
+        
+        for(OrderItem orderItem: orderItems)
+        {
+            System.out.println("add it pls");
+            System.out.println(orderItem.getExtraItems().toString());
+
+            Product productDB = new Product();
+
+            try {
+                productDB = em.find(Product.class, orderItem.getProduct().getId());
+            } catch (Exception e) {
+                System.out.println("Produkt nicht gefunden");
+                return false;
+            }
+
+            OrderItem newOrderItem = new OrderItem(productDB, dbOrder, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
+
+            try {
+                em.persist(newOrderItem);
+            } catch (Exception e) {
+            }
+        }
+
+        return true;
     }
 
     @Transactional
@@ -181,7 +220,7 @@ public class OrderItemOrm {
     @Transactional
     public Response removeExtraFromOrderItem(Long orderItemId, Long extraId)
     {
-        System.out.println("addProductToOrder");
+        System.out.println("removeExtraFromOrderItem");
 
         OrderItem orderItemDb = new OrderItem();
 

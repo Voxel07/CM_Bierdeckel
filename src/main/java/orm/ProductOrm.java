@@ -52,6 +52,12 @@ public class ProductOrm {
 
     public List<Product> getProductByCategory(String category)
     {
+        // TypedQuery<Product> query = em.createQuery(
+        //     "SELECT p FROM Product p " +
+        //     "JOIN FETCH p.extras " +
+        //     "WHERE p.category = :category", 
+        //     Product.class
+        // );
         TypedQuery<Product> query = em.createQuery("SELECT p FROM Product p WHERE category =: category", Product.class);
         query.setParameter("category", category);
         return query.getResultList();

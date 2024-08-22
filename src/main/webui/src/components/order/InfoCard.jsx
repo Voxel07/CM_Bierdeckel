@@ -66,7 +66,9 @@ const theme2 = createTheme({
 const InfoCard = ({ data, userData, handelChange, extra}) => {
   const { id, name, price, stock, category, consumption } = data;
   
-  const { id:extra_id , name:extra_name, price:extra_price} = extra;
+  if(extra){
+    const { id:extra_id , name:extra_name, price:extra_price} = extra;
+  }
 
   // console.log(extra_price)
 
@@ -93,11 +95,11 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
     }
   }, [id, userData]);
 
-  var shortInfo;
+  let shortInfo;
 
-  if (extra != null)
+  if (extra != null && (typeof extra_name !== 'undefined') && (typeof extra_price !== 'undefined'))
   {
-   shortInfo = "incl. " + extra_name + " für " + extra_price + "€"
+   shortInfo = "incl. " + extra_name + " für " +  extra_price + "€"
   }
   else
   {
@@ -139,7 +141,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
               {name}
               </Typography>
               <Typography variant="h5" textAlign="right">
-                €{(price+extra_price).toFixed(2)}
+                €{(price+(typeof extra_price !== 'undefined' ? extra_price : 0)).toFixed(2)}
               </Typography>
             </Stack>
             <Typography variant="body2" sx={{marginTop: 1 }}>

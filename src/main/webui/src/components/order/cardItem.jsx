@@ -35,8 +35,7 @@ const theme2 = createTheme({
   });
 
 function cardItem({product, handleStockChange}) {
-  const { key, productId, productName, productPrice, quantity, stock, category, extraItem } = product;
-  console.log(extraItem)
+  const { key, productId, productName, productPrice, quantity, stock, category, extraItems } = product;
   return (
 
     <Box key={key}>
@@ -53,7 +52,7 @@ function cardItem({product, handleStockChange}) {
         </Tooltip>
         <Tooltip title="Bezeichung" placement="top">
           {
-            extraItem == null ? null : <Chip key={Math.random()} color="primary" label={extraItem.name} size="small" />
+            extraItems == null ? null : <Chip key={Math.random()} color="primary" label={extraItems.name} size="small" />
           }
         </Tooltip>
         <Stack
@@ -82,12 +81,12 @@ function cardItem({product, handleStockChange}) {
         </Stack>
         <Tooltip title="Einzelpreis" placement="top">
           <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-            {(productPrice  + (extraItem ? extraItem.price : 0)).toFixed(2)}€
+            {(productPrice  + (extraItems ? extraItems.price : 0)).toFixed(2)}€
           </Typography>
         </Tooltip>
         <Tooltip title="Gesammtpreis" placement="top">
           <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-          {((productPrice  + (extraItem ? extraItem.price : 0)) * quantity).toFixed(2)}€
+          {((productPrice  + (extraItems ? extraItems.price : 0)) * quantity).toFixed(2)}€
           </Typography>
         </Tooltip>
         <IconButton color="error" onClick={() => handleStockChange(productId, "clear", category)}>
