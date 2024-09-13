@@ -35,10 +35,14 @@ const theme2 = createTheme({
   });
 
 function cardItem({product, handleStockChange}) {
-  const { key, productId, productName, productPrice, quantity, stock, category, extraItems } = product;
+  const { productId, productName, productPrice, quantity, stock, category, extraItems } = product;
+  const extraItem = extraItems && extraItems.length > 0 ? extraItems[0].extras : null;
+  const extraName = extraItem ? extraItem.name : '';
+  const extraPrice = extraItem ? extraItem.price : 0;
+
   return (
 
-    <Box key={key}>
+    <Box key={productId}>
       <Stack
         direction="row"
         spacing={2}
@@ -52,7 +56,7 @@ function cardItem({product, handleStockChange}) {
         </Tooltip>
         <Tooltip title="Bezeichung" placement="top">
           {
-            extraItems == null ? null : <Chip key={Math.random()} color="primary" label={extraItems.name} size="small" />
+            extraItems.length > 0 ?  <Chip key={Math.random()} color="primary" label={extraName} size="small" /> : null
           }
         </Tooltip>
         <Stack
@@ -62,7 +66,7 @@ function cardItem({product, handleStockChange}) {
         >
         <ThemeProvider theme={theme2}>
           <Tooltip title="Menge erhöhen" placement="top">
-          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add", category)} disabled={stock == 0}>
+          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add", category, extraItem)} disabled={stock == 0}>
             <AddIcon fontSize="inherit" />
           </IconButton>
           </Tooltip>
@@ -73,7 +77,7 @@ function cardItem({product, handleStockChange}) {
           </Tooltip>
           <Tooltip title="Menge veringern"  placement="top">
           <IconButton
-            aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm", category)}>
+            aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm", category, extraItem)}>
             <RemoveIcon fontSize="inherit" />
           </IconButton>
           </Tooltip>
@@ -81,12 +85,12 @@ function cardItem({product, handleStockChange}) {
         </Stack>
         <Tooltip title="Einzelpreis" placement="top">
           <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-            {(productPrice  + (extraItems ? extraItems.price : 0)).toFixed(2)}€
+          {(productPrice + extraPrice).toFixed(2)}€
           </Typography>
         </Tooltip>
         <Tooltip title="Gesammtpreis" placement="top">
           <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-          {((productPrice  + (extraItems ? extraItems.price : 0)) * quantity).toFixed(2)}€
+          {((productPrice + extraPrice) * quantity).toFixed(2)}€
           </Typography>
         </Tooltip>
         <IconButton color="error" onClick={() => handleStockChange(productId, "clear", category)}>
