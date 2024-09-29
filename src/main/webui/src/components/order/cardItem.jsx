@@ -56,7 +56,7 @@ function cardItem({product, handleStockChange}) {
         </Tooltip>
         <Tooltip title="Bezeichung" placement="top">
           {
-            extraItems.length > 0 ?  <Chip key={Math.random()} color="primary" label={extraName} size="small" /> : null
+            extraItems.length > 0 ?  <Chip color="primary" label={extraName} size="small" /> : null
           }
         </Tooltip>
         <Stack

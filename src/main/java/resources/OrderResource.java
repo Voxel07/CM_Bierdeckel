@@ -93,11 +93,12 @@ public class OrderResource {
         if (userId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
         }
+        System.out.println("do it");
         System.out.println(OrderItems.toString());
 
         // return Response.status(200).entity(OrderItems).build();
-        // return orm.createOrder(userId, OrderItems);
-        return Response.ok().build();
+        return orm.createOrder(userId, OrderItems);
+        // return Response.ok().build();
 
     }
 

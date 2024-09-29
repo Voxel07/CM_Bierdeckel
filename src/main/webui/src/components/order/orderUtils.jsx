@@ -1,19 +1,22 @@
 export const summarizeOrderItems = (orderData) => {
   const productCountMap = {};
   for (const orderItem of orderData) {
+    // console.log(orderItem);
     const { id: productId, name: productName, price: productPrice, stock, category } = orderItem.product;
     const extraItems = orderItem.extraItems || [];
 
-    console.log(extraItems)
+    // console.log(extraItems)
     
     // Create a unique key combining productId and sorted extraItems ids
     const extraItemsKey = extraItems.map(ei => ei.extras.id).sort().join('_');
     const key = `${productId}_${extraItemsKey}`;
     
-    if (productCountMap[key]) {
+    if (productCountMap[key]) { // if it exists inc and dec
+      console.log("exits");
       productCountMap[key].quantity += 1;
       productCountMap[key].stock -= 1;
-    } else {
+    } else { // of not, add the product
+      console.log("new");
       productCountMap[key] = {
         productId,
         productName,

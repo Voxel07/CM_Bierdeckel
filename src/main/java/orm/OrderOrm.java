@@ -126,6 +126,7 @@ public class OrderOrm {
         Order order = new Order();
         User user;
     
+        // Find User
         try {
             user = em.find(User.class, userId);
             if (user == null) {
@@ -134,7 +135,8 @@ public class OrderOrm {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error finding user: " + e.getMessage()).build();
         }
-    
+
+        // Check if user has a order
         TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o WHERE o.user = :user AND o.orderCompleted = false", Order.class);
         query.setParameter("user", user);
     

@@ -104,23 +104,37 @@ export default function Order() {
   }
 
   const rmItemFromShoppingcard = (item, extraItems) => {
-    console.log(item, extraItems)
-    const indexToRemove = userCardItems.findIndex((cartItem) => 
-      cartItem.product.id === item.id && 
-      ((cartItem.extraItems && extraItems && cartItem.extraItems.id === extraItems.id) || 
-       (!cartItem.extraItems && !extraItems))
-    );
+    // console.log("inrm", item, extraItems)
+
+    var indexToRemove = -1;
     
-    if (indexToRemove !== -1) {
-      const updatedNewItems = [...userCardItems];
-      updatedNewItems.splice(indexToRemove, 1);
-      setUserCardItems(updatedNewItems);
-      setCardMetadata((prevMetadata) => ({
-        ...prevMetadata,
-        total: Math.max(prevMetadata.total - item.price - (extraItems ? extraItems.price : 0), 0),
-        itemCount: prevMetadata.itemCount - 1
-      }));
+    if(extraItems == null){ // Handle no extra case
+      indexToRemove = userCardItems.findIndex((cartItem) => 
+      cartItem.product.id === item.id );
     }
+    else{ // handle extra case
+      indexToRemove = userCardItems.findIndex((cartItem) => 
+      cartItem.product.id === item.id && (cartItem.extraItems[0].extras.id === extraItems.id));
+    }
+
+    // console.log(indexToRemove)
+    // return;
+    
+    // Item not found return
+    if (indexToRemove == -1) {
+      return;
+    }
+
+    item.stock +=1;
+
+    const updatedNewItems = [...userCardItems];
+    updatedNewItems.splice(indexToRemove, 1);
+    setUserCardItems(updatedNewItems);
+    setCardMetadata((prevMetadata) => ({
+      ...prevMetadata,
+      total: Math.max(prevMetadata.total - item.price - (extraItems ? extraItems.price : 0), 0),
+      itemCount: prevMetadata.itemCount - 1
+    }));
   };
 
   const addItemToShoppingcard = (item, extra) => {
@@ -130,7 +144,8 @@ export default function Order() {
       orderStatus: "ORDERED",
       paymentStatus: "UNPAID",
       product: item,
-      extraItems: extra ? [
+      extraItems: extra ? 
+      [
         {
           extras: {
             id: extra.id,
@@ -148,7 +163,7 @@ export default function Order() {
     setCardMetadata((prevMetadata) => ({
       ...prevMetadata,
       total: prevMetadata.total + item.price + (extra ? extra.price : 0),
-      itemCount: prevMetadata.itemCount + 1
+      itemCount: prevMetadata.itemCount + 1 // shopping card itme cnt
     }));
   }
 
@@ -164,7 +179,7 @@ export default function Order() {
  * @return {void} This function does not return anything.
  */
 function stockChange(id, action, category, extraItems) {
-  console.log(id, action, category, extraItems);
+  // console.log(id, action, category, extraItems);
 
   const isProduct = category === 'Food';
   const items = isProduct ? products : drinks;
@@ -201,8 +216,8 @@ function stockChange(id, action, category, extraItems) {
     let itemsToRemoveCount = 0;
 
     const updatedCartItems = userCardItems.filter((item) => {
-      if (cartItem.product.id === id && ((cartItem.extraItems && extraItems && cartItem.extraItems.id === extraItems.id) || (!cartItem.extraItems && !extraItems))){
-          totalPriceToRemove += cartItem.product.price + (cartItem.extraItems ? cartItem.extraItems.price : 0);
+      if (item.product.id === id && ((item.extraItems && extraItems && item.extraItems.id === extraItems.id) || (!item.extraItems && !extraItems))){
+          totalPriceToRemove += item.product.price + (item.extraItems ? item.extraItems.price : 0);
           itemsToRemoveCount++;
           return false;
         } else {
@@ -336,12 +351,12 @@ function stockChange(id, action, category, extraItems) {
         </TabPanel>
       </TabContext>
 
-      {/* <pre>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-      {/* <Stack direction="row">
-        <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre>
-        <pre style={{ color: 'white' }}>{JSON.stringify(displayItems, null, 4)}</pre>
+      <Stack direction="row">
+        {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
+        {/* <pre style={{ color: 'white' }}>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
+        <pre style={{ color: 'white' }}> Display {JSON.stringify(displayItems, null, 4)}</pre>
 
-      </Stack> */}
+      </Stack>
     </Box>
   );
 }

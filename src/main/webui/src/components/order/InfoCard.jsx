@@ -66,13 +66,6 @@ const theme2 = createTheme({
 const InfoCard = ({ data, userData, handelChange, extra}) => {
   const { id, name, price, stock, category, consumption } = data;
   
-  if(extra){
-    const { id:extra_id , name:extra_name, price:extra_price} = extra;
-  }
-
-  // console.log(extra_price)
-
-
   const [cardState, setCardState] = useState('front'); // 'front', 'info', or 'extras'
   const [orderQuantity, setOrderQuantity] = useState(0);
   const [extras, setExtras] = useState({
@@ -86,8 +79,18 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
       setOrderQuantity(0);
       return;
     }
-    const matchingItem = userData?.find((item) => item.productId === id);
 
+    var matchingItem = 0;
+
+    if(extra == null)
+    {
+      matchingItem = userData?.find((item) => item.productId === id && item.extraItems.length == 0);
+    }
+    else
+    {
+      matchingItem = userData?.find((item) => item.productId === id && item.extraItems[0]?.extras.id == extra.id);
+    }
+    
     if (matchingItem) {
       setOrderQuantity(matchingItem.quantity);
     } else {
@@ -97,9 +100,10 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
 
   let shortInfo;
 
-  if (extra != null && (typeof extra_name !== 'undefined') && (typeof extra_price !== 'undefined'))
+  // if (extra != null && (typeof extra_name !== 'undefined') && (typeof extra_price !== 'undefined'))
+  if (extra != null)
   {
-   shortInfo = "incl. " + extra_name + " für " +  extra_price + "€"
+   shortInfo = "incl. " + extra.name + " für " +  extra.price + "€"
   }
   else
   {
@@ -141,7 +145,7 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
               {name}
               </Typography>
               <Typography variant="h5" textAlign="right">
-                €{(price+(typeof extra_price !== 'undefined' ? extra_price : 0)).toFixed(2)}
+                €{(price+(extra != null ? extra.price : 0)).toFixed(2)}
               </Typography>
             </Stack>
             <Typography variant="body2" sx={{marginTop: 1 }}>
@@ -152,7 +156,9 @@ const InfoCard = ({ data, userData, handelChange, extra}) => {
                 <Typography variant="body2">Verfügbar: {stock - consumption}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="body2">Bestellt: {orderQuantity}</Typography>
+                {
+                  <Typography variant="body2">Bestellt: {orderQuantity}</Typography>
+                }
               </Grid>
               <Grid item xs={6}>
                 <Button
