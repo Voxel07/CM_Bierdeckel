@@ -162,7 +162,8 @@ public class ProductOrm {
         try {
             dbProduct = em.find(Product.class, product.getId());
         } catch (Exception e) {
-            return Response.status(500).entity("Error while updating product").build();
+            System.out.println(e);
+            return Response.status(500).entity("Error while updating product2").build();
         }
 
         if (dbProduct == null) {
@@ -234,7 +235,8 @@ public class ProductOrm {
         try {
             em.merge(dbProduct);
         } catch (Exception e) {
-            return Response.status(500).entity("Error while updating product").build();
+            System.out.println(e);
+            return Response.status(500).entity("Error while updating product [Merging]").build();
         }
 
         return Response.status(200).entity("Produkt "+ dbProduct.getName() + " aktualisiert").build();

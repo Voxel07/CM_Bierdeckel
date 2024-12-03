@@ -257,35 +257,37 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
                         <ThemeProvider theme={theme}>
 
                         {extras && extras.length > 0 && (
-                         <Autocomplete
-                                multiple
-                                id="extras-tags"
-                                options={extras}
-                                getOptionLabel={(option) => option.name}
-                                value={values.extras}
-                                onChange={(event, newValue) => {
-                                    setFieldValue('extras', newValue);
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        label="Extras"
-                                        placeholder="Wähle Extras"
-                                    />
-                                )}
-                                renderTags={(value, getTagProps) =>
-                                    value.map((option, index) => (
-                                        <Chip
-                                            deleteIcon={<ClearIcon />}
-                                            variant="outlined"
-                                            label={option.name}
-                                            {...getTagProps({ index })}
-                                            sx={chipStyle}
-                                        />
-                                    ))
-                                }
+                        <Autocomplete
+                        multiple
+                        id="extras-tags"
+                        options={extras.filter(
+                            extra => !values.extras.some(selectedExtra => selectedExtra.id === extra.id)
+                        )}
+                        getOptionLabel={(option) => option.name}
+                        value={values.extras}
+                        onChange={(event, newValue) => {
+                            setFieldValue('extras', newValue);
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="outlined"
+                                label="Extras"
+                                placeholder="Wähle Extras"
                             />
+                        )}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    deleteIcon={<ClearIcon />}
+                                    variant="outlined"
+                                    label={option.name}
+                                    {...getTagProps({ index })}
+                                    sx={chipStyle}
+                                />
+                            ))
+                        }
+                    />
                         )}
                         </ThemeProvider>
                         </Grid>
