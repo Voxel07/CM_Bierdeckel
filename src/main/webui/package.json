@@ -19,9 +19,10 @@
     "bierdeckel": "file:",
     "formik": "^2.4.5",
     "keycloak-js": "^25.0.1",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
+    "react-router": "^7.0.2",
     "react-router-dom": "^6.22.1",
     "socket.io-client": "^4.7.4",
     "yup": "^1.3.3"
