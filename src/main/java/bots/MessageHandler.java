@@ -9,6 +9,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import reactor.core.publisher.Mono;
 
 @ApplicationScoped
@@ -16,6 +17,9 @@ public class MessageHandler {
 
     @Inject
     IdiscordBot discordBot;
+
+    @Inject
+    DocuSeal docuSeal;
 
     public Mono<Void> handleMessages() {
         DiscordClient client = DiscordClient.create(discordBot.token());
@@ -45,6 +49,13 @@ public class MessageHandler {
             return replyToMessage(message, "Hi there! How are you today?");
         }
 
+        if (content.startsWith("!id")) {
+            String dcUsername = message.getAuthor().get().getUsername();
+            String url = docuSeal.sendPostRequest(dcUsername);
+            // System.out.println(res.getEntity().toString());
+            return replyToMessage(message, "Hi there " + dcUsername + " " + url);
+        }
+
         if (content.startsWith("!ping")) {
             return replyToMessage(message, "Pong!");
         }
@@ -54,7 +65,8 @@ public class MessageHandler {
                 "Available commands:\n" +
                 "!hello - Get a greeting\n" +
                 "!ping - Check bot responsiveness\n" +
-                "!help - Show this help message"
+                "!help - Show this help message" +
+                "!id - To get a link to the Verzichtserklärung document"
             );
         }
 

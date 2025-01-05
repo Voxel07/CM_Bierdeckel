@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-// import Keycloak from 'keycloak-js';
 
 const ENDPOINT = 'ws://localhost:8443//data-updates/1'
 
@@ -34,19 +33,3 @@ function SocketTest() {
 }
 
 export default SocketTest
-
-// async function keycloakTest()
-// {
-//     const keycloak = new Keycloak({
-//         url: 'https://kc.matzeschneider.de',
-//         realm: 'CM_Bierdeckel',
-//         clientId: 'myapp'
-//     });
-
-//     try {
-//         const authenticated = await keycloak.init();
-//         console.log(`User is ${authenticated ? 'authenticated' : 'not authenticated'}`);
-//     } catch (error) {
-//         console.error('Failed to initialize adapter:', error);
-//     }
-// }

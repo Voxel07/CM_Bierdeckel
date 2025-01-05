@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-
 //Inventory
 import Products from './components/inventory/Products'
 import Order from './pages/Order'
+import Inventory from './pages/inventory'
 
 //user
 import SignIn from './components/user/SignIn'
@@ -16,7 +17,9 @@ import Home from './components/core/Home';
 import PageNotFound from './components/core/PageNotFound';
 import TemporaryDrawer from './components/core/Drawer';
 
-import Inventory from './pages/inventory'
+import PdfUpload from './pages/PDF';
+
+
 import SocketTest from './SocketTest'
 import State from './pages/State';
 import Checkout from './pages/Checkout';
@@ -169,6 +172,7 @@ function App() {
         <Route path='Status' Component={State}/>
         <Route path='Kasse' Component={Checkout}/>
         <Route path='test' Component={SocketTest}/>
+        <Route path='pdf' Component={PdfUpload}/>
 
       </Routes>
       <Footer/>
