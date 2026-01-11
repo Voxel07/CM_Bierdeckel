@@ -19,7 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Stack from "@mui/material/Stack";
 import Autocomplete from '@mui/material/Autocomplete';
 import CloseIcon from '@mui/icons-material/Close';
-import { IconButton } from '@mui/material/';
+import { IconButton } from '@mui/material';
 import {Chip} from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { createTheme, ThemeProvider } from '@mui/material';

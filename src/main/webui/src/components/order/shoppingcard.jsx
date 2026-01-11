@@ -10,7 +10,7 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import CartItem from "./cardItem";
 import CloseIcon from '@mui/icons-material/Close';
-import { IconButton, Tooltip } from '@mui/material/';
+import { IconButton, Tooltip } from '@mui/material';
 
 const style = {
   position: 'absolute',

@@ -10,7 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import EuroIcon from '@mui/icons-material/Euro';
 import axios from "axios";
 
-import { IconButton,  Paper, TextField } from '@mui/material/';
+import { IconButton,  Paper, TextField } from '@mui/material';
 
 const ColorRetainingIconButton = styled(IconButton)(({ theme, color }) => ({
   '&.Mui-disabled': {

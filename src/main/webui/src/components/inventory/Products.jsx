@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
-import { IconButton,  Paper, TextField } from '@mui/material/';
+import { IconButton,  Paper, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import AddProduct from './AddProduct'
