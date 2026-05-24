@@ -159,18 +159,17 @@ function Header() {
                 ...menuStyle
               }}
             >
-              {navItems.map((item, index) => (
-                <React.Fragment key={item.name}>
-                  <MenuItem 
-                    component={RouterLink} 
-                    to={item.path}
-                    onClick={handleCloseNavMenu}
-                  >
-                    <Typography textAlign="center">{item.name}</Typography>
-                  </MenuItem>
-                  {index < navItems.length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
+              {navItems.map((item, index) => [
+                <MenuItem 
+                  key={item.name}
+                  component={RouterLink} 
+                  to={item.path}
+                  onClick={handleCloseNavMenu}
+                >
+                  <Typography textAlign="center">{item.name}</Typography>
+                </MenuItem>,
+                index < navItems.length - 1 ? <Divider key={`${item.name}-divider`} /> : null
+              ])}
             </Menu>
           </Box>
           <Typography

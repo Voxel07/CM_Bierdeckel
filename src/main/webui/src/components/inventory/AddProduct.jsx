@@ -20,12 +20,12 @@ import Stack from "@mui/material/Stack";
 import Autocomplete from '@mui/material/Autocomplete';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@mui/material';
-import {Chip} from '@mui/material';
+import { Chip } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 //Feedback
-import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
+import { AlertsManager, AlertsContext } from '../../utils/AlertsManager';
 
 const pCategory = [
     { label: 'Essen', id: 'Food' },
@@ -43,48 +43,48 @@ const style = {
     border: '5px solid #090c11',
     p: 4,
     borderRadius: '20px',
-  };
+};
 
-  const theme = createTheme({
+const theme = createTheme({
     components: {
-      MuiAutocomplete: {
-        styleOverrides: {
-          root: {
-            '& .MuiInputLabel-root': { color: '#DDDDDD' },
-            '& .MuiOutlinedInput-root': { 
-              color: '#DDDDDD',
-              '& > fieldset': { borderColor: '#f5f0f3' },
+        MuiAutocomplete: {
+            styleOverrides: {
+                root: {
+                    '& .MuiInputLabel-root': { color: '#DDDDDD' },
+                    '& .MuiOutlinedInput-root': {
+                        color: '#DDDDDD',
+                        '& > fieldset': { borderColor: '#f5f0f3' },
+                    },
+                },
+                inputRoot: {
+                    color: '#f5f0f3'
+                },
+                clearIndicator: {
+                    color: 'red'
+                },
+                popupIndicator: {
+                    color: '#f5f0f3'
+                },
+                paper: {
+                    color: '#f5f0f3',
+                    backgroundColor: '#090c11',
+                },
+                option: {
+                    borderBottom: '1px solid #0d5459',
+                    '&[aria-selected="true"]': {
+                        backgroundColor: '#090c11', // Change this to your desired color
+                        color: '#1e7d29', // Change this to your desired text color
+                    },
+                },
             },
-          },
-          inputRoot: {
-            color: '#f5f0f3'
-          },
-          clearIndicator: {
-            color: 'red'
-          },
-          popupIndicator: {
-            color: '#f5f0f3'
-          },
-          paper: {
-            color: '#f5f0f3',
-            backgroundColor: '#090c11',
-          },
-          option: {
-            borderBottom: '1px solid #0d5459',
-            '&[aria-selected="true"]': {
-            backgroundColor: '#090c11', // Change this to your desired color
-            color: '#1e7d29', // Change this to your desired text color
-          },
-          },
         },
-      },
     },
-  });
+});
 
-  const chipStyle = {
+const chipStyle = {
     margin: '2px',
     backgroundColor: '#040608',
-    borderColor:'#19669d',
+    borderColor: '#19669d',
     color: '#fff',
     '&:hover': {
         backgroundColor: '#040608',
@@ -97,14 +97,13 @@ const style = {
     }
 };
 
-const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras }) =>
-{
-    const alertsManagerRef =  useRef();
+const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extras }) => {
+    const alertsManagerRef = useRef();
     const [open, setOpen] = useState(false);
     const descriptionRef = useRef();
     const [newCategory, setNewCategory] = useState(category)
- 
-    const handleSubmit = async(formData, { resetForm }) =>{
+
+    const handleSubmit = async (formData, { resetForm }) => {
         console.log(formData);
         console.log(productToModify);
         const url = 'products';
@@ -137,204 +136,204 @@ const AddProduct = (({onSubmitSuccess, category, action, productToModify, extras
 
     const handleOpen = () => {
         setOpen(true);
-        };
-    
+    };
+
     const handleClose = () => {
         setOpen(false);
-        };
+    };
 
     const validationSchema = yup.object().shape({
         description: yup.string().required("Pflichtfeld").min(4, "min. 4 Zeichen").max(20, "max. 20 Zeichen"),
         price: yup.number()
-    .typeError("Muss eine Zahl sein")
-    .transform((value, originalValue) => {
-      let replaced = String(originalValue).replace(",", ".");
-      return isNaN(replaced) ? value : parseFloat(replaced);
-    })
-    .required("Pflichtfeld")
-    .positive("Muss eine positive Zahl sein")
-    .min(0.01, "Muss größer als 0 sein"),
-      stock: yup.number()
-      .required("Pflichtfeld")
-      .integer("Ganze Zahlen")
-      .typeError("Numerischer Wert")
-        .min(1, "min. 1"),
-      consumption: yup.number("Numerischer Wert").integer("Ganze Zahlen").typeError("Numerischer Wert")
-        .min(0, "<= 0")
-        .required("Pflichtfeld")
+            .typeError("Muss eine Zahl sein")
+            .transform((value, originalValue) => {
+                let replaced = String(originalValue).replace(",", ".");
+                return isNaN(replaced) ? value : parseFloat(replaced);
+            })
+            .required("Pflichtfeld")
+            .positive("Muss eine positive Zahl sein")
+            .min(0.01, "Muss größer als 0 sein"),
+        stock: yup.number()
+            .required("Pflichtfeld")
+            .integer("Ganze Zahlen")
+            .typeError("Numerischer Wert")
+            .min(1, "min. 1"),
+        consumption: yup.number("Numerischer Wert").integer("Ganze Zahlen").typeError("Numerischer Wert")
+            .min(0, "<= 0")
+            .required("Pflichtfeld")
     })
 
     const FormikWithRef = React.forwardRef((props, ref) => (
         <Formik {...props} />
-      ));
+    ));
 
-    return(
+    return (
         <div>
-        <AlertsManager ref={alertsManagerRef} />
-        {
-            action == "add" ?
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
-            :
-            <IconButton variant="contained" color="warning" onClick={handleOpen}><EditIcon/></IconButton>
-        }
-        <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border:"solid 2px" }}
-        open={open}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <FormikWithRef
-        validateOnChange={true}
-        initialValues={
-            productToModify ? {
-                description: productToModify.name,
-                price: productToModify.price,
-                stock: productToModify.stock,
-                consumption: productToModify.consumption,
-                category: setNewCategory,
-                extras: productToModify.compatibleExtras || []
-            } : {
-                description: '',
-                price: '',
-                stock: '',
-                consumption: '', 
-                category: '',
-                extras: []
+            <AlertsManager ref={alertsManagerRef} />
+            {
+                action == "add" ?
+                    <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpen}>Neues Produkt hinzufügen</Button >
+                    :
+                    <IconButton variant="contained" color="warning" onClick={handleOpen}><EditIcon /></IconButton>
             }
-        }
-        validationSchema={validationSchema}
-        onSubmit={async(data, { setSubmitting, resetForm }) => {
-                setSubmitting(true);
-                await handleSubmit(data, { resetForm }); //async call
-                setSubmitting(false);
-            }
-        }
-        //end Formik
-        >  
-        {
-            ({ values, errors, isSubmitting, touched, setFieldValue }) => {
-                
-                useEffect(() => {
-                    if (!isSubmitting) {
-                        descriptionRef.current.focus();
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: "solid 2px" }}
+                open={open}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                    backdrop: {
+                        timeout: 500,
+                    },
+                }}
+            >
+                <FormikWithRef
+                    validateOnChange={true}
+                    initialValues={
+                        productToModify ? {
+                            description: productToModify.name,
+                            price: productToModify.price,
+                            stock: productToModify.stock,
+                            consumption: productToModify.consumption,
+                            category: setNewCategory,
+                            extras: productToModify.compatibleExtras || []
+                        } : {
+                            description: '',
+                            price: '',
+                            stock: '',
+                            consumption: '',
+                            category: '',
+                            extras: []
+                        }
                     }
-                }, [isSubmitting])
-
-                return(
-                <Container className="Form-Container" sx={{...style, width:'500px'}} >
+                    validationSchema={validationSchema}
+                    onSubmit={async (data, { setSubmitting, resetForm }) => {
+                        setSubmitting(true);
+                        await handleSubmit(data, { resetForm }); //async call
+                        setSubmitting(false);
+                    }
+                    }
+                //end Formik
+                >
                     {
-                        action == "add" ?
-                        <Typography  sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
-                        :
-                        <Typography  sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
+                        ({ values, errors, isSubmitting, touched, setFieldValue }) => {
+
+                            useEffect(() => {
+                                if (!isSubmitting) {
+                                    descriptionRef.current.focus();
+                                }
+                            }, [isSubmitting])
+
+                            return (
+                                <Container className="Form-Container" sx={{ ...style, width: '500px' }} >
+                                    {
+                                        action == "add" ?
+                                            <Typography sx={{ marginBottom: '35px' }}>Neues Produkt hinzufügen</Typography>
+                                            :
+                                            <Typography sx={{ marginBottom: '35px' }}>Produkt aktualisieren</Typography>
+                                    }
+
+                                    <Form className="Form-Container" >
+                                        <Grid container direction="row" alignItems="center" spacing={1}>
+                                            {/* <ThemeProvider theme={theme}> */}
+                                            <Grid item xs={8}>
+                                                <Field autoComplete="off" inputRef={descriptionRef} variant="outlined" label="Bezeichung" name="description" type="input" error={!!errors.description && !!touched.description} helperText={!!touched.description && !!errors.description ? String(errors.description) : ' '} as={TextField}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <Field autoComplete='off' variant="outlined" label="Preis" name="price" type="tel" error={!!errors.price && !!touched.price} helperText={!!touched.price && !!errors.price ? String(errors.price) : ' '} as={TextField} InputProps={{ endAdornment: <InputAdornment position="end">€</InputAdornment>, }} />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Field autoComplete='off' variant="outlined" label="Stück" name="stock" type="tel" error={!!errors.stock && !!touched.stock} helperText={!!touched.stock && !!errors.stock ? String(errors.stock) : ' '} as={TextField} />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption) : ' '} as={TextField} />
+                                            </Grid>
+
+                                            <Grid item xs={12}>
+                                                <ThemeProvider theme={theme}>
+
+                                                    {Array.isArray(extras) && extras.length > 0 && (
+                                                        <Autocomplete
+                                                            multiple
+                                                            id="extras-tags"
+                                                            options={extras.filter(
+                                                                extra => !values.extras.some(selectedExtra => selectedExtra.id === extra.id)
+                                                            )}
+                                                            getOptionLabel={(option) => option.name}
+                                                            value={values.extras}
+                                                            onChange={(event, newValue) => {
+                                                                setFieldValue('extras', newValue);
+                                                            }}
+                                                            renderInput={(params) => (
+                                                                <TextField
+                                                                    {...params}
+                                                                    variant="outlined"
+                                                                    label="Extras"
+                                                                    placeholder="Wähle Extras"
+                                                                />
+                                                            )}
+                                                            renderTags={(value, getTagProps) =>
+                                                                value.map((option, index) => (
+                                                                    <Chip
+                                                                        deleteIcon={<ClearIcon />}
+                                                                        variant="outlined"
+                                                                        label={option.name}
+                                                                        {...getTagProps({ index })}
+                                                                        sx={chipStyle}
+                                                                    />
+                                                                ))
+                                                            }
+                                                        />
+                                                    )}
+                                                </ThemeProvider>
+                                            </Grid>
+                                            {action == "add" ? null :
+                                                <Grid item xs={6} sx={{ marginTop: '20px' }}>
+                                                    <ThemeProvider theme={theme}>
+
+                                                        <Autocomplete
+                                                            disablePortal
+                                                            id="ac_category_update_product"
+                                                            defaultValue={pCategory.find(item => item.id === productToModify.category)}
+                                                            options={pCategory}
+                                                            name="category"
+                                                            onChange={(event, value) => {
+                                                                setNewCategory(value.id);
+                                                            }}
+                                                            renderInput={(params) => <TextField {...params} label="Kategorie" />}
+                                                        />
+                                                    </ThemeProvider>
+                                                </Grid>
+                                            }
+                                            <Grid item xs={12}>
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={2}
+                                                    justifyContent="space-between"
+                                                    alignItems="center"
+                                                    sx={{ marginTop: '35px' }}>
+                                                    {action == "add" ?
+                                                        <Button variant="outlined" color='success' disabled={isSubmitting || !errors} type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button> :
+                                                        <Button variant="outlined" color='success' disabled={isSubmitting || !errors} type='submit' startIcon={<SaveIcon />}> Aktualisieren </Button>}
+                                                    <Button variant="outlined" color='error' disabled={isSubmitting || !errors} onClick={handleClose} startIcon={<CloseIcon />}> Abbrechen </Button>
+
+                                                </Stack>
+
+                                            </Grid>
+
+                                        </Grid>
+                                    </Form>
+                                </Container>
+                            );
+
+                        }
                     }
-
-                <Form className="Form-Container" >
-                    <Grid container direction="row" alignItems="center" spacing={1}>
-                        {/* <ThemeProvider theme={theme}> */}
-                        <Grid item xs={8}>
-                            <Field  autoComplete="off" inputRef={descriptionRef} variant="outlined" label="Bezeichung" name="description" type="input" error={!!errors.description && !!touched.description} helperText={!!touched.description && !!errors.description ? String(errors.description): ' '  } as={TextField}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Field autoComplete='off' variant="outlined" label="Preis" name="price" type="tel" error={!!errors.price && !!touched.price} helperText={!!touched.price && !!errors.price ? String(errors.price):' '} as={TextField}  InputProps={{ endAdornment: <InputAdornment position="end">€</InputAdornment>,}}/>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Field autoComplete='off' variant="outlined" label="Stück" name="stock" type="tel" error={!!errors.stock && !!touched.stock} helperText={!!touched.stock && !!errors.stock ? String(errors.stock):' '} as={TextField} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Field autoComplete='off' variant="outlined" label="Verbraucht" name="consumption" type="tel" error={!!errors.consumption && !!touched.consumption} helperText={!!touched.consumption && !!errors.consumption ? String(errors.consumption):' '} as={TextField} />
-                        </Grid>
-                       
-                         <Grid item xs={12}>
-                        <ThemeProvider theme={theme}>
-
-                        {extras && extras.length > 0 && (
-                        <Autocomplete
-                        multiple
-                        id="extras-tags"
-                        options={extras.filter(
-                            extra => !values.extras.some(selectedExtra => selectedExtra.id === extra.id)
-                        )}
-                        getOptionLabel={(option) => option.name}
-                        value={values.extras}
-                        onChange={(event, newValue) => {
-                            setFieldValue('extras', newValue);
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="outlined"
-                                label="Extras"
-                                placeholder="Wähle Extras"
-                            />
-                        )}
-                        renderTags={(value, getTagProps) =>
-                            value.map((option, index) => (
-                                <Chip
-                                    deleteIcon={<ClearIcon />}
-                                    variant="outlined"
-                                    label={option.name}
-                                    {...getTagProps({ index })}
-                                    sx={chipStyle}
-                                />
-                            ))
-                        }
-                    />
-                        )}
-                        </ThemeProvider>
-                        </Grid>
-                        {action == "add" ? null:
-                        <Grid  item xs={6} sx={{marginTop:'20px'}}>
-                        <ThemeProvider theme={theme}>
-
-                        <Autocomplete
-                            disablePortal
-                            id="ac_category_update_product"
-                            defaultValue={pCategory.find(item => item.id === productToModify.category)}
-                            options={pCategory}
-                            name="category"
-                            onChange={(event, value) => {
-                               setNewCategory(value.id);
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Kategorie" />}
-                            />
-                            </ThemeProvider>
-                        </Grid>
-                        }
-                        <Grid item xs={12}>
-                        <Stack
-                            direction="row"
-                            spacing={2}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{ marginTop:'35px' }}>
-                          {action == "add" ? 
-                          <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Hinzufügen </Button>: 
-                          <Button variant="outlined" color='success' disabled={isSubmitting || !errors } type='submit' startIcon={<SaveIcon />}> Aktualisieren </Button>}
-                        <Button variant="outlined" color='error' disabled={isSubmitting || !errors } onClick={handleClose}  startIcon={<CloseIcon />}> Abbrechen </Button>
-
-                        </Stack>
-
-                        </Grid>
-
-                    </Grid>
-                </Form>
-                </Container>
-                );
-
-            }
-        }
-    </FormikWithRef>
-    </Modal>
-    </div>
+                </FormikWithRef>
+            </Modal>
+        </div>
     );
 })
 
