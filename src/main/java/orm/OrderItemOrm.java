@@ -67,9 +67,6 @@ public class OrderItemOrm {
         
         for(OrderItem orderItem: orderItems)
         {
-            System.out.println("add it pls");
-            System.out.println(orderItem.getExtraItems().toString());
-
             Product productDB = new Product();
 
             try {
@@ -81,10 +78,35 @@ public class OrderItemOrm {
 
             OrderItem newOrderItem = new OrderItem(productDB, dbOrder, OrderItem.PaymentStatus.UNPAID, OrderItem.OrderStatus.ORDERED);
 
+            if (orderItem.getExtraItems() != null) {
+                for (ExtraItem extraItem : orderItem.getExtraItems()) {
+                    if (extraItem.getExtras() != null && extraItem.getExtras().getId() != null) {
+                        Extras dbExtra = em.find(Extras.class, extraItem.getExtras().getId());
+                        if (dbExtra != null) {
+                            ExtraItem newExtraItem = new ExtraItem(newOrderItem, dbExtra);
+                            newOrderItem.getExtraItems().add(newExtraItem);
+                        }
+                    }
+                }
+            }
+
             try {
                 em.persist(newOrderItem);
+                dbOrder.addOrderItem(newOrderItem);
+                if (newOrderItem.getExtraItems() != null) {
+                    for (ExtraItem extraItem : newOrderItem.getExtraItems()) {
+                        dbOrder.incSum(extraItem.getExtras().getPrice());
+                    }
+                }
             } catch (Exception e) {
+                System.out.println("Error persisting order item: " + e.getMessage());
             }
+        }
+
+        try {
+            em.merge(dbOrder);
+        } catch (Exception e) {
+            System.out.println("Error merging order sum: " + e.getMessage());
         }
 
         return true;

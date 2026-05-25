@@ -154,9 +154,8 @@ const Products = ({ productCategory }) => {
                                     spacing={1}
                                     alignItems="start">
                                     {product.compatibleExtras && product.compatibleExtras.length > 0 && (
-
-                                        product.compatibleExtras.map((extra) => (
-                                            <Chip color="primary" label={extra.name} size="small" sx={chipStyle} />
+                                        product.compatibleExtras.map((extra, index) => (
+                                            <Chip key={extra && extra.id != null ? `${extra.id}-${index}` : index} color="primary" label={extra ? extra.name : ''} size="small" sx={chipStyle} />
                                         ))
                                     )}
                                 </Stack>

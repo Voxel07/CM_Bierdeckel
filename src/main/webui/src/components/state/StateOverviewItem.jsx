@@ -1,41 +1,42 @@
 import React from 'react';
-import { Paper, Box, Stack, Typography, Divider } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 
 export const StateOverviewItem = ({ displayItems }) => {
+  if (!displayItems || displayItems.length === 0) return null;
+
   return (
-    <Paper className='header'>
-      <Box sx={{ 
+    <Box 
+      sx={{ 
         display: 'flex', 
         flexWrap: 'wrap', 
-        rowGap: 0, 
-        columnGap: 2, 
-        maxWidth: '285px', 
-        margin: '0 auto'  // Centers the box if it's narrower than its container
-      }}>
-        {displayItems?.length ? (
-          displayItems.map((item) => (
-            <Box
-              key={item.productId}
-              sx={{
-                flexGrow: 0,
-                flexShrink: 0,
-                minWidth:'110px'
-              }}
-            >
-              <Stack
-                direction="row"
-                spacing={1}
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography noWrap>{item.productName}:</Typography>
-                <Typography>{item.quantity}</Typography>
-                {/* <Divider orientation="vertical" variant="middle" flexItem /> */}
-              </Stack>
-            </Box>
-          ))
-        ) : null}
-      </Box>
-    </Paper>
+        gap: 1, 
+        justifyContent: 'flex-start',
+        p: 1.5,
+        mt: 0.5,
+        mb: 1.5,
+        borderRadius: '12px',
+        backgroundColor: 'rgba(9, 12, 17, 0.4)',
+        border: '1px solid rgba(25, 152, 161, 0.1)',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}
+    >
+      {displayItems.map((item) => (
+        <Chip
+          key={item.productId}
+          label={`${item.productName}: ${item.quantity}`}
+          size="small"
+          sx={{
+            backgroundColor: 'rgba(25, 152, 161, 0.08)',
+            color: '#1998a1',
+            border: '1px solid rgba(25, 152, 161, 0.2)',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            '& .MuiChip-label': { px: 1 }
+          }}
+        />
+      ))}
+    </Box>
   );
 };
+export default StateOverviewItem;

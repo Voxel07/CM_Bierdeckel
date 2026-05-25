@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-
-import axios from "axios";
-
+import React from "react";
 import Box from "@mui/material/Box";
-import { Tab } from "@mui/material";
+import { Tab, Container, useMediaQuery, useTheme } from "@mui/material";
 import { TabList, TabPanel, TabContext } from '@mui/lab';
 import Stack from "@mui/material/Stack";
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
@@ -12,351 +9,104 @@ import SportsBarIcon from "@mui/icons-material/SportsBar";
 import OrderItems from "../components/order/OrderItems";
 import ShoppingCart from "../components/order/shoppingcard";
 import Userselection from "../components/order/userSelection";
-import { summarizeOrderItems } from "../components/order/orderUtils";
-import { AlertsManager , AlertsContext } from '../utils/AlertsManager';
+import { OrderProvider, useOrder } from "../components/order/OrderContext";
 
-
-export default function Order() {
+function OrderContent() {
   const [tabValue, setTabValue] = React.useState("1");
-  const [products, setProducts] = useState([]); // Raw data from DB
-  const [drinks, setDrinks] = useState([]);
-  const [selectedUser, setSelectedUser] = React.useState({label: "1", id: 1});
-  const [userCardItems, setUserCardItems] = React.useState([]); // Raw DB data with items of the selected user
-  const [orderId, setOrderId] = React.useState(0);
-  const [orderDeleted, setOrderDeleted] = React.useState(false);
-  const [cardMetadata, setCardMetadata] = React.useState({total: 0, itemCount: 0});
-  const [displayItems, setDisplayItems] = useState([]); // Items sorted to have a quantity
-  const alertsManagerRef =  useRef(AlertsContext);
-
-
-  const fetchProductsAndDrinks = useCallback(async () => {
-    try {
-      const [productsResponse, drinksResponse] = await Promise.all([
-        axios.get("products", { params: { category: "Food" } }),
-        axios.get("products", { params: { category: "Drink" } })
-      ]);
-
-      setProducts(productsResponse.data);
-      setDrinks(drinksResponse.data);
-    } catch (error) {
-      console.error("Error fetching products and drinks:", error);
-      alertsManagerRef.current.showAlert('error', "Fehler bei der der Datenabfrage");
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProductsAndDrinks();
-  }, [fetchProductsAndDrinks, orderDeleted]);
-
-
-  //Fetch the oder of the selected user
-  useEffect(() => {
-    if (
-      selectedUser == null ||
-      typeof selectedUser.id === "undefined" ||
-      selectedUser.id <= 0
-    ) {
-      clearShoppingcard(); // Reset shopping Card if no user is defined
-      return;
-    }
-    axios
-      .get("/order", {
-        params: {
-          userId: selectedUser.id,
-          completed: false
-        },
-      })
-      .then((response) => {
-        setTimeout(() => {
-          if (response.data && response.data.length) {
-            setUserCardItems(response.data[0].orderItems);
-            setOrderId(response.data[0].id);
-            setCardMetadata({total: response.data[0].sum, itemCount: response.data[0].orderItems.length})
-            setDisplayItems(
-              summarizeOrderItems(response.data[0].orderItems)
-            );
-          } else {
-            setOrderId(null);
-            clearShoppingcard();
-          }
-        }, 0);
-      })
-      .catch((error) => {
-        console.log(error);
-        alertsManagerRef.current.showAlert('error', "Fehler beim Abfragen der Userdaten");
-
-      });
-  }, [selectedUser]);
-
-  useEffect(() => {
-    setDisplayItems(summarizeOrderItems(userCardItems));
-  }, [userCardItems]);
+  const { products, drinks, selectedUser } = useOrder();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  //Reset card in case of new/invalide user withoud data
-  const clearShoppingcard = () =>
-  {
-    setCardMetadata({total: 0, itemCount: 0});
-    setUserCardItems([]);
-  }
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Top Header Section */}
+      <Stack
+        direction={isMobile ? "column" : "row"}
+        spacing={3}
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{
+          mb: 4,
+          p: 3,
+          borderRadius: 4,
+          background: "linear-gradient(135deg, rgba(8, 48, 54, 0.4) 0%, rgba(9, 12, 17, 0.6) 100%)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(25, 152, 161, 0.15)",
+        }}
+      >
+        <Userselection />
+        <ShoppingCart />
+      </Stack>
 
-  const rmItemFromShoppingcard = (item, extraItems) => {
-    // console.log("inrm", item, extraItems)
-
-    var indexToRemove = -1;
-    
-    if(extraItems == null){ // Handle no extra case
-      indexToRemove = userCardItems.findIndex((cartItem) => 
-      cartItem.product.id === item.id );
-    }
-    else{ // handle extra case
-      indexToRemove = userCardItems.findIndex((cartItem) => 
-      cartItem.product.id === item.id && (cartItem.extraItems[0].extras.id === extraItems.id));
-    }
-
-    // console.log(indexToRemove)
-    // return;
-    
-    // Item not found return
-    if (indexToRemove == -1) {
-      return;
-    }
-
-    item.stock +=1;
-
-    const updatedNewItems = [...userCardItems];
-    updatedNewItems.splice(indexToRemove, 1);
-    setUserCardItems(updatedNewItems);
-    setCardMetadata((prevMetadata) => ({
-      ...prevMetadata,
-      total: Math.max(prevMetadata.total - item.price - (extraItems ? extraItems.price : 0), 0),
-      itemCount: prevMetadata.itemCount - 1
-    }));
-  };
-
-  const addItemToShoppingcard = (item, extra) => {
-    let nextId = userCardItems.length > 0 ? userCardItems[userCardItems.length - 1].id + 1 : 1;
-    const orderItem = {
-      id: nextId,
-      orderStatus: "ORDERED",
-      paymentStatus: "UNPAID",
-      product: item,
-      extraItems: extra ? 
-      [
-        {
-          extras: {
-            id: extra.id,
-            name: extra.name,
-            price: extra.price,
-            stock: extra.stock || 0, 
-            consumption: extra.consumption || 0, 
-            category: extra.category
-          }
-        }
-      ] : []
-    };
-  
-    setUserCardItems([...userCardItems, orderItem]);
-    setCardMetadata((prevMetadata) => ({
-      ...prevMetadata,
-      total: prevMetadata.total + item.price + (extra ? extra.price : 0),
-      itemCount: prevMetadata.itemCount + 1 // shopping card itme cnt
-    }));
-  }
-
-  const handleUserSelectionChange = (event, newValue) => {
-    setSelectedUser({ ...newValue });
-  };
-
-/**
- * Updates the shopping card based on the given action.
- *
- * @param {string} id - The ID of the product to add or remove.
- * @param {string} action - The action to perform ("add", "rm", or "clear").
- * @return {void} This function does not return anything.
- */
-function stockChange(id, action, category, extraItems) {
-  // console.log(id, action, category, extraItems);
-
-  const isProduct = category === 'Food';
-  const items = isProduct ? products : drinks;
-  const setItems = isProduct ? setProducts : setDrinks;
-  // const addItemToCart =  addItemToShoppingcard;
-  // const rmItemFromCart =  rmItemFromShoppingcard;
-  // const cartItems =  userCardItems;
-  // const setCartItems =  setUserCardItems;
-
-  if (action === "add") {
-    const indexToModify = items.findIndex((item) => item.id === id);
-    if (indexToModify !== -1) {
-      const itemToModify = {...items[indexToModify]};
-      itemToModify.stock -= 1;
-      const newItems = [...items];
-      newItems[indexToModify] = itemToModify;
-      setItems(newItems);
-      addItemToShoppingcard(itemToModify, extraItems);
-    }
-  }
-  else if (action === "rm") {
-    const indexToModify = items.findIndex((item) => item.id === id);
-    if (indexToModify !== -1) {
-      const itemToModify = {...items[indexToModify]};
-      itemToModify.stock += 1;
-      const newItems = [...items];
-      newItems[indexToModify] = itemToModify;
-      setItems(newItems);
-      rmItemFromShoppingcard(itemToModify, extraItems);
-    }
-  }
-  else if(action === "clear") {
-    let totalPriceToRemove = 0;
-    let itemsToRemoveCount = 0;
-
-    const updatedCartItems = userCardItems.filter((item) => {
-      if (item.product.id === id && ((item.extraItems && extraItems && item.extraItems.id === extraItems.id) || (!item.extraItems && !extraItems))){
-          totalPriceToRemove += item.product.price + (item.extraItems ? item.extraItems.price : 0);
-          itemsToRemoveCount++;
-          return false;
-        } else {
-        return true;
-      }});
-
-    setUserCardItems(updatedCartItems);
-
-    const indexToModify = items.findIndex((item) => item.id === id);
-    if (indexToModify !== -1) {
-      const itemToModify = {...items[indexToModify]};
-      itemToModify.stock += itemsToRemoveCount;
-      const newItems = [...items];
-      newItems[indexToModify] = itemToModify;
-      setItems(newItems);
-    }
-
-    // Update cardMetadata
-    setCardMetadata((prevMetadata) => ({
-      ...prevMetadata,
-      total: prevMetadata.total - totalPriceToRemove,
-      itemCount: prevMetadata.itemCount - itemsToRemoveCount
-    }));
-  }
-  else {
-    console.log("nope");
-  }
+      {/* Product categories */}
+      {selectedUser ? (
+        <TabContext value={tabValue}>
+          <Box sx={{
+            borderBottom: "1px solid rgba(25, 152, 161, 0.2)",
+            mb: 3,
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <TabList
+              textColor="primary"
+              indicatorColor="primary"
+              onChange={handleTabChange}
+              aria-label="Product category tabs"
+              centered
+              sx={{
+                '& .MuiTabs-indicator': {
+                  height: 3,
+                  borderRadius: '3px 3px 0 0',
+                }
+              }}
+            >
+              <Tab
+                icon={<LunchDiningIcon />}
+                iconPosition="start"
+                value="1"
+                label="Essen"
+                sx={{ fontSize: '1rem', fontWeight: 600, px: 4, minHeight: 64 }}
+              />
+              <Tab
+                icon={<SportsBarIcon />}
+                iconPosition="start"
+                value="2"
+                label="Trinken"
+                sx={{ fontSize: '1rem', fontWeight: 600, px: 4, minHeight: 64 }}
+              />
+            </TabList>
+          </Box>
+          <TabPanel value="1" sx={{ px: 0, py: 2 }}>
+            <OrderItems products={products} />
+          </TabPanel>
+          <TabPanel value="2" sx={{ px: 0, py: 2 }}>
+            <OrderItems products={drinks} />
+          </TabPanel>
+        </TabContext>
+      ) : (
+        <Box sx={{
+          textAlign: 'center',
+          py: 8,
+          borderRadius: 4,
+          background: "rgba(9, 12, 17, 0.4)",
+          border: "1px dashed rgba(25, 152, 161, 0.3)"
+        }}>
+          <h3 style={{ color: '#1998a1', fontWeight: 600, margin: '0 0 8px 0' }}>Kein Benutzer ausgewählt</h3>
+          <p style={{ color: '#a0aab4', margin: 0 }}>Bitte wähle oben einen Benutzer aus, um mit der Bestellung zu beginnen.</p>
+        </Box>
+      )}
+    </Container>
+  );
 }
 
-  function placeOrder() {
-    axios.post("/order", JSON.stringify(userCardItems), {
-      params: {
-        userId: selectedUser.id
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich. "+ response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung. "+ error.response.data);
-      });
-  }
-
-  function updateOrder() {
-    console.log("updating order", userCardItems);
-    console.log("userId", selectedUser.id);
-    axios.put("/order", JSON.stringify(userCardItems), {
-      params: {
-        userId: selectedUser.id
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich. "+ response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        alertsManagerRef.current.showAlert('error', "Fehler bei der Bestellung. "+ error.response.data);
-      });
-  }
-
-  function deleteOrder() {
-    axios.delete("/order", {
-      data: { id: orderId }
-    })
-      .then((response) => {
-        alertsManagerRef.current.showAlert('success', "Bestellung erfolgreich gelöscht. "+ response.data);
-        setOrderDeleted(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        alertsManagerRef.current.showAlert('error', "Fehler beim löschen. "+ orderId + error.response.data);
-      });
-  }
-
+export default function Order() {
   return (
-    <Box sx={{ width: "100%", typography: "body1" }}>
-      <AlertsManager ref={alertsManagerRef} />
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="center"
-        alignItems="center"
-        sx={{ padding: 1 }}
-      >
-        <ShoppingCart
-          cardData={cardMetadata}
-          handleStockChange={stockChange}
-          displayItems={displayItems}
-          placeOrder={placeOrder}
-          updateOrder={updateOrder}
-          deleteOrder={deleteOrder}
-          orderId={orderId}
-        />
-        <Userselection handleUserChange={handleUserSelectionChange} />
-      </Stack>
-      <TabContext value={tabValue}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <TabList
-            textColor="primary"
-            indicatorColor="primary"
-            onChange={handleTabChange}
-            aria-label="lab API tabs example"
-            centered
-          >
-            <Tab icon={<LunchDiningIcon />} value="1" label="Essen" />
-            <Tab icon={<SportsBarIcon />} value="2" label="Trinken" />
-          </TabList>
-        </Box>
-        <TabPanel value="1">
-          <OrderItems
-            // currentUserId={selectedUser ? selectedUser.id : null}
-            products={products}
-            handleStockChange={stockChange}
-            displayItems={displayItems}
-          />
-        </TabPanel>
-        <TabPanel value="2">
-        <OrderItems
-            // currentUserId={selectedUser ? selectedUser.id : null}
-            products={drinks}
-            handleStockChange={stockChange}
-            displayItems={displayItems}
-          />
-        </TabPanel>
-      </TabContext>
-
-      <Stack direction="row">
-        {/* <pre style={{ color: 'white' }}>{JSON.stringify(userCardItems, null, 4)}</pre> */}
-        {/* <pre style={{ color: 'white' }}>{JSON.stringify(cardMetadata, null, 2)}</pre> */}
-        <pre style={{ color: 'white' }}> Display {JSON.stringify(displayItems, null, 4)}</pre>
-
-      </Stack>
-    </Box>
+    <OrderProvider>
+      <OrderContent />
+    </OrderProvider>
   );
 }

@@ -1,3 +1,4 @@
+import React from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
@@ -7,101 +8,131 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
+import { useOrder } from "./OrderContext";
 
-const theme2 = createTheme({
-  components: {
-    MuiTypography: {
-      styleOverrides: {
-       body1: { color: '#f5f0f3' },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          '& .MuiSvgIcon-root': {
-            color: '#f5f0f3',
-          },
-          '&:hover': {
-            '& .MuiSvgIcon-root': {
-              color: '#1998a1',
-            },
-          },
-        },
-      },
-    },
-  }
-  });
-
-function cardItem({product, handleStockChange}) {
+function CartItem({ product }) {
+  const { handleStockChange } = useOrder();
   const { productId, productName, productPrice, quantity, stock, category, extraItems } = product;
-  const extraItem = extraItems && extraItems.length > 0 ? extraItems[0].extras : null;
-  const extraName = extraItem ? extraItem.name : '';
-  const extraPrice = extraItem ? extraItem.price : 0;
+
+  const extrasList = extraItems ? extraItems.map(ei => ei.extras) : [];
+  const extrasPrice = extrasList.reduce((sum, e) => sum + e.price, 0);
+  const totalUnitPrice = productPrice + extrasPrice;
+
+  const handleAdd = () => {
+    handleStockChange(productId, "add", category, extrasList);
+  };
+
+  const handleRemove = () => {
+    handleStockChange(productId, "rm", category, extrasList);
+  };
+
+  const handleClear = () => {
+    handleStockChange(productId, "clear", category, extrasList);
+  };
 
   return (
-
-    <Box key={productId}>
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Tooltip title="Bezeichung" placement="top">
-          <Typography sx={{ minWidth: "120px", textAlign: "left" }}>
+    <Box 
+      sx={{ 
+        py: 1.5, 
+        borderBottom: '1px solid rgba(25, 152, 161, 0.1)',
+        "&:last-child": { borderBottom: 'none' }
+      }}
+    >
+      <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="space-between">
+        
+        {/* Product details & extras chips */}
+        <Stack spacing={0.5} sx={{ minWidth: 0, flex: 1 }}>
+          <Typography variant="body1" sx={{ color: '#f5f0f3', fontWeight: 600, noWrap: true }}>
             {productName}
           </Typography>
-        </Tooltip>
-        <Tooltip title="Bezeichung" placement="top">
-          {
-            extraItems.length > 0 ?  <Chip color="primary" label={extraName} size="small" /> : null
-          }
-        </Tooltip>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-        <ThemeProvider theme={theme2}>
-          <Tooltip title="Menge erhöhen" placement="top">
-          <IconButton aria-label="add" size="small" onClick={() => handleStockChange(productId, "add", category, extraItem)} disabled={stock == 0}>
-            <AddIcon fontSize="inherit" />
-          </IconButton>
-          </Tooltip>
-          <Tooltip title="Menge" placement="top">
-            <Typography sx={{ minWidth: "20px", textAlign: "center" }}>
-              {quantity}
-            </Typography>
-          </Tooltip>
-          <Tooltip title="Menge veringern"  placement="top">
-          <IconButton
-            aria-label="delete" size="small" onClick={() => handleStockChange(productId, "rm", category, extraItem)}>
-            <RemoveIcon fontSize="inherit" />
-          </IconButton>
-          </Tooltip>
-          </ThemeProvider>
+          {extrasList.length > 0 && (
+            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ gap: 0.5 }}>
+              {extrasList.map((extra) => (
+                <Chip
+                  key={extra.id}
+                  label={extra.name}
+                  size="small"
+                  sx={{
+                    backgroundColor: 'rgba(25, 152, 161, 0.1)',
+                    color: '#1998a1',
+                    border: '1px solid rgba(25, 152, 161, 0.25)',
+                    fontSize: '0.7rem',
+                    height: '20px',
+                    '& .MuiChip-label': { px: 1 }
+                  }}
+                />
+              ))}
+            </Stack>
+          )}
         </Stack>
-        <Tooltip title="Einzelpreis" placement="top">
-          <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-          {(productPrice + extraPrice).toFixed(2)}€
-          </Typography>
-        </Tooltip>
-        <Tooltip title="Gesammtpreis" placement="top">
-          <Typography sx={{ minWidth: "50px", textAlign: "right" }}>
-          {((productPrice + extraPrice) * quantity).toFixed(2)}€
-          </Typography>
-        </Tooltip>
-        <IconButton color="error" onClick={() => handleStockChange(productId, "clear", category)}>
-          <Tooltip title="Produkt löschen" placement="top" >
-            <DeleteIcon />
+
+        {/* Quantity Adjusters */}
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Tooltip title="Entfernen" placement="top">
+            <IconButton 
+              size="small" 
+              onClick={handleRemove}
+              sx={{ 
+                color: '#8898a5', 
+                border: '1px solid rgba(245, 240, 243, 0.08)',
+                '&:hover': { color: '#ef5350', borderColor: '#ef5350' } 
+              }}
+            >
+              <RemoveIcon fontSize="small" />
+            </IconButton>
           </Tooltip>
-        </IconButton>
+
+          <Typography sx={{ color: '#f5f0f3', minWidth: 24, textAlign: 'center', fontWeight: 700 }}>
+            {quantity}
+          </Typography>
+
+          <Tooltip title="Hinzufügen" placement="top">
+            <IconButton 
+              size="small" 
+              onClick={handleAdd}
+              disabled={stock === 0}
+              sx={{ 
+                color: '#8898a5', 
+                border: '1px solid rgba(245, 240, 243, 0.08)',
+                '&:hover': { color: '#1998a1', borderColor: '#1998a1' },
+                '&.Mui-disabled': { color: 'rgba(245, 240, 243, 0.1)', borderColor: 'rgba(245, 240, 243, 0.05)' }
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+
+        {/* Prices */}
+        <Stack spacing={0.2} sx={{ minWidth: 65, alignItems: 'flex-end' }}>
+          <Typography variant="body2" sx={{ color: '#f5f0f3', fontWeight: 700 }}>
+            €{(totalUnitPrice * quantity).toFixed(2)}
+          </Typography>
+          {quantity > 1 && (
+            <Typography variant="caption" sx={{ color: '#8898a5' }}>
+              €{totalUnitPrice.toFixed(2)}/Stk.
+            </Typography>
+          )}
+        </Stack>
+
+        {/* Delete button */}
+        <Tooltip title="Eintrag löschen" placement="top">
+          <IconButton 
+            size="small"
+            onClick={handleClear}
+            sx={{ 
+              color: 'rgba(239, 83, 80, 0.5)', 
+              '&:hover': { color: '#ef5350', backgroundColor: 'rgba(239, 83, 80, 0.05)' } 
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+
       </Stack>
-      <Divider/>
     </Box>
   );
 }
 
-export default cardItem;
+export default CartItem;

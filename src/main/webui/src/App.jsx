@@ -30,7 +30,9 @@ import axios from 'axios';
 const isDev = import.meta.env.DEV;
 
 // axios.defaults.baseURL = "https://bierdeckel.matze.fun/api/"
-axios.defaults.baseURL = isDev ? import.meta.env.VITE_DEV_API_URL : import.meta.env.VITE_PROD_API_URL;
+axios.defaults.baseURL = isDev 
+  ? (import.meta.env.VITE_DEV_API_URL || "http://localhost:8337/api/") 
+  : (import.meta.env.VITE_PROD_API_URL || "/api/");
 
 const theme = createTheme({
   components: {

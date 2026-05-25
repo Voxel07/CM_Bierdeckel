@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -6,267 +6,199 @@ import {
   Stack,
   CardContent,
   Typography,
-  CardActions,
   Button,
   Checkbox,
   FormControlLabel,
   FormGroup,
+  Collapse,
+  IconButton
 } from "@mui/material";
-import { createTheme, ThemeProvider } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useOrder } from "./OrderContext";
 
 const OutOfStockMessage = () => {
   return (
-    <Typography variant="h6" color="error.main" component="span">
+    <Typography variant="body2" sx={{ color: "#ff4d4f", fontWeight: "bold" }}>
       Ausverkauft
     </Typography>
   );
 };
 
-const theme2 = createTheme({
-  components: {
-    MuiTypography: {
-      styleOverrides: {
-        h5: { color: '#f5f0f3' },
-        body1: { color: '#f5f0f3' },
-        body2: { color: '#f5f0f3' },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          color: '#f5f0f3',
-          borderColor: '#1998a1',
-          '&:hover': {
-            backgroundColor: '#1998a1',
-            color: '#f5f0f3',
-          },
-        },
-      },
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: {
-          color: '#f5f0f3',
-          '&.Mui-checked': {
-            color: '#1998a1',
-          },
-        },
-      },
-    },
-    MuiFormControlLabel: {
-      styleOverrides: {
-        label: {
-          color: '#f5f0f3',
-        },
-      },
-    },
-  }
-});
+const InfoCard = ({ data }) => {
+  const { id, name, price, stock, category, consumption, compatibleExtras } = data;
+  const { displayItems, handleStockChange } = useOrder();
 
-const InfoCard = ({ data, userData, handelChange, extra}) => {
-  const { id, name, price, stock, category, consumption } = data;
-  
-  const [cardState, setCardState] = useState('front'); // 'front', 'info', or 'extras'
-  const [orderQuantity, setOrderQuantity] = useState(0);
-  const [extras, setExtras] = useState({
-    extra1: false,
-    extra2: false,
-    extra3: false,
-  });
+  const [expanded, setExpanded] = useState(false);
+  const [selectedExtras, setSelectedExtras] = useState([]);
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
+  // Calculate the total quantity of the product ordered across all extras combinations
   useEffect(() => {
-    if (userData === 0 || typeof userData !== "object") {
-      setOrderQuantity(0);
-      return;
-    }
+    const qty = displayItems
+      .filter(item => item.productId === id)
+      .reduce((sum, item) => sum + item.quantity, 0);
+    setTotalQuantity(qty);
+  }, [displayItems, id]);
 
-    var matchingItem = 0;
+  const hasExtras = compatibleExtras && compatibleExtras.length > 0;
+  const totalPrice = price + selectedExtras.reduce((sum, e) => sum + e.price, 0);
+  const isAvailable = stock > consumption;
 
-    if(extra == null)
-    {
-      matchingItem = userData?.find((item) => item.productId === id && item.extraItems.length == 0);
-    }
-    else
-    {
-      matchingItem = userData?.find((item) => item.productId === id && item.extraItems[0]?.extras.id == extra.id);
-    }
-    
-    if (matchingItem) {
-      setOrderQuantity(matchingItem.quantity);
-    } else {
-      setOrderQuantity(0);
-    }
-  }, [id, userData]);
-
-  let shortInfo;
-
-  // if (extra != null && (typeof extra_name !== 'undefined') && (typeof extra_price !== 'undefined'))
-  if (extra != null)
-  {
-   shortInfo = "incl. " + extra.name + " für " +  extra.price + "€"
-  }
-  else
-  {
-    shortInfo = "hier könnte eine kurze Info stehen";
-  }
-  const detailedInfo = "Hier kann ein langer Zusatz stehen, falls jeder Kunde für sich selber bestellen sollte. Da brauche ich aber noch ein bisschen bis das gescheit umgesetzt werdn kann. Bis dahin sthet das einfach mal so hier.";
-
-  const handleFlip = (side) => {
-    setCardState(side);
+  const handleToggleExtra = (extra) => {
+    setSelectedExtras((prev) => {
+      const exists = prev.some((e) => e.id === extra.id);
+      if (exists) {
+        return prev.filter((e) => e.id !== extra.id);
+      } else {
+        return [...prev, extra];
+      }
+    });
   };
 
-  const handleAddToOrder = (extra) => {
-    handelChange(id, "add", category, extra);
-  };
-
-  const handleRemoveFromOrder = (extra) => {
-    handelChange(id, "rm", category, extra);
-  };
-
-  const handleExtraChange = (event) => {
-    setExtras({ ...extras, [event.target.name]: event.target.checked });
+  const handleAdd = () => {
+    handleStockChange(id, "add", category, selectedExtras);
   };
 
   return (
-    <ThemeProvider theme={theme2}>
-      <Card key={id} sx={{ maxWidth: 300, position: "relative", padding: 0, backgroundColor: "#083036" }}>
-        {/* Front of the card */}
-        <Box
-          sx={{
-            transform: cardState === 'front' ? "" : "rotateY(180deg)",
-            backfaceVisibility: "hidden",
-            transition: "transform 0.3s, opacity 0.3s",
-            opacity: cardState === 'front' ? 1 : 0,
-          }}
-        >
-          <CardContent>
-            <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Typography variant="h5">
+    <Card 
+      sx={{ 
+        width: "100%", 
+        minWidth: 260,
+        backgroundColor: "rgba(18, 28, 37, 0.45)", 
+        backdropFilter: "blur(12px)",
+        borderRadius: "16px",
+        border: "1px solid rgba(25, 152, 161, 0.15)",
+        boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.3)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          borderColor: "rgba(25, 152, 161, 0.45)",
+          boxShadow: "0 12px 40px 0 rgba(25, 152, 161, 0.15)",
+        }
+      }}
+    >
+      <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
+        <Stack spacing={2}>
+          {/* Title and Price */}
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
+            <Typography variant="h6" sx={{ color: "#f5f0f3", fontWeight: 700, lineHeight: 1.2 }}>
               {name}
-              </Typography>
-              <Typography variant="h5" textAlign="right">
-                €{(price+(extra != null ? extra.price : 0)).toFixed(2)}
-              </Typography>
-            </Stack>
-            <Typography variant="body2" sx={{marginTop: 1 }}>
-              {stock ? shortInfo : <OutOfStockMessage />}
             </Typography>
-            <Grid container spacing={2} sx={{ marginTop: 1 }}>
-              <Grid item xs={6}>
-                <Typography variant="body2">Verfügbar: {stock - consumption}</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                {
-                  <Typography variant="body2">Bestellt: {orderQuantity}</Typography>
-                }
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => handleAddToOrder(extra)}
-                  disabled={stock === 0}
-                >
-                  Hinzufügen
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => handleRemoveFromOrder(extra)}
-                  disabled={orderQuantity === 0}
-                >
-                  Entfernen
-                </Button>
-              </Grid>
-            </Grid>
-          </CardContent>
-          <CardActions>
-            <Stack direction="row" spacing={9} justifyContent="space-around"> 
-              <Button size="small" variant='outlined' onClick={() => handleFlip('info')} sx={{color:"#a64913"}}>
-                Informationen
+            <Typography variant="h6" sx={{ color: "#1998a1", fontWeight: 700 }}>
+              €{totalPrice.toFixed(2)}
+            </Typography>
+          </Stack>
+
+          {/* Stock and Ordered Count Info */}
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="caption" sx={{ color: "#8898a5" }}>
+              Verfügbar: {isAvailable ? (stock - consumption) : <OutOfStockMessage />}
+            </Typography>
+            {totalQuantity > 0 && (
+              <Box 
+                sx={{ 
+                  backgroundColor: "rgba(25, 152, 161, 0.15)", 
+                  color: "#1998a1", 
+                  px: 1.5, 
+                  py: 0.5, 
+                  borderRadius: "20px",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  border: "1px solid rgba(25, 152, 161, 0.3)"
+                }}
+              >
+                {totalQuantity} bestellt
+              </Box>
+            )}
+          </Stack>
+
+          {/* Extras Toggle Link */}
+          {hasExtras && (
+            <Box>
+              <Button
+                size="small"
+                onClick={() => setExpanded(!expanded)}
+                endIcon={expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                sx={{
+                  color: "#8898a5",
+                  textTransform: "none",
+                  p: 0,
+                  fontSize: "0.85rem",
+                  "&:hover": { color: "#1998a1", backgroundColor: "transparent" }
+                }}
+              >
+                Zusatzoptionen ansehen
               </Button>
-              {/* <Button size="small" variant='outlined' onClick={() => handleFlip('extras')} sx={{color:"#a64913"}}>
-                Extras
-              </Button> */}
-            </Stack>
-          </CardActions>
-        </Box>
 
-        {/* Info side of the card */}
-        <Box
-          sx={{
-            transform: cardState === 'info' ? "" : "rotateY(180deg)",
-            backfaceVisibility: "hidden",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            transition: "transform 0.5s",
-          }}
-        >
-          <CardContent>
-            <Typography variant="body1">{detailedInfo}</Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small" variant='outlined' onClick={() => handleFlip('front')} sx={{color:"#a64913"}}>
-              Back
-            </Button>
-          </CardActions>
-        </Box>
+              <Collapse in={expanded} timeout="auto" unmountOnExit sx={{ mt: 1 }}>
+                <Box 
+                  sx={{ 
+                    p: 2, 
+                    borderRadius: "10px", 
+                    backgroundColor: "rgba(9, 12, 17, 0.6)",
+                    border: "1px solid rgba(25, 152, 161, 0.1)"
+                  }}
+                >
+                  <FormGroup>
+                    {compatibleExtras.map((extra) => {
+                      const isChecked = selectedExtras.some(e => e.id === extra.id);
+                      return (
+                        <FormControlLabel
+                          key={extra.id}
+                          control={
+                            <Checkbox
+                              checked={isChecked}
+                              onChange={() => handleToggleExtra(extra)}
+                              size="small"
+                              sx={{
+                                color: "rgba(25, 152, 161, 0.4)",
+                                "&.Mui-checked": { color: "#1998a1" },
+                              }}
+                            />
+                          }
+                          label={
+                            <Typography variant="body2" sx={{ color: "#d1d5db", fontSize: "0.85rem" }}>
+                              {extra.name} (+€{extra.price.toFixed(2)})
+                            </Typography>
+                          }
+                          sx={{ m: 0, py: 0.5 }}
+                        />
+                      );
+                    })}
+                  </FormGroup>
+                </Box>
+              </Collapse>
+            </Box>
+          )}
 
-        {/* Extras side of the card */}
-        <Box
-          sx={{
-            transform: cardState === 'extras' ? "" : "rotateY(180deg)",
-            backfaceVisibility: "hidden",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            transition: "transform 0.5s",
-          }}
-        >
-       <CardContent>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>Extras</Typography>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox checked={extras.extra1} onChange={handleExtraChange} name="extra1" />}
-                    label="Extra 1"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={extras.extra2} onChange={handleExtraChange} name="extra2" />}
-                    label="Extra 2"
-                  />
-                </FormGroup>
-              </Grid>
-              <Grid item xs={6}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox checked={extras.extra3} onChange={handleExtraChange} name="extra3" />}
-                    label="Extra 3"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={extras.extra4} onChange={handleExtraChange} name="extra4" />}
-                    label="Extra 4"
-                  />
-                </FormGroup>
-              </Grid>
-            </Grid>
-          </CardContent>
-          <CardActions>
-            <Button size="small" variant='outlined' onClick={() => handleFlip('front')} sx={{color:"#a64913"}}>
-              Back
+          {/* Add Button */}
+          <Box sx={{ pt: 1 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleAdd}
+              disabled={!isAvailable}
+              sx={{
+                backgroundColor: isAvailable ? "#1998a1" : "rgba(25, 152, 161, 0.12)",
+                color: isAvailable ? "#090c11" : "rgba(245, 240, 243, 0.3)",
+                fontWeight: 700,
+                borderRadius: "10px",
+                textTransform: "none",
+                py: 1,
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: "#157f87",
+                  boxShadow: "none",
+                }
+              }}
+            >
+              Hinzufügen
             </Button>
-          </CardActions>
-        </Box>
-      </Card>
-    </ThemeProvider>
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 };
 

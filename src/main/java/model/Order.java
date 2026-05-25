@@ -139,7 +139,15 @@ public class Order {
 
     public void removeOrderItem(OrderItem orderItem) {
         this.orderItems.remove(orderItem);
-        this.sum -= orderItem.getProduct().getPrice();
+        double itemPrice = orderItem.getProduct().getPrice();
+        if (orderItem.getExtraItems() != null) {
+            for (ExtraItem extraItem : orderItem.getExtraItems()) {
+                if (extraItem.getExtras() != null) {
+                    itemPrice += extraItem.getExtras().getPrice();
+                }
+            }
+        }
+        this.sum -= itemPrice;
         if (this.sum < 0 || this.orderItems.size() == 0){
             this.sum = 0;
         }

@@ -1,91 +1,88 @@
-import { useEffect, useState, useRef } from 'react';
+import React from "react";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { AlertsManager , AlertsContext } from '../../utils/AlertsManager';
+import { useOrder } from "./OrderContext";
 
-import axios from 'axios';
-
-export default function Userselection({handleUserChange }) {
-
-  const [avUsers, setAvUsers] = useState([])
-  const alertsManagerRef =  useRef(AlertsContext);
-
-  useEffect(()=>{
-    axios.get("/users")
-    .then((respone) =>
-    {
-      const mappedUsers = respone.data.map(user => ({
-        label: ""+user.id,
-        id: user.id, 
-      }));
-      setAvUsers(mappedUsers)
-    }).catch((error)=>{
-      alertsManagerRef.current.showAlert('error', "Fehler beim abfragen der Benutzer. "+ orderId + error.response.data);
-    })
-
-    
-  },[])
-
-  const theme = createTheme({
-    components: {
-      MuiAutocomplete: {
-        styleOverrides: {
-          root: {
-            '& .MuiInputLabel-root': { color: '#DDDDDD' },
-            '& .MuiOutlinedInput-root': { 
-              color: '#DDDDDD',
-              '& > fieldset': { borderColor: '#1998a1' },
-            },
-          },
-          inputRoot: {
-            color: '#f5f0f3'
-          },
-          clearIndicator: {
-            color: 'red'
-          },
-          popupIndicator: {
-            color: '#f5f0f3'
-          },
-          paper: {
+const theme = createTheme({
+  components: {
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputLabel-root': { color: '#8898a5' },
+          '& .MuiOutlinedInput-root': {
             color: '#f5f0f3',
+            borderRadius: '12px',
+            '& > fieldset': { borderColor: 'rgba(25, 152, 161, 0.3)' },
+            '&:hover > fieldset': { borderColor: '#1998a1' },
+            '&.Mui-focused > fieldset': { borderColor: '#1998a1' },
+          },
+        },
+        inputRoot: {
+          color: '#f5f0f3'
+        },
+        clearIndicator: {
+          color: '#ef5350'
+        },
+        popupIndicator: {
+          color: '#1998a1'
+        },
+        paper: {
+          color: '#f5f0f3',
+          backgroundColor: '#090c11',
+          border: '1px solid rgba(25, 152, 161, 0.3)',
+          borderRadius: '12px',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
+        },
+        option: {
+          borderBottom: '1px solid rgba(25, 152, 161, 0.1)',
+          '&:last-child': {
+            borderBottom: 'none'
+          },
+          '&[aria-selected="true"]': {
+            backgroundColor: 'rgba(25, 152, 161, 0.15) !important',
+          },
+          '&.Mui-focused': {
+            backgroundColor: 'rgba(25, 152, 161, 0.08) !important',
+          }
+        },
+        listbox: {
+          '&::-webkit-scrollbar': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-track': {
             backgroundColor: '#090c11',
-            borderColor: '#1998a1',
-            borderWidth: '2px',
-            borderStyle: 'solid',
           },
-          option: {
-            borderBottom: '1px solid #0d5459',
-          },
-          listbox: {
-            '&::-webkit-scrollbar': {
-              width: '7px',
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: '#090c11',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#1998a1',
-              borderRadius: '10px',
-            },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(25, 152, 161, 0.5)',
+            borderRadius: '10px',
           },
         },
       },
     },
-  });
+  },
+});
+
+export default function Userselection() {
+  const { users, selectedUser, selectUser } = useOrder();
+
+  const handleUserChange = (event, newValue) => {
+    selectUser(newValue);
+  };
 
   return (
     <ThemeProvider theme={theme}>
-    <AlertsManager ref={alertsManagerRef} />
-    <Autocomplete
-      disablePortal
-      id="user-selection"
-      options={avUsers}
-      sx={{ width: 120 }}
-      onChange={handleUserChange}
-      renderInput={(params) => <TextField {...params} label="Benutzer" />}
-      getOptionLabel={(option) => option.label}
-    />
+      <Autocomplete
+        disablePortal
+        id="user-selection"
+        options={users}
+        sx={{ width: 140 }}
+        value={selectedUser || null}
+        onChange={handleUserChange}
+        isOptionEqualToValue={(option, value) => option.id === value?.id}
+        renderInput={(params) => <TextField {...params} label="Benutzer" size="small" />}
+        getOptionLabel={(option) => `${option.label}`}
+      />
     </ThemeProvider>
   );
 }
