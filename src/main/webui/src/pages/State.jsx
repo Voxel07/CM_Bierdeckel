@@ -8,6 +8,7 @@ import StateRowHeader from "../components/state/StateRowHeader";
 import StateRowSubHeader from "../components/state/StateRowSubHeader";
 import { AlertsManager, AlertsContext } from '../utils/AlertsManager';
 import { StateOverviewItem } from "../components/state/StateOverviewItem";
+import { subscribeToWebSocket } from "../utils/websocket";
 
 function State() {
   const titles = ["ORDERED", "IN_PROGRESS", "DELIVERED"];
@@ -39,6 +40,15 @@ function State() {
 
   useEffect(() => {
     fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToWebSocket((msg) => {
+      if (msg === "orders" || msg === "products") {
+        fetchOrders();
+      }
+    });
+    return unsubscribe;
   }, []);
 
   // Compute product summary counts regardless of the user and extras

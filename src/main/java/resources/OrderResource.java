@@ -28,6 +28,9 @@ public class OrderResource {
     @Inject
     OrderOrm orm;
 
+    @Inject
+    test.SocketTest socketTest;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -60,144 +63,162 @@ public class OrderResource {
            else{
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalide completionState").build();
            }
-        }
-        else if (paymentState != null)
-        {
-            System.out.println(paymentState);
+         }
+         else if (paymentState != null)
+         {
+             System.out.println(paymentState);
 
-            if(paymentState.equals(true))
-            {
-                System.out.println("paid");
-                return  Response.status(200).entity(orm.getOrdersByPaymentState(true)).build();
-            }
-            else if(paymentState.equals(false))
-            {
-                System.out.println("nope");
+             if(paymentState.equals(true))
+             {
+                 System.out.println("paid");
+                 return  Response.status(200).entity(orm.getOrdersByPaymentState(true)).build();
+             }
+             else if(paymentState.equals(false))
+             {
+                 System.out.println("nope");
 
-                return  Response.status(200).entity(orm.getOrdersByPaymentState(false)).build();
-            }
-            else{
-                return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalide paymentState").build();
-               }
-        }
-        else
-        {
-            return orm.getAllOrder();
-        }
-    }
+                 return  Response.status(200).entity(orm.getOrdersByPaymentState(false)).build();
+             }
+             else{
+                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity("invalide paymentState").build();
+                }
+         }
+         else
+         {
+             return orm.getAllOrder();
+         }
+     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createOrder(@QueryParam("userId") Long userId, List<OrderItem> OrderItems) {
-        if (userId == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
-        }
-        System.out.println("do it");
-        System.out.println(OrderItems.toString());
+     @POST
+     @Produces(MediaType.APPLICATION_JSON)
+     @Consumes(MediaType.APPLICATION_JSON)
+     public Response createOrder(@QueryParam("userId") Long userId, List<OrderItem> OrderItems) {
+         if (userId == null) {
+             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty userId").build();
+         }
+         System.out.println("do it");
+         System.out.println(OrderItems.toString());
 
-        // return Response.status(200).entity(OrderItems).build();
-        return orm.createOrder(userId, OrderItems);
-        // return Response.ok().build();
+         Response response = orm.createOrder(userId, OrderItems);
+         if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+             socketTest.broadcast("orders");
+             socketTest.broadcast("products");
+         }
+         return response;
+     }
 
-    }
 
+     /**
+      * Updates the order based on the provided parameters.
+      *
+      * @param orderId   the ID of the order
+      * @param productId the ID of the product for remove, payment or progress its the orderItem id
+      * @param action    the action to perform on the order
+      * @return          the response indicating the success or failure of the update
+      */
+     @PUT
+     @Produces(MediaType.APPLICATION_JSON)
+     @Consumes(MediaType.APPLICATION_JSON)
+     @CacheInvalidate(cacheName = "product-stock-cache")
+     public Response updateOrder(@QueryParam("orderId") Long orderId,
+                                 @QueryParam("productId") Long productId,
+                                 @QueryParam("orderItemId") Long orderItemId,
+                                 @QueryParam("action") String action,
+                                 @QueryParam("userId") Long userId, 
+                                 List<OrderItem> OrderItems
+                                 )
+     {
+         System.out.println("OrderResource updateOrder");
+         Response response;
+         if(userId != null && OrderItems != null)
+         {
+             response = orm.updateOrder(userId, OrderItems);
+             if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                 socketTest.broadcast("orders");
+                 socketTest.broadcast("products");
+             }
+             return response;
+         }
+         if (orderId == null  || action == null) {
+             return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
+         }
+         if(productId != null)
+         {
+             System.out.println("Product");
+             response = handleProduct(orderId, productId, action);
+         }
+         else if(orderItemId != null)
+         {
+             response = handleOrderItem(orderId, orderItemId, action);
+         }
+         else if (action.equals("payOrder"))
+         {
+             System.out.println("paythatnow");
+             response = orm.payOrder(orderId);
+         }
+         else if (action.equals("completeOrder"))
+         {
+             response = orm.completeOrder(orderId);
+         }
+         else
+         {
+             response = Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
+         }
+         if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+             socketTest.broadcast("orders");
+             socketTest.broadcast("products");
+         }
+         return response;
+     }
 
-    /**
-     * Updates the order based on the provided parameters.
-     *
-     * @param orderId   the ID of the order
-     * @param productId the ID of the product for remove, payment or progress its the orderItem id
-     * @param action    the action to perform on the order
-     * @return          the response indicating the success or failure of the update
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @CacheInvalidate(cacheName = "product-stock-cache")
-    public Response updateOrder(@QueryParam("orderId") Long orderId,
-                                @QueryParam("productId") Long productId,
-                                @QueryParam("orderItemId") Long orderItemId,
-                                @QueryParam("action") String action,
-                                @QueryParam("userId") Long userId, 
-                                List<OrderItem> OrderItems
-                                )
-    {
-        System.out.println("OrderResource updateOrder");
-        if(userId != null && OrderItems != null)
-        {
-            return orm.updateOrder(userId, OrderItems);
-        }
-        if (orderId == null  || action == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
-        }
-        if(productId != null)
-        {
-            System.out.println("Product");
-            return handleProduct(orderId, productId, action);
-        }
-        else if(orderItemId != null)
-        {
-            return handleOrderItem(orderId, orderItemId, action);
-        }
-        else if (action.equals("payOrder"))
-        {
-            System.out.println("paythatnow");
-            return orm.payOrder(orderId);
-        }
-        else if (action.equals("completeOrder"))
-        {
-            return orm.completeOrder(orderId);
-        }
-        else
-        {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing parameter").build();
-        }
-    }
+     public Response handleProduct(Long orderId, Long productId, String action)
+     {
+         if(action.equals("add"))
+         {
+             return orm.addProductToOrder(orderId, productId);
+         }
+         else if(action.equals("remove") )
+         {
+             return orm.removeProductFromOrder(orderId, productId);
+         }
 
-    public Response handleProduct(Long orderId, Long productId, String action)
-    {
-        if(action.equals("add"))
-        {
-            return orm.addProductToOrder(orderId, productId);
-        }
-        else if(action.equals("remove") )
-        {
-            return orm.removeProductFromOrder(orderId, productId);
-        }
+         else
+         {
+             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
+         }
+     }
 
-        else
-        {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
-        }
-    }
+     public Response handleOrderItem(Long orderId, Long orderItemId, String action)
+     {
+         if (action.equals("payItem"))
+         {
+             return orm.updateOrderPayment(orderId, orderItemId);
+         }
+         // else if (action.equals("progress"))
+         // {
+         //     return orm.updateOrderStatus(orderId, orderItemId);
+         // }
+         else
+         {
+             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
+         }
+     }
 
-    public Response handleOrderItem(Long orderId, Long orderItemId, String action)
-    {
-        if (action.equals("payItem"))
-        {
-            return orm.updateOrderPayment(orderId, orderItemId);
-        }
-        // else if (action.equals("progress"))
-        // {
-        //     return orm.updateOrderStatus(orderId, orderItemId);
-        // }
-        else
-        {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid action").build();
-        }
-    }
+     @DELETE
+     @Produces(MediaType.APPLICATION_JSON)
+     @Consumes(MediaType.APPLICATION_JSON)
+     public Response deleteOrder(Order order)
+     {
+         if (order == null) {
+             return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty order").build();
 
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteOrder(Order order)
-    {
-        if (order == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty order").build();
+         }
 
-        }
-
-        return orm.deleteOrder(order);
-    }
+         Response response = orm.deleteOrder(order);
+         if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+             socketTest.broadcast("orders");
+             socketTest.broadcast("products");
+         }
+         return response;
+     }
 }

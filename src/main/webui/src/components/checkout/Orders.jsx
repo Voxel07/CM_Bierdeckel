@@ -23,7 +23,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   color:'#F5F0F3'
 }));
 
-export default function Orders({OrderState}) {
+export default function Orders({OrderState, refreshTrigger}) {
   console.log(OrderState)
   const alertsManagerRef =  useRef(AlertsContext);
 
@@ -51,7 +51,7 @@ export default function Orders({OrderState}) {
         .catch(error => {
           console.log(error);
         });
-    }, [trigger, OrderState]); // Add OrderState to the dependency array
+    }, [trigger, OrderState, refreshTrigger]); // Add OrderState and refreshTrigger to the dependency array
 
   useEffect(()=>{
     console.log("update something");

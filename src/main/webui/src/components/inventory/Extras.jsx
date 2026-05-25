@@ -16,7 +16,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     color: '#F5F0F3'
 }));
 
-const Extras = ({ extraCategory }) => {
+const Extras = ({ extraCategory, refreshTrigger }) => {
 
     const [extras, setExtras] = useState([]);
     const [trigger, setTrigger] = useState(false);
@@ -34,7 +34,7 @@ const Extras = ({ extraCategory }) => {
                 console.log(error);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });
-    }, [trigger])
+    }, [trigger, refreshTrigger])
 
     const handleDelete = (_id) => {
         console.log("jetzt aber")

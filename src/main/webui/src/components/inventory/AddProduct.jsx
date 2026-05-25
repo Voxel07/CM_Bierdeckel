@@ -331,7 +331,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
 
                                         <Form style={{ display: 'block', width: '100%' }}>
                                             <Grid container spacing={2.5}>
-                                                <Grid item xs={colDesignation}>
+                                                <Grid xs={colDesignation}>
                                                     <Field
                                                         autoComplete="off"
                                                         inputRef={descriptionRef}
@@ -345,7 +345,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
                                                         as={TextField}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={colPrice}>
+                                                <Grid xs={colPrice}>
                                                     <Field
                                                         autoComplete='off'
                                                         variant="outlined"
@@ -361,7 +361,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
                                                         }}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={colStock}>
+                                                <Grid xs={colStock}>
                                                     <Field
                                                         autoComplete='off'
                                                         variant="outlined"
@@ -374,7 +374,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
                                                         as={TextField}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={colConsumption}>
+                                                <Grid xs={colConsumption}>
                                                     <Field
                                                         autoComplete='off'
                                                         variant="outlined"
@@ -389,7 +389,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
                                                 </Grid>
 
                                                 {action !== "add" && (
-                                                    <Grid item xs={colCategory}>
+                                                    <Grid xs={colCategory}>
                                                         <Autocomplete
                                                             disablePortal
                                                             id="ac_category_update_product"
@@ -408,7 +408,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
 
                                                 {/* Fourth Row: Kompatible Extras (only rendered if extras are available) */}
                                                 {Array.isArray(extras) && extras.length > 0 && (
-                                                    <Grid item xs={12}>
+                                                    <Grid xs={12}>
                                                         <Autocomplete
                                                             multiple
                                                             id="extras-tags"
@@ -449,7 +449,7 @@ const AddProduct = (({ onSubmitSuccess, category, action, productToModify, extra
                                                 )}
 
                                                 {/* Fifth Row: Action Buttons */}
-                                                <Grid item xs={12}>
+                                                <Grid xs={12}>
                                                     <Stack
                                                         direction="row"
                                                         spacing={2}

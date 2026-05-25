@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback, u
 import axios from "axios";
 import { summarizeOrderItems } from "./orderUtils";
 import { AlertsManager } from "../../utils/AlertsManager";
+import { subscribeToWebSocket } from "../../utils/websocket";
 
 const OrderContext = createContext();
 
@@ -254,6 +255,22 @@ export function OrderProvider({ children }) {
       fetchActiveOrder(state.selectedUser.id);
     }
   }, [state.selectedUser, fetchActiveOrder]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToWebSocket((msg) => {
+      if (msg === "users") {
+        fetchUsers();
+      } else if (msg === "products") {
+        fetchProductsAndDrinks();
+      } else if (msg === "orders") {
+        fetchProductsAndDrinks();
+        if (state.selectedUser) {
+          fetchActiveOrder(state.selectedUser.id);
+        }
+      }
+    });
+    return unsubscribe;
+  }, [fetchUsers, fetchProductsAndDrinks, fetchActiveOrder, state.selectedUser]);
 
   const selectUser = useCallback((user) => {
     dispatch({ type: "SET_SELECTED_USER", payload: user });

@@ -26,6 +26,9 @@ public class ExtrasResource {
     @Inject
     ExtrasOrm orm;
 
+    @Inject
+    test.SocketTest socketTest;
+
     @GET
     // @CacheResult(cacheName = "fetch-extras") 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -49,7 +52,11 @@ public class ExtrasResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createExtras(Extras extra) {
-        return orm.createExtras(extra);
+        Response response = orm.createExtras(extra);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
 
     @PUT
@@ -57,7 +64,11 @@ public class ExtrasResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateExtras(Extras extra) {
-        return orm.updateExtras(extra);
+        Response response = orm.updateExtras(extra);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
 
     @DELETE
@@ -66,14 +77,19 @@ public class ExtrasResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteExtras(   @QueryParam("force") Boolean force,
                                     Extras extra) {
-
+        Response response;
         if(force == true)
         {
             System.out.println("pls");
-            return orm.deleteExtrasById(extra.getId());
+            response = orm.deleteExtrasById(extra.getId());
         }
-        
-        return orm.deleteExtra(extra);
+        else {
+            response = orm.deleteExtra(extra);
+        }
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
 
 

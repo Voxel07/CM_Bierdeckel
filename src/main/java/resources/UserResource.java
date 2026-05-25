@@ -27,6 +27,9 @@ public class UserResource {
     @Inject
     UserOrm orm;
 
+    @Inject
+    test.SocketTest socketTest;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -56,20 +59,32 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(User user) {
-        return orm.addUser(user);
+        Response response = orm.addUser(user);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("users");
+        }
+        return response;
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(User user) {
-        return orm.updateUser(user);
+        Response response = orm.updateUser(user);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("users");
+        }
+        return response;
     }
 
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(User user) {
-        return orm.delteUser(user);
+        Response response = orm.delteUser(user);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("users");
+        }
+        return response;
     }
 }

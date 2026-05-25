@@ -26,7 +26,8 @@ public class OrderItemResource {
     @Inject
     OrderItemOrm orderItemOrm;
 
-
+    @Inject
+    test.SocketTest socketTest;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -86,6 +87,7 @@ public class OrderItemResource {
     {
         OrderStatus target = null;
         OrderStatusActions itemAtion = null;
+        Response response;
 
         if(orderItems == null)
         {
@@ -93,7 +95,11 @@ public class OrderItemResource {
         }
         if(extraId != null)
         {
-            return handleExtra(extraId, orderItems.get(0).getId(), action);
+            response = handleExtra(extraId, orderItems.get(0).getId(), action);
+            if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                socketTest.broadcast("orders");
+            }
+            return response;
         }
     
         if(targetState != null)
@@ -122,7 +128,11 @@ public class OrderItemResource {
             }
         }
        
-        return orderItemOrm.updateOrderItems(orderItems, itemAtion, target);
+        response = orderItemOrm.updateOrderItems(orderItems, itemAtion, target);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("orders");
+        }
+        return response;
        
     }
 

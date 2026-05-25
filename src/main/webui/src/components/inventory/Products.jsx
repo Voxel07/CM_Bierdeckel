@@ -34,7 +34,7 @@ const chipStyle = {
     }
 };
 
-const Products = ({ productCategory }) => {
+const Products = ({ productCategory, refreshTrigger }) => {
 
     const [products, setProducts] = useState([]);
     const [extras, setExtras] = useState([]);
@@ -51,7 +51,7 @@ const Products = ({ productCategory }) => {
                 console.log(error);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });
-    }, [trigger])
+    }, [trigger, refreshTrigger])
 
     useEffect(() => {
         axios.get("extras", { params: { category: productCategory } })
@@ -63,7 +63,7 @@ const Products = ({ productCategory }) => {
                 console.log(error);
                 alertsManagerRef.current.showAlert('error', "Produkte konnten nicht geladen werden. Server nicht erreichbar");
             });
-    }, [])
+    }, [refreshTrigger])
 
     const handleEdit = (id) => {
         const updatedProducts = products.map(product => {

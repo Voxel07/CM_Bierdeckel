@@ -12,9 +12,20 @@ import Extras from '../components/inventory/Extras';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import KitchenIcon from '@mui/icons-material/Kitchen';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
+import { subscribeToWebSocket } from '../utils/websocket';
 
 export default function LabTabs() {
   const [value, setValue] = React.useState('1');
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+
+  React.useEffect(() => {
+    const unsubscribe = subscribeToWebSocket((msg) => {
+      if (msg === 'products' || msg === 'extras') {
+        setRefreshTrigger(prev => prev + 1);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -32,13 +43,13 @@ export default function LabTabs() {
           </TabList>
             </Box>
         <TabPanel value="1">
-            <Products productCategory={"Food"}/>
+            <Products productCategory={"Food"} refreshTrigger={refreshTrigger}/>
         </TabPanel>
         <TabPanel value="2">
-            <Products productCategory={"Drink"}/>
+            <Products productCategory={"Drink"} refreshTrigger={refreshTrigger}/>
         </TabPanel>
         <TabPanel value="3">
-            <Extras/>
+            <Extras refreshTrigger={refreshTrigger}/>
         </TabPanel>
       </TabContext>
       {/* </ThemeProvider> */}

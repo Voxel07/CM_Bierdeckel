@@ -11,11 +11,22 @@ import KitchenIcon from '@mui/icons-material/Kitchen';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 
 import Orders from '../components/checkout/Orders';
+import { subscribeToWebSocket } from '../utils/websocket';
 
 
 function Checkout() {
   const alertsManagerRef =  useRef(AlertsContext);
   const [value, setValue] = React.useState('1');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToWebSocket((msg) => {
+      if (msg === "orders") {
+        setRefreshTrigger(prev => prev + 1);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -36,13 +47,13 @@ function Checkout() {
           </TabList>
             </Box>
         <TabPanel value="1">
-          <Orders OrderState={""}/>
+          <Orders OrderState={""} refreshTrigger={refreshTrigger}/>
         </TabPanel>
         <TabPanel value="2">
-          <Orders OrderState={"paid"}/>
+          <Orders OrderState={"paid"} refreshTrigger={refreshTrigger}/>
         </TabPanel>
         <TabPanel value="3">
-          <Orders OrderState={"completed"}/>
+          <Orders OrderState={"completed"} refreshTrigger={refreshTrigger}/>
         </TabPanel>
       </TabContext>
       {/* </ThemeProvider> */}

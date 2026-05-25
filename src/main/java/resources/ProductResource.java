@@ -30,6 +30,9 @@ public class ProductResource {
     private int counter = 0;
     @Inject 
     ProductOrm orm;
+
+    @Inject
+    test.SocketTest socketTest;
     
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
@@ -67,7 +70,11 @@ public class ProductResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateStock(@QueryParam("productId") Long productId,
                                 @QueryParam("action") String action){
-        return orm.updateProductStock(productId, action);
+        Response response = orm.updateProductStock(productId, action);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
 
     
@@ -76,7 +83,11 @@ public class ProductResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProduct(Product product) {
-        return orm.createProduct(product);
+        Response response = orm.createProduct(product);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
     
     @PUT
@@ -84,7 +95,11 @@ public class ProductResource {
     @Produces(MediaType.APPLICATION_JSON)
     @CacheInvalidate(cacheName = "product-stock-cache")
     public Response updateProduct(Product product) {
-        return orm.updateProduct(product);
+        Response response = orm.updateProduct(product);
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
     
     
@@ -93,13 +108,17 @@ public class ProductResource {
     @Produces(MediaType.APPLICATION_JSON)
     @CacheInvalidate(cacheName = "product-stock-cache")
     public Response deleteProduct(Product product) {
-
+        Response response;
         if(product.getId() != null)
         {
-            return orm.deleteProductById(product.getId());
+            response = orm.deleteProductById(product.getId());
         }
         else{
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty productId").build();
+            response = Response.status(Response.Status.BAD_REQUEST).entity("Missing or empty productId").build();
         }
+        if (response != null && response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+            socketTest.broadcast("products");
+        }
+        return response;
     }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom';
@@ -26,6 +26,7 @@ import Checkout from './pages/Checkout';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 import axios from 'axios';
+import { initWebSocket } from './utils/websocket';
 
 const isDev = import.meta.env.DEV;
 
@@ -156,6 +157,9 @@ const theme = createTheme({
 
 
 function App() {
+  useEffect(() => {
+    initWebSocket();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
